@@ -14,8 +14,39 @@ class HomeLeaseSpecificationTests(unittest.TestCase):
     # The published corpus validates both sides of each shape pair and covers every HL/W identifier.
     def test_published_pairs(self) -> None:
         schemas, semantic = home_leases.check_corpus(ROOT)
-        self.assertGreaterEqual(schemas, 109)
-        self.assertGreaterEqual(semantic, 42)
+        self.assertGreaterEqual(schemas, 198)
+        self.assertGreaterEqual(semantic, 110)
+
+    # Publication guards retain every observer row, its closed refusal and valid positive;
+    # these controls prove corpus regression detection, not runtime process observation.
+    def test_observer_semantic_contract(self) -> None:
+        cases = home_leases.decode((ROOT / "conformance/home-leases-v1/cases.json").read_bytes())["cases"]
+        home_leases.check_observer_pairs(cases)
+        core = next(i for i, row in enumerate(cases) if row["negative"]["setup"].startswith(
+            "observer-linux-manager-record-agree-kernel-disagrees."))
+        mutations = {
+            "missing-core": lambda rows: rows.pop(core),
+            "missing-all": lambda rows: rows.__setitem__(slice(None), [
+                row for row in rows if not row["negative"]["setup"].startswith("observer-")]),
+            "duplicate-core": lambda rows: rows.append(copy.deepcopy(rows[core])),
+            "wrong-decision": lambda rows: rows[core]["negative"].update(expected="bound: exact tuple stored"),
+            "wrong-reason": lambda rows: rows[core]["negative"]["expected"].update(reason="session_generation_changed"),
+            "wrong-exit": lambda rows: rows[core]["negative"]["expected"].update(exit=0),
+            "boolean-exit": lambda rows: rows[core]["negative"]["expected"].update(exit=True),
+            "write-on-refusal": lambda rows: rows[core]["negative"]["expected"].update(changed=True),
+            "missing-positive": lambda rows: rows[core].pop("positive"),
+            "rejecting-positive": lambda rows: rows[core]["positive"]["expected"].update(exit=1),
+            "missing-replay-invariant": lambda rows: rows[core]["negative"]["forbidden"].remove(
+                "refusal_cured_by_retry_or_replay"),
+            "missing-preservation": lambda rows: rows[core]["negative"]["preserve"].remove(
+                "blocking_lease_record_bytes_and_revision"),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(control=name):
+                planted = copy.deepcopy(cases)
+                mutate(planted)
+                with self.assertRaisesRegex(ValueError, "observer"):
+                    home_leases.check_observer_pairs(planted)
 
     # Controls prove this checker rejects a planted accepted negative and missing positive, not runtime guard behavior.
     def test_checker_detects_control_plants(self) -> None:

@@ -497,7 +497,8 @@
           "enum": [
             "manager_incarnation_changed",
             "session_generation_changed",
-            "request_conflict"
+            "request_conflict",
+            "process_incarnation_mismatch"
           ]
         },
         "result": {
@@ -836,6 +837,22 @@
                 "const": false
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "reason": {
+            "const": "process_incarnation_mismatch"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "operation": {
+            "const": "bind"
           }
         }
       }

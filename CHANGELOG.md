@@ -7,6 +7,14 @@ Versioning for the complete specification set.
 
 ### Home-lease independent observer
 
+- Close observer refusal projections using existing error codes and the new
+  bind-only `process_incarnation_mismatch` reason. Add both unequal-holder
+  vectors, observation-unavailable controls and Linux same-incarnation/stat
+  parsing requirements. Guard the observer row inventory, closed decisions and
+  preservation/replay invariants with checker controls. Clarify frozen observer
+  arguments, M3 boot/birth and legacy/prepared uncertainty; cover non-ASCII
+  decimal tail digits. These remain unreleased specification/checker changes.
+
 - Revise the unreleased home-leases-v1 holder per accepted observation v2 d5:
   bound processes require exactly `pid`, real `uid`, `boot_id` and tagged
   `start_time`, with large values preserved as decimal strings. Legacy

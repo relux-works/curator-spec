@@ -31,6 +31,12 @@ safe-integer shape for parsing compatibility; legacy data can never bind.
 Only bound holders accept the four-field `{pid, uid, boot_id, start_time}`
 tuple. Its shape does not prove the independent kernel match required by HL23.
 This is an unreleased holder revision with no deployed records or migration.
+Legacy prepared data confers no release, no-start, liveness or HL19 observation
+evidence. Observer refusals reuse existing result codes: a three-way process
+mismatch uses the new bind-only reason `process_incarnation_mismatch` under
+`environment_lease_holder_mismatch`; unavailable proof uses
+`environment_lease_authority_refused/authority_unavailable`; malformed bound
+data uses `usage/invalid_holder`. The protocol's observer table pins every row.
 
 Cross-record identity/CAS, exact revision increments, event/tombstone agreement,
 count/order, canonical actual home identity and observation provenance are semantic

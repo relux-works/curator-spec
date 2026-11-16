@@ -46,6 +46,11 @@ acquired revision. Every refusal preserves the blocking record/revision,
 acquisition binding, ledger/audit preimages, other holders and home contents;
 it forbids a bound publication, successful bind reply, productive input and
 implicit release/break, including on retry/replay.
+Negative expectations are closed `{exit, code, reason, stdout_fragment, changed}`
+projections of the protocol's observer refusal rows: exit 1 for mismatch or
+unavailable authority, exit 2 for malformed bound data. Positives pin exit 0,
+null code, `bound` and `changed:true`. A refusal object is JSON stdout, not a
+resolve fragment; `stdout_fragment:false` does not mean empty JSON stdout.
 
 | Suffix after `observer-linux-` or `observer-darwin-` | Required negative |
 | --- | --- |
@@ -54,14 +59,27 @@ implicit release/break, including on retry/replay.
 | `pid-reuse-across-boots` | Same PID/birth time, different boot UUID. |
 | `wrong-real-uid` | Only the independently read real uid differs. |
 | `manager-record-agree-kernel-disagrees` | Manager tuple equals its authoritative record and requested holder, but Core reads a different start time; **REFUSE**. |
+| `record-kernel-agree-holder-disagrees` | Record/observation and Core agree, but the curator-run holder differs; **REFUSE**. |
+| `holder-kernel-agree-observation-disagrees` | Holder and Core agree, but the authoritative observation differs; **REFUSE**. |
+| `observation-unavailable` | The read-only v2 observation fails or is unavailable; a matching holder/kernel pair cannot replace it. |
 | `start-time-hz-mismatch` (Linux) / `start-time-usec-mismatch` (macOS) | The remaining member of the tagged birth identity also must match. |
 | `vanished-pid`, `unreadable-*` | Vanished PID or any unreadable tuple/variant field refuses despite cached manager/record agreement. |
 | `missing-process` | Valid observation without process means unknown; never bind or release. |
 | `unsupported-kind`, `unsupported-native-variant` | Reject an unknown tag and a known but unsupported opposite-platform variant; never coerce. |
 | `legacy-process-cannot-bind` | Prepared legacy data stays parseable but a legacy bound holder refuses. |
 
+Linux additionally requires `incarnation-changed-pid`,
+`incarnation-changed-start-time` and `incarnation-changed-boot-id`: a change
+during the single stat/status/stat and boot pass refuses, even if mixed readings
+would match. `stat-comm-last-parenthesis` pairs an unparseable/truncated stat
+refusal with a matching valid stat whose `comm` contains spaces and `)`.
+Field 22 is the twentieth suffix token after the last `)`, never a token from
+splitting the whole line. The checker inventory pins 23 Linux and 19 macOS rows.
+
 These semantic rows specify later real-observer obligations. The current checker
-checks their structure and HL/W coverage, not kernel reads or runtime verdicts.
+checks exact row inventory, closed refusal/positive decisions, preservation and
+replay invariants, in addition to HL/W coverage. It checks no kernel reads or
+runtime verdicts. Missing, duplicate or weakened rows fail on the named case.
 The manager-record disagreement row is not qualified merely by agreeing with its
 expected label. Linux/macOS runtime tests, skipped-start-time-comparison control,
 real launcher/proving-manager docking and M3 evidence belong to implementation
@@ -95,6 +113,12 @@ python3 tools/validate.py
 ```
 
 The focused tests plant an accepted negative and a missing positive/requirement
-and require the intended checker failure. They do not substitute for future
+and require the intended checker failure. `test_observer_semantic_contract`
+also rejects dropped/duplicated observer rows, a success in Core's negative,
+wrong reasons/exits, refusal writes and missing positive/preservation/replay
+controls. Corpus floors are 198 schema pairs and 110 semantic pairs. Changing
+Core's negative to success must fail `make validate` at that row. Non-ASCII tail
+digit pairs (`"1\u0661"`) independently guard `[0-9]` after the first digit.
+These checks do not substitute for future
 runtime guard-bypass/ignore-unknown/omit-digest control plants. Logs belong in
 `.temp/`; no generated output is written to managed/provider state.

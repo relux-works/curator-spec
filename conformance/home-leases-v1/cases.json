@@ -2201,7 +2201,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2222,7 +2228,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2233,7 +2244,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2254,7 +2271,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2265,7 +2287,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2286,7 +2314,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2297,7 +2330,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2318,7 +2357,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2329,7 +2373,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2350,7 +2400,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2361,7 +2416,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2382,7 +2443,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2393,7 +2459,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2414,7 +2486,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2425,7 +2502,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2446,7 +2529,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2457,7 +2545,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2478,7 +2572,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2489,7 +2588,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2510,7 +2615,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2521,7 +2631,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2542,7 +2658,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2553,7 +2674,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2574,7 +2701,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2585,7 +2717,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2606,7 +2744,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2617,7 +2760,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: usage/invalid_holder for the malformed holder; no bind, release or other mutation",
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "invalid_holder",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2638,7 +2787,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2649,7 +2803,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2670,7 +2830,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2681,7 +2846,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: usage/invalid_holder for legacy bound data; the prepared lease remains blocking",
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "invalid_holder",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2702,7 +2873,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2713,7 +2889,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2734,7 +2916,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2745,7 +2932,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2766,7 +2959,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2777,7 +2975,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2798,7 +3002,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2809,7 +3018,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2830,7 +3045,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2841,7 +3061,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2862,7 +3088,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2873,7 +3104,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2894,7 +3131,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2905,7 +3147,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2926,7 +3174,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2937,7 +3190,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2958,7 +3217,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -2969,7 +3233,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -2990,7 +3260,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -3001,7 +3276,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -3022,7 +3303,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -3033,7 +3319,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -3054,7 +3346,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -3065,7 +3362,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -3086,7 +3389,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -3097,7 +3405,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -3118,7 +3432,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -3129,7 +3448,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: usage/invalid_holder for the malformed holder; no bind, release or other mutation",
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "invalid_holder",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -3150,7 +3475,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -3161,7 +3491,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -3182,7 +3518,12 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     },
     {
@@ -3193,7 +3534,13 @@
           "Attempt bind at revision 1 using the manager assertion",
           "Retry and replay the same assertion after refusal; neither cures refusal"
         ],
-        "expected": "REFUSE: usage/invalid_holder for legacy bound data; the prepared lease remains blocking",
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "invalid_holder",
+          "stdout_fragment": false,
+          "changed": false
+        },
         "preserve": [
           "blocking_lease_record_bytes_and_revision",
           "acquisition_binding",
@@ -3214,7 +3561,442 @@
         "steps": [
           "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
         ],
-        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-record-kernel-agree-holder-disagrees. Prepared blocking lease revision 1; all other authority/M3 gates valid. Manager record, observation v2 and Core kernel reading agree on {\"pid\": 42, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"linux-stat-starttime\", \"ticks\": \"123456789\", \"hz\": 100}}. Requested bound holder alone carries {\"pid\": 43, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"linux-stat-starttime\", \"ticks\": \"123456789\", \"hz\": 100}}; it must not replace the observed harness.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-holder-kernel-agree-observation-disagrees. Prepared blocking lease revision 1; all other authority/M3 gates valid. Requested holder and Core kernel reading agree on {\"pid\": 42, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"linux-stat-starttime\", \"ticks\": \"123456789\", \"hz\": 100}}. Manager record and authoritative observation v2 alone carry {\"pid\": 43, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"linux-stat-starttime\", \"ticks\": \"123456789\", \"hz\": 100}}; holder equality alone is insufficient.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-observation-unavailable. Prepared blocking lease revision 1. The requested holder equals Core kernel reading, but curator-run observe --schema v2 fails or is unavailable and supplies no authoritative process tuple. No cached record substitutes for it.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-incarnation-changed-pid. Prepared blocking lease revision 1; first native pass reading matches holder and observation. Between stat/status/stat and boot reads, pid changes. Combining fields from the two incarnations could reproduce the asserted tuple, but the coherent pass must refuse.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-incarnation-changed-start-time. Prepared blocking lease revision 1; first native pass reading matches holder and observation. Between stat/status/stat and boot reads, start-time changes. Combining fields from the two incarnations could reproduce the asserted tuple, but the coherent pass must refuse.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-incarnation-changed-boot-id. Prepared blocking lease revision 1; first native pass reading matches holder and observation. Between stat/status/stat and boot reads, boot-id changes. Combining fields from the two incarnations could reproduce the asserted tuple, but the coherent pass must refuse.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-stat-comm-last-parenthesis. Prepared blocking lease revision 1; same directory fd pass. stat lacks the final comm delimiter or is truncated before field 22; the observer cannot parse a complete process tuple.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 with matching observation/holder and stable boot/uid. Native stat is '42 (harness ) with spaces) S 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 123456789'; stat is identical before/after status. Parse field 22 as the twentieth token after the LAST closing parenthesis, yielding ticks 123456789; every field then matches.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-record-kernel-agree-holder-disagrees. Prepared blocking lease revision 1; all other authority/M3 gates valid. Manager record, observation v2 and Core kernel reading agree on {\"pid\": 42, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"darwin-pbi-start\", \"sec\": \"1731715200\", \"usec\": 123456}}. Requested bound holder alone carries {\"pid\": 43, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"darwin-pbi-start\", \"sec\": \"1731715200\", \"usec\": 123456}}; it must not replace the observed harness.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-holder-kernel-agree-observation-disagrees. Prepared blocking lease revision 1; all other authority/M3 gates valid. Requested holder and Core kernel reading agree on {\"pid\": 42, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"darwin-pbi-start\", \"sec\": \"1731715200\", \"usec\": 123456}}. Manager record and authoritative observation v2 alone carry {\"pid\": 43, \"uid\": 1001, \"boot_id\": \"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\", \"start_time\": {\"kind\": \"darwin-pbi-start\", \"sec\": \"1731715200\", \"usec\": 123456}}; holder equality alone is insufficient.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "process_incarnation_mismatch",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-observation-unavailable. Prepared blocking lease revision 1. The requested holder equals Core kernel reading, but curator-run observe --schema v2 fails or is unavailable and supplies no authoritative process tuple. No cached record substitutes for it.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "authority_unavailable",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound",
+          "changed": true
+        }
       }
     }
   ]

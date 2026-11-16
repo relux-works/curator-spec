@@ -85,6 +85,72 @@ def check_semantic_pairs(cases: list[dict[str, Any]], required: set[str]) -> Non
         raise ValueError(f"requirement coverage mismatch: missing={sorted(required-found)}, extra={sorted(found-required)}")
 
 
+def observer_refusals() -> dict[str, dict[str, Any]]:
+    """Pin the published observer inventory and HL20 decisions, not kernel behavior."""
+    result = {}
+    mismatch = ["pid-mismatch", "pid-reuse-within-boot", "pid-reuse-across-boots",
+                "wrong-real-uid", "manager-record-agree-kernel-disagrees",
+                "record-kernel-agree-holder-disagrees",
+                "holder-kernel-agree-observation-disagrees"]
+    unavailable = ["vanished-pid", "unreadable-pid", "unreadable-uid",
+                   "unreadable-boot_id", "missing-process", "unsupported-native-variant",
+                   "observation-unavailable"]
+    for platform, birth, scale in (("linux", "ticks", "hz"), ("darwin", "sec", "usec")):
+        rows = [(name, 1, "environment_lease_holder_mismatch", "process_incarnation_mismatch")
+                for name in mismatch + [f"start-time-{scale}-mismatch"]]
+        rows += [(name, 1, "environment_lease_authority_refused", "authority_unavailable")
+                 for name in unavailable + [f"unreadable-start_time-{birth}",
+                                             f"unreadable-start_time-{scale}"]]
+        rows += [(name, 2, "usage", "invalid_holder")
+                 for name in ("unsupported-kind", "legacy-process-cannot-bind")]
+        if platform == "linux":
+            rows += [("incarnation-changed-" + field, 1,
+                      "environment_lease_holder_mismatch", "process_incarnation_mismatch")
+                     for field in ("pid", "start-time", "boot-id")]
+            rows.append(("stat-comm-last-parenthesis", 1,
+                         "environment_lease_authority_refused", "authority_unavailable"))
+        for suffix, status, code, reason in rows:
+            result[f"observer-{platform}-{suffix}"] = {
+                "exit": status, "code": code, "reason": reason,
+                "stdout_fragment": False, "changed": False}
+    return result
+
+
+def check_observer_pairs(cases: list[dict[str, Any]]) -> None:
+    required = observer_refusals()
+    found = set()
+    forbidden = {"bound_holder_publication", "successful_bind_outcome", "productive_input",
+                 "implicit_release_or_break", "refusal_cured_by_retry_or_replay"}
+    preserve = {"blocking_lease_record_bytes_and_revision", "acquisition_binding",
+                "ledger_and_audit_preimages", "other_holders", "home_bytes_links_modes"}
+    for case in cases:
+        negative = case.get("negative", {})
+        setup = negative.get("setup", "")
+        if not setup.startswith("observer-"):
+            continue
+        name = setup.partition(". ")[0]
+        if name not in required or name in found or case.get("requirement") != "HL07":
+            raise ValueError(f"unknown, duplicate or misplaced observer row: {name}")
+        found.add(name)
+        expected = negative.get("expected")
+        if (expected != required[name] or type(expected.get("exit")) is not int
+                or type(expected.get("changed")) is not bool
+                or type(expected.get("stdout_fragment")) is not bool):
+            raise ValueError(f"observer refusal decision mismatch: {name}")
+        if (not forbidden.issubset(negative.get("forbidden", []))
+                or not preserve.issubset(negative.get("preserve", []))):
+            raise ValueError(f"observer refusal invariant missing: {name}")
+        positive = case.get("positive", {})
+        accepted = positive.get("expected", {})
+        if (not positive.get("setup") or not positive.get("steps")
+                or accepted != {"exit": 0, "code": None, "reason": "bound", "changed": True}
+                or type(accepted.get("exit")) is not int
+                or type(accepted.get("changed")) is not bool):
+            raise ValueError(f"observer matching positive missing or invalid: {name}")
+    if found != set(required):
+        raise ValueError(f"observer row coverage mismatch: missing={sorted(set(required)-found)}")
+
+
 def check_corpus(root: Path) -> tuple[int, int]:
     checks = validators(root)
     suite = root / "conformance/home-leases-v1"
@@ -99,6 +165,7 @@ def check_corpus(root: Path) -> tuple[int, int]:
         raise ValueError("home-lease requirements absent")
     check_schema_pairs(schema_pairs["pairs"], checks)
     check_semantic_pairs(semantic["cases"], required)
+    check_observer_pairs(semantic["cases"])
     return len(schema_pairs["pairs"]), len(semantic["cases"])
 
 

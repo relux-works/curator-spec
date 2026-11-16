@@ -254,6 +254,8 @@ schemas. Its separate schema and corpus require implementation qualification.
   non-admitting terminal acquire replay, paired launcher no-start controls and
   observation v2 d5's bound tuple/independent kernel-match vectors. These remain
   schema and specification-data checks, not Linux/macOS observer qualification.
+  The checker guards the observer inventory, closed refusal decisions and
+  preservation/replay controls; focused tests plant missing or weakened rows.
 
 - Profile command PATH companion: `python3 -B -m unittest discover -s tools -p
   'test_profile_command_path.py' -v` validates the closed root-receipt/native-state

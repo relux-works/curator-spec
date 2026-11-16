@@ -76,6 +76,8 @@ No arbitrary maps, argv, secrets or caller filesystem paths are accepted.
 Strict UTF-8 decoding rejects duplicate, missing and unknown members, unsafe
 integers, case aliases, overlength fields and control characters before use.
 Schema-valid shape alone supplies no lifecycle or observation authority.
+Legacy prepared process data confers no release, no-start, liveness or HL19
+observation evidence.
 
 The bound process tuple follows observation v2 d5 §3:
 
@@ -273,7 +275,7 @@ the machine contract. The following closed mapping applies to the new family:
 | 1 | `environment_lease_unreadable` | `state_unreadable`, `invalid_record`, `ledger_missing` |
 | 1 | `environment_lease_recovery_required` | `pending_mutation` |
 | 1 | `environment_lease_release_unconfirmed` | `session_state_unknown`, `termination_unconfirmed` |
-| 1 | `environment_lease_holder_mismatch` | `manager_incarnation_changed`, `session_generation_changed`, `request_conflict` |
+| 1 | `environment_lease_holder_mismatch` | `manager_incarnation_changed`, `session_generation_changed`, `request_conflict`, `process_incarnation_mismatch` (bind only) |
 | 1 | `environment_lease_revision_conflict` | `revision_changed` |
 | 1 | `environment_lease_unknown` | `unknown_lease` (bind/break only) |
 | 1 | `environment_lease_authority_refused` | `unsupported_lease_kind`, `authority_unavailable` |
@@ -314,6 +316,9 @@ never silent digest replacement.
 manager registration, session, generation, process incarnation and Werkstatt,
 using the acquired revision. Crash before bind leaves a discoverable blocking
 prepared lease; reconciliation binds from the manager's authoritative record.
+If the harness exits before an independent bind succeeds, that record alone
+cannot repair the bind. The prepared lease remains blocking; absent admissible
+HL09 proof, only explicit HL12–HL13 audited break can end its protection.
 A future reserve/start split binds durably before provider start.
 
 **HL23 (L3).** curator-run MUST request release only after exact `down`/termination
@@ -344,6 +349,17 @@ input to the observer, never the proof.
 | Linux | `/proc/<pid>/stat` field 1 for `pid` and field 22 for `start_time.ticks`, with `sysconf(_SC_CLK_TCK)` for `start_time.hz`; `/proc/<pid>/status` `Uid:` first field for the real `uid`; `/proc/sys/kernel/random/boot_id` for `boot_id`. |
 | macOS | `proc_pidinfo` with `PROC_PIDTBSDINFO`: `pbi_pid` for `pid`, `pbi_ruid` for the real `uid`, and `pbi_start_tvsec`/`pbi_start_tvusec` for `start_time.sec`/`start_time.usec`; sysctl `kern.bootsessionuuid`, lowercased, for `boot_id`. |
 
+On Linux, `pid`, `start_time` and `boot_id` MUST describe one incarnation in
+one observation pass. Fields are counted after the last `)` of field 2.
+`stat` and `status` are read through one `/proc/<pid>` directory fd (or pidfd),
+and `stat` is re-read after `status`; any change refuses. Read `boot_id` before
+and after the process reads too. Compare both readings of `pid`, `start_time`
+and `boot_id`; a change between reads refuses, without combining incarnations
+or retrying the pass into success. The first token after the last `)` is field
+3, so field 22 is the twentieth suffix token. `comm` may contain spaces and
+`)`: never split the whole line on whitespace or terminate it at the first
+`)`. Missing delimiters, truncated fields or an unreadable parse refuse.
+
 Bind is permitted only when all four fields are byte-equal to the authoritative
 observation v2 tuple and the requested bound holder, including the `start_time`
 tag and every member of that variant. The applicable native variant must be
@@ -357,16 +373,45 @@ publishing a bound holder or successful bind outcome. No retry or replay cures
 a refusal. Replaying an assertion or historical success cannot bypass this
 independent check.
 
+The following closed rows pin every observer refusal, including an identical
+committed bind retry whose fresh observation no longer qualifies. First reject
+a malformed requested holder as `usage/invalid_holder`; for a well-formed holder,
+unavailable evidence takes precedence over equality comparison. A detected
+same-incarnation change within the Linux pass uses the mismatch row. These are
+Curator lease results, not new curator-run launcher codes.
+
+| Refusal row | Exit | Code | Reason |
+| --- | ---: | --- | --- |
+| Any unequal field/tag/member among requested holder, observation v2 and Core's reading; Linux incarnation changes between reads | 1 | `environment_lease_holder_mismatch` | `process_incarnation_mismatch` |
+| PID vanished | 1 | `environment_lease_authority_refused` | `authority_unavailable` |
+| Any kernel field unreadable, including an unparseable/truncated `stat` | 1 | `environment_lease_authority_refused` | `authority_unavailable` |
+| Well-formed variant unsupported on the native platform | 1 | `environment_lease_authority_refused` | `authority_unavailable` |
+| Observation lacks `process` | 1 | `environment_lease_authority_refused` | `authority_unavailable` |
+| `observe --schema v2` unavailable or fails, so no authoritative tuple is obtained | 1 | `environment_lease_authority_refused` | `authority_unavailable` |
+| Required frozen launcher binding unavailable | 1 | `environment_lease_authority_refused` | `authority_unavailable` |
+| Requested bound holder lacks `process`, has null/legacy data, an unknown tag or malformed tuple | 2 | `usage` | `invalid_holder` |
+
+Every row has `ok:false`, `result:null`, no resolve stdout fragment and no
+change to the blocking lease, binding, ledger or audit. HL18's closed JSON
+refusal object still goes to stdout. No row yields a successful bind reply or
+productive input, and retry/replay preserves the same refusal while its cause
+remains. `process_incarnation_mismatch` is a new reason under an existing code;
+it MUST NOT be relabeled `session_generation_changed`.
+
 The observation is obtained through curator-run's read-only `observe` contract
 with `--schema v2`. Before using it, compare the manager ID and frozen
 `manager_registered_at` against the prepared holder, and session/generation
-against the frozen handle/generation. Apply observation v2 d5 §1.3a's frozen
-executable comparison where one exists; no executable field is added to the
-holder. Current registry state cannot be compared with itself as proof of the
-frozen owner incarnation.
+against the frozen handle/generation. Curator passes `--expect-registered-at`
+from the prepared holder and `--expect-generation` from the requested bound
+holder (the prepared generation is null). Where an executable was frozen, pass
+that value from the frozen launcher operation binding as `--expect-executable`;
+curator-run performs that comparison. An unavailable frozen binding is
+unavailable authority, not permission to substitute the current registry.
+No executable field is added to the holder. Current registry state cannot be
+compared with itself as proof of the frozen owner incarnation.
 
 Tuple equality is necessary, but does not replace the proving manager's M3
-actual-harness/retained-hold evidence or its effective uid, executable/handoff,
+actual-harness/retained-hold evidence or its effective uid, boot and birth, executable/handoff,
 role, execution/generation and profile/home/plan binding and revision predicates.
 The wire `uid` remains the real uid. Those private proofs add no public fields.
 Ordering is lease preparation, admitted start, observation v2 with `process`,
@@ -376,6 +421,13 @@ This first use adds no release or break authority: `no_start` and `termination`
 are only inputs for future release rules. Unknown or missing process evidence
 retains protection and never releases a lease; HL09's existing reconciliation
 and HL12–HL13's audited-break requirements remain in force.
+
+Here the proving manager is the session manager frozen as the launch owner,
+which spawned and retains the actual harness. Observation v2 d5 is the
+curator-run contract maintained with `curator-agent-launcher`, identified by
+the digest above. M3 names the proving manager's admission contract in Session
+Host's `docs/m3-hosted-dependencies.md` §§1–3; those private proofs remain with
+that component and are not new public holder fields.
 
 **HL24.** Owner decision 2026-10-27 requires one managed home per unattended lane
 and one profile per Werkstatt. Launcher admission MUST refuse cross-lane or

@@ -1140,6 +1140,54 @@
       "schema": "holder",
       "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
       "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\",\"uid\":1001}}"
+    },
+    {
+      "name": "observer-result-process-incarnation-unknown-reason",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"process_incarnation_mismatch\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "observer-result-process-incarnation-wrong-code",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"process_incarnation_mismatch\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_authority_refused\",\"reason\":\"process_incarnation_mismatch\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "observer-result-process-incarnation-wrong-exit",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"process_incarnation_mismatch\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":2,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"process_incarnation_mismatch\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "observer-result-process-incarnation-wrong-operation",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"process_incarnation_mismatch\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"process_incarnation_mismatch\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "observer-result-authority_unavailable",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_authority_refused\",\"reason\":\"authority_unavailable\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":0,\"code\":\"environment_lease_authority_refused\",\"reason\":\"authority_unavailable\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "observer-result-invalid_holder",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"invalid_holder\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":0,\"code\":\"usage\",\"reason\":\"invalid_holder\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "observer-linux-ticks-non-ascii-tail",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"1\\u0661\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-darwin-sec-non-ascii-tail",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1\\u0661\",\"usec\":123456}}}"
     }
   ]
 }
