@@ -2907,10 +2907,13 @@ when none is current. Only `--use` or `profile use` changes the machine or
 scoped current profile. A first install or reinstall without `--use`
 registers/resolves/audits the profile and writes its lock, but does not
 activate it or write adapter homes. Missing runtimes during registration-only
-install are warnings naming the scoped adapters whose runtime was not found;
-they are not refusals. Re-installing an installed source with the same
-requirement re-resolves as `profile update` does (section 9.2) and retains its
-existing confirmation semantics.
+install are warnings naming the adapters in the machine activation scope
+whose runtime was not found; they are not refusals. Re-installing an
+installed source with the same requirement re-resolves as `profile update`
+does (section 9.2) and retains its existing confirmation semantics; when that
+reinstall moves the lock of a profile that is current in some scope, it
+warns (`environment_home_stale`) that the current adapter homes were not
+re-materialized and names `profile use` or `profile sync` as the repair.
 
 `profile install --use` activates only adapters selected by its machine
 scope; adapters with a scoped current are outside that scope. Before any
@@ -2922,9 +2925,10 @@ or import activation fails after registration and lock publication, the
 operation MUST roll back all adapter-home writes and preserve the prior
 machine and scoped current markers, while keeping the registration and lock.
 It returns a nonzero result with the activation error and tells the operator:
-“installed, not activated; fix and run profile use”. Standalone `profile use`
-retains the partial-switch behavior specified in section 9.2. `--use` takes
-no name because install names one root.
+“installed, not activated; fix and run profile use” (a reinstall keeps its
+update wording: “updated, not activated; fix and run profile use”).
+Standalone `profile use` retains the partial-switch behavior specified in
+section 9.2. `--use` takes no name because install names one root.
 
 ### 9.2 Current profile, switching, update, and removal
 
@@ -2955,6 +2959,14 @@ recorded current), and `profile use` of either profile — the recorded one
 or the attempted one — completes the scope from the journal. The switch
 never touches environment-owned mutable state, credential files beyond
 section 7.4 links, unmanaged files, or backups.
+
+Before the first entry is written, the switch MUST compare the effective
+overlay declarations of the profile it materializes with that profile's lock
+exactly as `env resolve` does (section 10.1) and refuse a disagreement with
+`composition_lock_mismatch`, writing no surface and recording no current.
+Install and import `--use` reach the same seam after their lock publication;
+a reinstall re-resolves the lock from the declarations first (it is the
+section 9.1 update path), so it converges rather than refuses.
 
 **`profile update [<name> | --all] [--confirm-system-delta]`** re-resolves
 the root and the overlays from their declared requirements, fetching new
@@ -3564,7 +3576,7 @@ declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 | lossy import proceeding under explicit consent (warning, loss list) | `environment_import_lossy` |
 | imported skill declaration recovered from foreign records (warning) | `environment_import_skill_foreign` |
 | chosen import profile name already installed | `profile_import_name_taken` |
-| effective machine overlay declarations and the selected profile lock disagree (names the profile and missing or extra overlay members; no fragment or repair) | `composition_lock_mismatch` |
+| effective machine overlay declarations and the selected profile lock disagree (names the profile and missing or extra overlay members; no fragment, repair, or switch) | `composition_lock_mismatch` |
 | MCP package allowlist empty at install or update under the `permissive` posture (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
 | MCP package allowlist empty at install or update under the `hardened` posture while the resolved closure carries an MCP declaration package (resolution error; old lock stands) | `mcp_package_allowlist_empty` |
 | recorded passthrough entry whose link state cannot be established (non-current, currency unknown; never "detached"; policy owned by §7.7) | `environment_passthrough_unreadable` |
@@ -3613,6 +3625,11 @@ re-resolve a missing or extra overlay. Effective overlays honor
 `overlays_allowed`: when it is `false`, declarations are inert and the
 effective root-only composition matches a lock without overlay members.
 If the selected profile has no lock, the existing no-lock refusal remains.
+Membership is compared by identity: a `git` overlay by its canonical source
+identity and directory, a `path` overlay by its package name (a path member
+records no source). Requirement forms and weights are not compared — a moved
+pin is `profile update`'s resolved-version delta, not a composition
+disagreement.
 
 `--preserve-lock` is valid only with `--repair`. Without `--repair`, it MUST
 fail as the existing general CLI `usage` error, before resolving a profile,
@@ -4811,11 +4828,18 @@ resolves and audits; publication follows the existing CAS/history order; a
 crash between the two writes leaves a disagreement that `env resolve`
 refuses with `composition_lock_mismatch`, and rerunning compose (or
 `profile update`) converges. No concurrent newer state is overwritten.
-Before a profile has a lock, compose `add` and `remove` update only the
-declaration; the first install resolves the overlays jointly. `env resolve`
-on a profile without a lock retains its existing refusal. When
-`overlays_allowed` is `false`, declarations remain warned and inert, and
-comparison uses the effective root-only composition.
+The lock publishes first and the declaration second, so the one crash window
+leaves a rebuilt lock the declaration does not yet match; rerunning the same
+compose is idempotent (an identical declaration is never appended twice) and
+converges, and so does `profile update` or a reinstall of the same source,
+both of which re-resolve the lock from the declarations. Before a profile has
+a lock, compose `add` and `remove` update only the declaration; the first
+install resolves the overlays jointly. The builtin local profile takes no
+overlays: compose on it refuses with `profile_update_blocked` and changes
+nothing. `env resolve` on a profile without a lock retains its existing
+refusal. When `overlays_allowed` is `false`, declarations remain warned and
+inert, the lock is rebuilt root-only, and comparison uses the effective
+root-only composition.
 
 Team distribution stays **per-machine** in revision 1: an organization
 ships a bootstrap shape — a system-configuration file (manager §1) carrying
