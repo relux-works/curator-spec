@@ -2902,16 +2902,29 @@ install` MUST print the section 2.3 surfacing rows for the resolved MCP
 set, and MUST emit `mcp_package_allowlist_empty` when the MCP package
 allowlist is empty; neither fails the install.
 
-Activation on install follows operator intent without magic: `install` sets
-the machine current profile only when the machine has none — first install,
-and the activation is reported, never silent — or when the operator passes
-`--use`. `--use` takes no name: an install names one root, so there is
-nothing to choose. In every other case the manager prints the installed
-profile and how to activate it. Re-installing an already installed source
-with the same requirement re-resolves exactly as `profile update` does
-(section 9.2) and is reported as an update; `profile install` accepts
-`--confirm-system-delta` for that path with the same per-invocation
-semantics as `profile update`.
+Installation without `--use` never selects a current profile, including
+when none is current. Only `--use` or `profile use` changes the machine or
+scoped current profile. A first install or reinstall without `--use`
+registers/resolves/audits the profile and writes its lock, but does not
+activate it or write adapter homes. Missing runtimes during registration-only
+install are warnings naming the scoped adapters whose runtime was not found;
+they are not refusals. Re-installing an installed source with the same
+requirement re-resolves as `profile update` does (section 9.2) and retains its
+existing confirmation semantics.
+
+`profile install --use` activates only adapters selected by its machine
+scope; adapters with a scoped current are outside that scope. Before any
+persistent write, install with `--use`, import with `--use`, and `profile use`
+MUST find every runtime required by the selected activation scope on `PATH`.
+Otherwise the operation MUST refuse with `adapter_runtime_missing`, naming
+each adapter and runtime, and leave manager state byte-identical. If install
+or import activation fails after registration and lock publication, the
+operation MUST roll back all adapter-home writes and preserve the prior
+machine and scoped current markers, while keeping the registration and lock.
+It returns a nonzero result with the activation error and tells the operator:
+“installed, not activated; fix and run profile use”. Standalone `profile use`
+retains the partial-switch behavior specified in section 9.2. `--use` takes
+no name because install names one root.
 
 ### 9.2 Current profile, switching, update, and removal
 
@@ -3513,14 +3526,17 @@ The assembled directory then installs through section 9.1 exactly as an
 operator-supplied `path` source — snapshot copy, state-hash pin,
 resolution of the pinned skills, always-strict audit; a blocking finding,
 `context-secret-material` included, fails the import like any install.
+Import inherits the explicit activation rule in section 9.1: without
+`--use` it never activates, including when no current profile exists; with
+`--use` it activates only the adapters in the machine scope.
 Activation follows the section 9.1 rules without magic. That activation
 carries no takeover flag: it is outside the section 9.5 closed set and
 fails closed on `environment_surface_unmanaged_conflict` exactly as
 section 8.3 states; recover by running `profile use --takeover` or
 `profile sync --takeover`, then retry activation rather than `profile
-import`. The import writes
-nothing into any native home by itself: replacing native files remains the
-section 9.5 takeover path with its notice and backup. The import is a
+import`. The import writes nothing into any native home without `--use`;
+replacing unmanaged native files during activation remains the section 9.5
+takeover path with its notice and backup. The import is a
 `path` root for the section 4 boundary contract: its directory passes the
 same verification at every resolve, and an import MUST NOT carry an MCP
 declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
@@ -3537,6 +3553,7 @@ declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 | migrated legacy global skill contacts a host not covered by its own manifest's `capabilities.network` (blocking; names the skill, host, file, and remediation under section 9.4) | finding `audit.capability.network-undeclared` |
 | `--as <name>` or the root package name is already an installed profile name | `profile_name_taken` |
 | more than one requirement flag, or a requirement flag or `--directory` with a `path` operand | `profile_install_ref_conflict` |
+| an activation-scope adapter runtime is missing before install/import `--use` or `profile use` writes (names adapter and runtime; no manager state changes) | `adapter_runtime_missing` |
 | `profile update` candidate lock carries a blocking finding on a new member; old lock stands | `profile_update_blocked` |
 | update delta introduces or changes a `class: system` module or MCP declaration (revision A warning, names the members, carries the migration hint) | `profile_update_system_delta` |
 | same trigger under revision B without `--confirm-system-delta` (refusal, names the members; old lock stands) | `profile_update_confirmation_required` |
@@ -3547,6 +3564,7 @@ declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 | lossy import proceeding under explicit consent (warning, loss list) | `environment_import_lossy` |
 | imported skill declaration recovered from foreign records (warning) | `environment_import_skill_foreign` |
 | chosen import profile name already installed | `profile_import_name_taken` |
+| effective machine overlay declarations and the selected profile lock disagree (names the profile and missing or extra overlay members; no fragment or repair) | `composition_lock_mismatch` |
 | MCP package allowlist empty at install or update under the `permissive` posture (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
 | MCP package allowlist empty at install or update under the `hardened` posture while the resolved closure carries an MCP declaration package (resolution error; old lock stands) | `mcp_package_allowlist_empty` |
 | recorded passthrough entry whose link state cannot be established (non-current, currency unknown; never "detached"; policy owned by §7.7) | `environment_passthrough_unreadable` |
@@ -3584,6 +3602,17 @@ applicable scope — and an environment to a **launch environment fragment**.
 Resolution is a pure function from (lock, precedence policy, environment,
 machine configuration) to the fragment; it launches nothing and applies no
 channel.
+
+Before `env resolve` emits a fragment or repairs a home, it MUST compare the
+selected profile's effective ordered overlay declarations in machine
+configuration with the overlay members recorded in its lock. A disagreement
+MUST refuse with `composition_lock_mismatch`, naming the profile and missing
+or extra effective overlay members, emit no fragment, and perform no repair
+or write. Resolution MUST NOT treat the stale lock as success or silently
+re-resolve a missing or extra overlay. Effective overlays honor
+`overlays_allowed`: when it is `false`, declarations are inert and the
+effective root-only composition matches a lock without overlay members.
+If the selected profile has no lock, the existing no-lock refusal remains.
 
 `--preserve-lock` is valid only with `--repair`. Without `--repair`, it MUST
 fail as the existing general CLI `usage` error, before resolving a profile,
@@ -4772,12 +4801,29 @@ different material never does. A source absent from the map has no
 allowlist and is never verified; a source mapped to an empty list has an
 allowlist that admits no signer.
 
+For an installed profile, `profile compose add` and `remove` MUST read the
+current machine configuration and profile lock under the same held profile
+operation, validate and resolve/audit the complete resulting effective
+composition, and publish the updated declaration with its matching lock
+using the existing compare-and-swap/history order. Neither the configuration
+nor the lock changes unless the complete resulting composition validates,
+resolves and audits; publication follows the existing CAS/history order; a
+crash between the two writes leaves a disagreement that `env resolve`
+refuses with `composition_lock_mismatch`, and rerunning compose (or
+`profile update`) converges. No concurrent newer state is overwritten.
+Before a profile has a lock, compose `add` and `remove` update only the
+declaration; the first install resolves the overlays jointly. `env resolve`
+on a profile without a lock retains its existing refusal. When
+`overlays_allowed` is `false`, declarations remain warned and inert, and
+comparison uses the effective root-only composition.
+
 Team distribution stays **per-machine** in revision 1: an organization
 ships a bootstrap shape — a system-configuration file (manager §1) carrying
 the locked knobs of section 12.2 and a documented `profile install` command
 line — and each machine applies it; there is no fleet-push surface and no
-knob is read from a package. Informative CLI rows (`profile compose`, `env
-config`) that edit these knobs are the next batch's `cli/curator.md` work.
+knob is read from a package. The `profile compose` contract is specified in
+`cli/curator.md` and below; `env config` remains an informative row for the
+configuration-editing interface.
 
 The [Codex settings extension](profile-codex-settings.md#4-ownership-and-the-bounded-exception-environments-sections-103-121)
 does not add a machine permission knob or transfer permission consent to
