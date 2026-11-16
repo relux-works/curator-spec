@@ -8,15 +8,19 @@ Versioning for the complete specification set.
 ### Station contract (station/1)
 
 - Add the unreleased [`station/1` contract](protocol/station.md) for a
-  long-lived agent station, written as one lifecycle table of 16 states against
-  19 events. Each cell names the next state, the single committing service, the
-  durable record written before the effect and the closed refusal codes.
-  Unknown outcomes enter case-specific held rows that only a named proof or an
-  operator teardown order leaves. The file also states the restart rule, nine
-  rules for a kept station, the home skeleton, the proposed name latch, key
-  custody with one account as exactly one message author, ownership, the two
-  admission joins, negative obligations, implementation units and 17 open
-  questions. The one-task run is a special case of the same table.
+  long-lived agent station, written as one lifecycle table of 22 states against
+  25 events. Each cell names the one next state, the one committing service
+  (the owner of the station state record, by compare-and-set on a state
+  version), the durable record written before the effect and the closed gate
+  set. Effects in flight have rows of their own; unknown outcomes enter
+  case-specific held rows that are left upward only by a named proof, and no
+  cell enters the stopped state without the absence proof. The file also
+  states one ordered set of start gates, the restart rule, nine rules for a
+  kept station, proposed runs inside a station, the home skeleton, the
+  proposed name latch, key custody with one account as one message author at
+  the key holder, ownership, the admission joins, negative obligations,
+  implementation units and 25 open questions. The one-task run is a special
+  case of the same table.
 - Mark the contract as the normative successor of the "Lifecycle and failure
   handling" and "Ownership and records" sections of CIP-0024. Specification
   text only: no schema, vector, released carrier or conformance claim changes.
