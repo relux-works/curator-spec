@@ -1,6 +1,7 @@
 # CIP-0024: Agent stations
 
 - **Status:** Draft
+- **Successor (normative):** the unreleased [`station/1` contract](../protocol/station.md) is the normative successor of the "Lifecycle and failure handling" and "Ownership and records" sections below; the owner decisions are unchanged.
 - **Owner:** orchestrator; decisions: operator
 - **Created:** 2026-10-22
 - **Updated:** 2026-10-23 (revision 2)
