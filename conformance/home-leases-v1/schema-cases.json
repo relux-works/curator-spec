@@ -64,62 +64,62 @@
     {
       "name": "holder-bound-missing-kind",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-launcher",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-manager_id",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-manager_registered_at",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-request_id",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-werkstatt",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-session",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-generation",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "holder-bound-missing-process",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
       "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1}"
     },
     {
       "name": "holder-bound-unknown",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"},\"unknown\":true}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}},\"unknown\":true}"
     },
     {
       "name": "record-home-lease/1-missing-kind",
@@ -328,32 +328,32 @@
     {
       "name": "bound-null-session",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "bound-zero-generation",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":0,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":0,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "bound-unsafe-generation",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":9007199254740992,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":9007199254740992,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "bound-fraction-generation",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1.5,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1.5,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
     },
     {
       "name": "unknown-process-field",
       "schema": "holder",
-      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
-      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\",\"argv\":\"synthetic\"}}"
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100},\"argv\":\"synthetic\"}}"
     },
     {
       "name": "control-character",
@@ -640,8 +640,8 @@
     {
       "name": "success-bind-bound",
       "schema": "result",
-      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
-      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
     },
     {
       "name": "success-break-broken",
@@ -664,8 +664,8 @@
     {
       "name": "blocking-active",
       "schema": "record",
-      "positive": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-active\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"active\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"bound\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": \"session-1\", \"generation\": 1, \"process\": {\"pid\": 42, \"started_at\": \"2026-10-27T00:00:00Z\"}}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}",
-      "negative": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-active\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"active\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"bound\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": \"session-1\", \"generation\": 1, \"process\": {\"pid\": 42, \"started_at\": \"2026-10-27T00:00:00Z\"}, \"unexpected\": true}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}"
+      "positive": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-active\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"active\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"bound\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": \"session-1\", \"generation\": 1, \"process\": {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}",
+      "negative": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-active\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"active\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"bound\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": \"session-1\", \"generation\": 1, \"process\": {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}, \"unexpected\": true}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}"
     },
     {
       "name": "blocking-unknown",
@@ -742,8 +742,8 @@
     {
       "name": "bind-terminal-released-not-bound",
       "schema": "result",
-      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
-      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"released\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"released\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
     },
     {
       "name": "acquire-terminal-broken-not-acquired",
@@ -784,8 +784,362 @@
     {
       "name": "bind-terminal-broken-not-bound",
       "schema": "result",
-      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
-      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "observer-legacy-prepared-only",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "observer-prepared-cannot-carry-bound-tuple",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-bound-null-process",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":null}"
+    },
+    {
+      "name": "observer-process-missing-pid",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-process-missing-uid",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-process-missing-boot_id",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-process-missing-start_time",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\"}}"
+    },
+    {
+      "name": "observer-process-extra-started-at",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100},\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "observer-pid-zero",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":0,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-pid-negative",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":-1,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-pid-overflow",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":2147483648,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-pid-string",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":\"42\",\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-uid-negative",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":-1,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-uid-sentinel",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":4294967295,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-uid-string",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":\"1001\",\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-boot_id-uppercase",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6F1C0E2A-8B44-4D1E-9A51-2F0C3D7E9B10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-boot_id-short",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b1\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-boot_id-newline",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\\n\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-missing-kind",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-missing-ticks",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-missing-hz",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\"}}}"
+    },
+    {
+      "name": "observer-linux-unknown-kind",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"unsupported-start\",\"ticks\":\"123456789\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-extra-field",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100,\"started_at\":\"2026-10-27T00:00:00Z\"}}}"
+    },
+    {
+      "name": "observer-linux-mixed-variant",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100,\"sec\":\"123\"}}}"
+    },
+    {
+      "name": "observer-linux-ticks-number",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":123,\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-leading-zero",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"01\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-zero-padding",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"00000000000000000000\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-overlength",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"111111111111111111111\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-negative",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"-1\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-plus",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"+1\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-space",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\" 1\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-newline",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"1\\n\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-ticks-non-ascii",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"\\u0661\",\"hz\":100}}}"
+    },
+    {
+      "name": "observer-linux-hz-zero",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":0}}}"
+    },
+    {
+      "name": "observer-linux-hz-overflow",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100001}}}"
+    },
+    {
+      "name": "observer-linux-minimum-control",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":1,\"uid\":0,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"0\",\"hz\":1}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":0,\"uid\":0,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"0\",\"hz\":1}}}"
+    },
+    {
+      "name": "observer-linux-maximum-control",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":2147483647,\"uid\":4294967294,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"18446744073709551615\",\"hz\":100000}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":2147483647,\"uid\":4294967295,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"18446744073709551615\",\"hz\":100000}}}"
+    },
+    {
+      "name": "observer-darwin-missing-kind",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"sec\":\"1731715200\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-missing-sec",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-missing-usec",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\"}}}"
+    },
+    {
+      "name": "observer-darwin-unknown-kind",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"unsupported-start\",\"sec\":\"1731715200\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-extra-field",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456,\"started_at\":\"2026-10-27T00:00:00Z\"}}}"
+    },
+    {
+      "name": "observer-darwin-mixed-variant",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456,\"ticks\":\"123\"}}}"
+    },
+    {
+      "name": "observer-darwin-sec-number",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":123,\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-leading-zero",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"01\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-zero-padding",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"00000000000000000000\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-overlength",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"111111111111111111111\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-negative",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"-1\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-plus",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"+1\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-space",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\" 1\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-newline",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1\\n\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-sec-non-ascii",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"\\u0661\",\"usec\":123456}}}"
+    },
+    {
+      "name": "observer-darwin-usec-negative",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":-1}}}"
+    },
+    {
+      "name": "observer-darwin-usec-overflow",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":1000000}}}"
+    },
+    {
+      "name": "observer-darwin-minimum-control",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":1,\"uid\":0,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"0\",\"usec\":0}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":0,\"uid\":0,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"0\",\"usec\":0}}}"
+    },
+    {
+      "name": "observer-darwin-maximum-control",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":2147483647,\"uid\":4294967294,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"18446744073709551615\",\"usec\":999999}}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":2147483647,\"uid\":4294967295,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"18446744073709551615\",\"usec\":999999}}}"
+    },
+    {
+      "name": "observer-legacy-prepared-missing-pid",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "observer-legacy-prepared-missing-started_at",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42}}"
+    },
+    {
+      "name": "observer-legacy-prepared-extra-field",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\",\"uid\":1001}}"
     }
   ]
 }

@@ -5,6 +5,22 @@ Versioning for the complete specification set.
 
 ## Unreleased
 
+### Home-lease independent observer
+
+- Revise the unreleased home-leases-v1 holder per accepted observation v2 d5:
+  bound processes require exactly `pid`, real `uid`, `boot_id` and tagged
+  `start_time`, with large values preserved as decimal strings. Legacy
+  `{pid, started_at}` is parseable only for prepared holders and can never bind.
+  No deployed home-lease records exist, so no migration is required; frozen
+  release carriers and the protocol release version remain unchanged.
+- Require Core's independent Linux/macOS kernel re-read before bind, exact
+  four-field equality and refusal on mismatch, missing/unreadable evidence,
+  vanished PID or unsupported variant. Retry/replay cannot cure refusal.
+  Publish paired shape and semantic vectors, including manager/record agreement
+  that differs from Core's reading. This is specification evidence only; M3,
+  productive-input fencing, release authority and runtime qualification remain
+  separate obligations.
+
 ### Environment store verification proposal
 
 - Define unsigned startup verification levels 1–4 (default 3), local outcome

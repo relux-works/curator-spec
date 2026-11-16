@@ -184,7 +184,7 @@
         ]
       },
       "positive": {
-        "setup": "Prepared lease revision 1 with exact manager incarnation M",
+        "setup": "Prepared lease revision 1 with exact manager incarnation M; Core independently reads a supported native tuple matching all four bound process fields before every bind/replay success",
         "steps": [
           "Bind exact tuple at revision 1 then retry identical committed payload/revision"
         ],
@@ -591,7 +591,7 @@
       "positive": {
         "setup": "Manager started; crash before bind; recover launcher journal",
         "steps": [
-          "Reconcile exact manager tuple and bind acquired revision"
+          "Reconcile exact frozen manager/session/generation and independently match all four native kernel process fields, then bind acquired revision before productive input"
         ],
         "expected": "active_exact_tuple_once"
       }
@@ -1333,7 +1333,7 @@
         ]
       },
       "positive": {
-        "setup": "Prepared lease revision 1 bound by manager M incarnation T",
+        "setup": "Prepared lease revision 1 bound by manager M incarnation T; Core independently reads a supported native tuple matching all four bound process fields before every bind/replay success",
         "steps": [
           "Bind exact M/T/session/generation/process"
         ],
@@ -1371,7 +1371,7 @@
         ]
       },
       "positive": {
-        "setup": "Lease revision advanced by another valid transition",
+        "setup": "Lease revision advanced by another valid transition; Core independently reads a supported native tuple matching all four bound process fields before every bind/replay success",
         "steps": [
           "Exact committed bind retry with original payload/revision is unchanged"
         ],
@@ -1409,7 +1409,7 @@
         ]
       },
       "positive": {
-        "setup": "Syntactically valid absent lease ID",
+        "setup": "Syntactically valid absent lease ID; Core independently reads a supported native tuple matching all four bound process fields before every bind/replay success",
         "steps": [
           "Bind existing prepared ID"
         ],
@@ -2046,7 +2046,7 @@
         ]
       },
       "positive": {
-        "setup": "The same committed bind remains active and nonterminal",
+        "setup": "The same committed bind remains active and nonterminal; Core independently reads a supported native tuple matching all four bound process fields before every bind/replay success",
         "steps": [
           "Replay the identical original bind payload and revision"
         ],
@@ -2186,11 +2186,1035 @@
         ]
       },
       "positive": {
-        "setup": "The same committed bind remains active and nonterminal",
+        "setup": "The same committed bind remains active and nonterminal; Core independently reads a supported native tuple matching all four bound process fields before every bind/replay success",
         "steps": [
           "Replay the identical original bind payload and revision"
         ],
         "expected": "bound_same_outcome_no_write_retry"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-pid-mismatch. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads {\"pid\":43,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}} from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id; the pid differs.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-pid-reuse-within-boot. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. The original process exited and its pid was reused in the same boot. Core independently reads {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456790\",\"hz\":100}} from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-manager-record-agree-kernel-disagrees. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. The well-formed manager tuple equals the record above, including its older start_time. Core's own fresh kernel reading is {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456790\",\"hz\":100}} from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id. Agreement of manager and record is input, never proof.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-pid-reuse-across-boots. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. After reboot the same pid and start_time are observed, but Core independently reads {\"pid\":42,\"uid\":1001,\"boot_id\":\"7f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}} from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-wrong-real-uid. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Pid, boot and birth match, but Core independently reads real uid 1002: {\"pid\":42,\"uid\":1002,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}} from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-start-time-hz-mismatch. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. All fields except start_time.hz match. Core independently reads {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":101}} from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-vanished-pid. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core reads /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id itself, but the pid vanished before its complete reading; a cached manager/record match remains available.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-unreadable-pid. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core attempts its own reads from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id; pid is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-unreadable-uid. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core attempts its own reads from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id; uid is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-unreadable-boot_id. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core attempts its own reads from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id; boot_id is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-unreadable-start_time-ticks. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core attempts its own reads from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id; start_time.ticks is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-unreadable-start_time-hz. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core attempts its own reads from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id; start_time.hz is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-missing-process. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Override the manager observation: process is absent (a valid observation with unknown process evidence). No complete independent match is possible; missing evidence can neither bind nor release.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-unsupported-kind. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Override both asserted tuples with start_time.kind=\"unsupported-start\"; no variant coercion or fallback is allowed.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: usage/invalid_holder for the malformed holder; no bind, release or other mutation",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-unsupported-native-variant. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Override both manager and record process with the otherwise well-formed opposite-platform tuple {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core supports only its native variant; it cannot convert start_time.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-linux-legacy-process-cannot-bind. Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. The prepared holder carries only legacy process {\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}. This remains parseable prepared data; an attempted bound holder with that process is invalid and cannot replace the independent four-field match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: usage/invalid_holder for legacy bound data; the prepared lease remains blocking",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on linux; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core independently reads all four fields from /proc/<pid>/stat fields 1 and 22, sysconf(_SC_CLK_TCK), /proc/<pid>/status Uid: first field, /proc/sys/kernel/random/boot_id: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-pid-mismatch. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads {\"pid\":43,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}} from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid; the pid differs.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-pid-reuse-within-boot. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. The original process exited and its pid was reused in the same boot. Core independently reads {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715201\",\"usec\":123456}} from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-manager-record-agree-kernel-disagrees. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. The well-formed manager tuple equals the record above, including its older start_time. Core's own fresh kernel reading is {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715201\",\"usec\":123456}} from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid. Agreement of manager and record is input, never proof.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-pid-reuse-across-boots. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. After reboot the same pid and start_time are observed, but Core independently reads {\"pid\":42,\"uid\":1001,\"boot_id\":\"7f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}} from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-wrong-real-uid. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Pid, boot and birth match, but Core independently reads real uid 1002: {\"pid\":42,\"uid\":1002,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}} from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-start-time-usec-mismatch. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. All fields except start_time.usec match. Core independently reads {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123457}} from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-vanished-pid. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core reads proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid itself, but the pid vanished before its complete reading; a cached manager/record match remains available.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-unreadable-pid. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core attempts its own reads from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid; pid is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-unreadable-uid. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core attempts its own reads from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid; uid is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-unreadable-boot_id. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core attempts its own reads from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid; boot_id is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-unreadable-start_time-sec. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core attempts its own reads from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid; start_time.sec is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-unreadable-start_time-usec. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core attempts its own reads from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid; start_time.usec is unreadable, although manager and record still agree. All other fields are readable and match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-missing-process. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Override the manager observation: process is absent (a valid observation with unknown process evidence). No complete independent match is possible; missing evidence can neither bind nor release.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-unsupported-kind. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Override both asserted tuples with start_time.kind=\"unsupported-start\"; no variant coercion or fallback is allowed.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: usage/invalid_holder for the malformed holder; no bind, release or other mutation",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-unsupported-native-variant. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Override both manager and record process with the otherwise well-formed opposite-platform tuple {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"linux-stat-starttime\",\"ticks\":\"123456789\",\"hz\":100}}. Core supports only its native variant; it cannot convert start_time.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: bind; retain the blocking lease; no successful bind outcome",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "observer-darwin-legacy-process-cannot-bind. Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. The prepared holder carries only legacy process {\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}. This remains parseable prepared data; an attempted bound holder with that process is invalid and cannot replace the independent four-field match.",
+        "steps": [
+          "Attempt bind at revision 1 using the manager assertion",
+          "Retry and replay the same assertion after refusal; neither cures refusal"
+        ],
+        "expected": "REFUSE: usage/invalid_holder for legacy bound data; the prepared lease remains blocking",
+        "preserve": [
+          "blocking_lease_record_bytes_and_revision",
+          "acquisition_binding",
+          "ledger_and_audit_preimages",
+          "other_holders",
+          "home_bytes_links_modes"
+        ],
+        "forbidden": [
+          "bound_holder_publication",
+          "successful_bind_outcome",
+          "productive_input",
+          "implicit_release_or_break",
+          "refusal_cured_by_retry_or_replay"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared blocking lease revision 1 on darwin; frozen manager registration, session/generation, held manager lock and all other admission/M3 predicates valid. The manager's authoritative started record, its observation v2 and the requested bound holder all carry process {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}. Core independently reads all four fields from proc_pidinfo PROC_PIDTBSDINFO pbi_pid/pbi_ruid/pbi_start_tvsec/pbi_start_tvusec and kern.bootsessionuuid: {\"pid\":42,\"uid\":1001,\"boot_id\":\"6f1c0e2a-8b44-4d1e-9a51-2f0c3d7e9b10\",\"start_time\":{\"kind\":\"darwin-pbi-start\",\"sec\":\"1731715200\",\"usec\":123456}}.",
+        "steps": [
+          "Read the native kernel fields independently, compare the frozen identity and all four tuple fields, then bind at revision 1"
+        ],
+        "expected": "bound: exact tuple stored, active revision 2; productive input stays fenced until the bound lease exists; no release or break authority added"
       }
     }
   ]

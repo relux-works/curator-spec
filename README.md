@@ -251,7 +251,9 @@ schemas. Its separate schema and corpus require implementation qualification.
   `.temp/`. These commands execute no lease runtime or provider. The
   [contract](protocol/home-leases.md) records CIP-0016's 2026-10-27 confirmed
   refuse and per-Werkstatt/lane conditions before implementation, including
-  non-admitting terminal acquire replay and paired launcher no-start controls.
+  non-admitting terminal acquire replay, paired launcher no-start controls and
+  observation v2 d5's bound tuple/independent kernel-match vectors. These remain
+  schema and specification-data checks, not Linux/macOS observer qualification.
 
 - Profile command PATH companion: `python3 -B -m unittest discover -s tools -p
   'test_profile_command_path.py' -v` validates the closed root-receipt/native-state

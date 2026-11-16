@@ -28,6 +28,47 @@ terminal records labeled `acquired`, mismatched terminal outcomes, changed
 terminal retrievals and terminal outcomes carrying historical prepared snapshots.
 HL07 pairs require terminal refusal before historical bind replay success.
 
+## Independent bind observer (observation v2 d5)
+
+The unreleased holder revision follows accepted d5 §§3/6, SHA-256
+`82ed29271b60db5712793a9874b7e2f3d7425cc8c88cb26e8d8ebdf0e902bac4`.
+Existing bound controls now carry the exact four-field process; original pair
+names and unrelated refusals are retained. New `observer-*` schema pairs cover
+prepared-only legacy parsing, bound tuple closure, both tagged variants, integer
+ranges, lowercase boot UUIDs and decimal-string grammar/boundaries. Each negative
+has a valid nearby control, including zero and 20-digit decimal strings.
+
+`cases.json` adds HL07 semantic pairs with stable IDs at the start of negative
+`setup`. Every `observer-linux-*` case has a matching native Linux control;
+every `observer-darwin-*` case has a matching native macOS control. A successful
+control independently reads every kernel field and binds the equal tuple at the
+acquired revision. Every refusal preserves the blocking record/revision,
+acquisition binding, ledger/audit preimages, other holders and home contents;
+it forbids a bound publication, successful bind reply, productive input and
+implicit release/break, including on retry/replay.
+
+| Suffix after `observer-linux-` or `observer-darwin-` | Required negative |
+| --- | --- |
+| `pid-mismatch` | Independently read PID differs. |
+| `pid-reuse-within-boot` | Same PID/boot, different birth time. |
+| `pid-reuse-across-boots` | Same PID/birth time, different boot UUID. |
+| `wrong-real-uid` | Only the independently read real uid differs. |
+| `manager-record-agree-kernel-disagrees` | Manager tuple equals its authoritative record and requested holder, but Core reads a different start time; **REFUSE**. |
+| `start-time-hz-mismatch` (Linux) / `start-time-usec-mismatch` (macOS) | The remaining member of the tagged birth identity also must match. |
+| `vanished-pid`, `unreadable-*` | Vanished PID or any unreadable tuple/variant field refuses despite cached manager/record agreement. |
+| `missing-process` | Valid observation without process means unknown; never bind or release. |
+| `unsupported-kind`, `unsupported-native-variant` | Reject an unknown tag and a known but unsupported opposite-platform variant; never coerce. |
+| `legacy-process-cannot-bind` | Prepared legacy data stays parseable but a legacy bound holder refuses. |
+
+These semantic rows specify later real-observer obligations. The current checker
+checks their structure and HL/W coverage, not kernel reads or runtime verdicts.
+The manager-record disagreement row is not qualified merely by agreeing with its
+expected label. Linux/macOS runtime tests, skipped-start-time-comparison control,
+real launcher/proving-manager docking and M3 evidence belong to implementation
+qualification. No release rule or productive-input authority is added here.
+
+## Checker and runtime evidence limits
+
 The data checker verifies schema/decoder verdicts and requirement/pair coverage.
 It executes no manager, launcher, lock, process, recovery engine or home writer.
 Later runtime qualification must drive each real writer/CLI and consumer path

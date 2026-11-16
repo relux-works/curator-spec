@@ -7,6 +7,12 @@ an implemented CLI, enabled capability or qualified runtime. The
 [paired vectors](../conformance/home-leases-v1/README.md) are normative.
 Existing frozen release carriers and `project-lease/1` are unchanged.
 
+The unreleased holder revision below incorporates observation v2 d5 §§3 and 6
+(accepted contract SHA-256
+`82ed29271b60db5712793a9874b7e2f3d7425cc8c88cb26e8d8ebdf0e902bac4`).
+It refines CIP-0016's confirmed conditions; no deployed home-lease records exist,
+so no record migration is required. This does not revise frozen release schemas.
+
 ## 1. Authority, storage and identity
 
 **HL01.** Curator MUST own the profile-home lease store in manager state at
@@ -53,11 +59,14 @@ an empty list or a successful absent-ID release.
 
 **HL05.** Inputs and records MUST follow the closed prepared/bound holder union:
 `kind`, `launcher`, `manager_id`, `manager_registered_at`, `request_id`,
-`werkstatt`, `session`, `generation`, `process`. Prepared has the last three
-explicitly null; bound has an exact session, positive safe-integer generation and
-process incarnation (`pid`, `started_at`). The start time is the manager
-observer's exact OS process-start identity, not the launcher's current clock or a
-PID-existence probe; inability to validate it retains uncertainty. `werkstatt` is an ID or null.
+`werkstatt`, `session`, `generation`, `process`. Prepared has `session` and
+`generation` explicitly null and `process` null or the legacy closed
+`{pid, started_at}` form. That legacy form remains parseable only for prepared
+holders and can never bind: a wall-clock `started_at` cannot be independently
+matched to the kernel incarnation. Bound has an exact session, positive
+safe-integer generation and exactly the four-field process tuple
+`{pid, uid, boot_id, start_time}` below. A missing or null process never binds.
+`werkstatt` is an ID or null.
 `launcher` is exactly `curator-run`; `kind` is exactly `prepared` or `bound`.
 Curator authors `acquired_at`, opaque canonical `manager_root_id`, `home_id`,
 `lease_id`, environment/profile, digest, phase, revision and observation evidence.
@@ -67,6 +76,27 @@ No arbitrary maps, argv, secrets or caller filesystem paths are accepted.
 Strict UTF-8 decoding rejects duplicate, missing and unknown members, unsafe
 integers, case aliases, overlength fields and control characters before use.
 Schema-valid shape alone supplies no lifecycle or observation authority.
+
+The bound process tuple follows observation v2 d5 §3:
+
+| Field | Closed type and range |
+| --- | --- |
+| `pid` | Integer 1–2147483647 (`pid_t`). |
+| `uid` | Integer 0–4294967294, the real uid; `(uid_t)-1` is excluded. |
+| `boot_id` | Lowercase UUID, exactly 36 ASCII bytes. |
+| `start_time` | Exactly one of the two closed tagged objects below. |
+
+- Linux: `{"kind":"linux-stat-starttime","ticks":"123456789","hz":100}`.
+  `ticks` is an unsigned decimal string of 1–20 ASCII digits without leading
+  zero padding; `hz` is an integer 1–100000.
+- macOS: `{"kind":"darwin-pbi-start","sec":"1731715200","usec":123456}`.
+  `sec` has the same decimal-string grammar; `usec` is an integer 0–999999.
+
+Large values stay decimal strings, including values above the JSON safe-integer
+range. The single string `"0"` is valid; `"00"`, signs, whitespace and non-ASCII
+digits are not. No date-time is ever derived from kernel ticks, and no variant
+is converted into another or into a wall-clock observation. Every tuple and
+tagged variant rejects missing and extra members.
 
 **HL06.** Acquire MUST use a launcher-persisted `request_id` and canonical payload
 binding, durable before its first attempt. Replaying an identical request returns
@@ -89,8 +119,9 @@ registration incarnation, Werkstatt and session/generation/process tuple from
 authoritative manager evidence. It changes prepared to active, advances the
 revision by one and makes the bound tuple immutable. An identical committed
 retry with the original revision/payload returns that bind outcome without a
-write only while the lease is nonterminal; terminal refusal takes precedence
-over this idempotent retry. Other stale revisions conflict. A different tuple,
+write only while the lease is nonterminal and HL23's independent observer
+still matches; terminal refusal takes precedence over this idempotent retry.
+Other stale revisions conflict. A different tuple,
 wrong incarnation,
 unknown ID or terminal lease refuses. Binding is not a liveness assertion.
 
@@ -299,6 +330,52 @@ This also carries L4. Acquire failures become launcher
 `session_home_lease_unavailable` (exit 1), preserving Curator code/reason; lock
 unavailability remains distinct (L5). Native unhosted launches take no lease,
 and no `--no-home-lease` hosted bypass is admitted (L6).
+
+### Independent observer before bind (HL07/HL09/HL23)
+
+Before any bind, Curator's own home-lease observer MUST independently re-read
+`pid`, `uid`, `boot_id` and `start_time` from the kernel. It MUST NOT substitute
+the manager's tuple, a stored record, the launcher's PID or clock, a wrapper PID,
+or a PID-existence probe for its own reading. The manager's assertion is an
+input to the observer, never the proof.
+
+| Platform | Independent kernel sources |
+| --- | --- |
+| Linux | `/proc/<pid>/stat` field 1 for `pid` and field 22 for `start_time.ticks`, with `sysconf(_SC_CLK_TCK)` for `start_time.hz`; `/proc/<pid>/status` `Uid:` first field for the real `uid`; `/proc/sys/kernel/random/boot_id` for `boot_id`. |
+| macOS | `proc_pidinfo` with `PROC_PIDTBSDINFO`: `pbi_pid` for `pid`, `pbi_ruid` for the real `uid`, and `pbi_start_tvsec`/`pbi_start_tvusec` for `start_time.sec`/`start_time.usec`; sysctl `kern.bootsessionuuid`, lowercased, for `boot_id`. |
+
+Bind is permitted only when all four fields are byte-equal to the authoritative
+observation v2 tuple and the requested bound holder, including the `start_time`
+tag and every member of that variant. The applicable native variant must be
+supported. Same PID with another birth time or boot is a different incarnation;
+a matching birth and boot with a different uid also refuses. In particular,
+agreement between the manager tuple and the record MUST REFUSE when Curator's
+own kernel reading differs, for example by an older asserted `start_time`.
+A mismatch, a vanished PID, any unreadable field, an unsupported variant or a
+missing `process` MUST refuse the bind and preserve the blocking lease without
+publishing a bound holder or successful bind outcome. No retry or replay cures
+a refusal. Replaying an assertion or historical success cannot bypass this
+independent check.
+
+The observation is obtained through curator-run's read-only `observe` contract
+with `--schema v2`. Before using it, compare the manager ID and frozen
+`manager_registered_at` against the prepared holder, and session/generation
+against the frozen handle/generation. Apply observation v2 d5 §1.3a's frozen
+executable comparison where one exists; no executable field is added to the
+holder. Current registry state cannot be compared with itself as proof of the
+frozen owner incarnation.
+
+Tuple equality is necessary, but does not replace the proving manager's M3
+actual-harness/retained-hold evidence or its effective uid, executable/handoff,
+role, execution/generation and profile/home/plan binding and revision predicates.
+The wire `uid` remains the real uid. Those private proofs add no public fields.
+Ordering is lease preparation, admitted start, observation v2 with `process`,
+Core's independent match, bound lease, then productive input. Input stays
+fenced until the bound lease exists; process presence alone is not readiness.
+This first use adds no release or break authority: `no_start` and `termination`
+are only inputs for future release rules. Unknown or missing process evidence
+retains protection and never releases a lease; HL09's existing reconciliation
+and HL12–HL13's audited-break requirements remain in force.
 
 **HL24.** Owner decision 2026-10-27 requires one managed home per unattended lane
 and one profile per Werkstatt. Launcher admission MUST refuse cross-lane or

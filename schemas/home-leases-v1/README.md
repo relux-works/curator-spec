@@ -6,7 +6,7 @@ release schemas or `project-lease/1` and do not advertise an implemented CLI.
 
 | Schema | Object |
 | --- | --- |
-| `holder.schema.json` | Closed prepared/bound launcher holder; explicit null pre-bind fields |
+| `holder.schema.json` | Closed prepared/bound launcher holder; prepared null or legacy process, bound four-field tuple |
 | `record.schema.json` | Curator-authored record and diagnostic row, including terminal phase |
 | `event.schema.json` | Permanent reconciliation/break audit projection with prior record |
 | `result.schema.json` | Operation-specific CLI result, closed exit/code/reason mapping and details |
@@ -15,10 +15,22 @@ Identifiers are case-sensitive opaque ASCII `[A-Za-z0-9][A-Za-z0-9_.:-]*`,
 1–128 bytes; no slashes or control characters. Canonical environment IDs,
 launcher and kind tags are exact lowercase tokens, not case-folded aliases.
 Times are UTC RFC3339 strings with at most nanosecond precision. Revisions,
-generations and PIDs are positive safe integers. The CLI's strict decoder also
+generations are positive safe integers. Bound process PIDs are 1–2147483647;
+real uids are 0–4294967294. `boot_id` is a lowercase UUID. The closed
+`start_time` variants are `linux-stat-starttime` (`ticks` decimal string, `hz`
+1–100000) and `darwin-pbi-start` (`sec` decimal string, `usec` 0–999999).
+Decimal strings have 1–20 ASCII digits with no leading zero padding; `"0"` is
+valid. No date-time is derived from ticks. The CLI's strict decoder also
 rejects duplicate keys, non-integer numeric spelling, invalid UTF-8 and lone
 surrogates. Reason text is 1–1024 Unicode characters without controls; a whitespace-only
 operator reason is rejected by semantic admission. Holder data is not evidence.
+
+Prepared holders keep `session`/`generation` null and accept `process:null` or
+the closed legacy `{pid, started_at}` form. Legacy PIDs retain their positive
+safe-integer shape for parsing compatibility; legacy data can never bind.
+Only bound holders accept the four-field `{pid, uid, boot_id, start_time}`
+tuple. Its shape does not prove the independent kernel match required by HL23.
+This is an unreleased holder revision with no deployed records or migration.
 
 Cross-record identity/CAS, exact revision increments, event/tombstone agreement,
 count/order, canonical actual home identity and observation provenance are semantic
