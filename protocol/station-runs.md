@@ -19,9 +19,12 @@ proposal only; they bind nobody until the owner adopts this file.
 | --- | --- | --- | --- | --- |
 | OQ20 | Runs: whether the proposed run model of this file is adopted, and whether conversation state may be carried across runs. | Adopt as proposed; each run starts from a fresh conversation. | Adopt as proposed; conversation state is carried, with a rule for what a later grant may read. | Owner. |
 | Row 12 | Runs inside a station (row 12 of the comparison of what the action profile hands to the station contract): whether a standing station takes follow-up work as runs under per-instruction grants at all, as this file proposes. | Adopt this file (with OQ20 answered) and merge its table additions, vocabulary and rules into the station contract. | Do not adopt: a standing station's work input is then defined by a later contract, and this file is retired. | Owner. |
+| store-loss recovery: v2 | Restoring a station after a store loss, fence or restore instead of the station/1 version 1 cut (every station in `lost`, exit only by operator re-provision from scratch; the same open item in the station contract, section 15): a proof of its principal, pin and owner binding from an effect owner, and the cells that would spend it. Nothing in this companion spends it. | Define that proof and its carrying cells in version 2 of the station contract, and let a proved station leave `lost` by them. | Keep the version 1 cut indefinitely: `lost` is terminal and a station returns only by re-provision from scratch under a new generation. | Owner. |
 
-Until both are decided, station/1 v1 defines no instruction delivery and no
-run. A standing station's work input is out of scope of v1.
+Until OQ20 and Row 12 are decided, station/1 v1 defines no instruction
+delivery and no run. A standing station's work input is out of scope of v1.
+The store-loss recovery: v2 row above is a station-contract open item
+named here as a pointer; deciding it adopts nothing in this companion.
 
 ## 2. Proposed additions to the lifecycle table
 
