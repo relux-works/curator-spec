@@ -403,6 +403,18 @@ names the cases each pin must be observed passing for the schema-8 families,
 and `tools/implementation_coverage.py` enforces that ledger against each run's
 own result stream and against this suite's published manifest.
 
+## Probe tooling
+
+[curator-spec-probe-observer](https://github.com/relux-works/curator-spec-probe-observer)
+is a helper repository, not part of the specification. It holds a neutral
+observer fixture that the runtime probes for the profile-generations chapter
+use to judge a probe session from outside the agent: it journals the start,
+binds the session to the exact process by kernel identity, detects a crash,
+and releases the holder only on terminal-tree or no-start evidence. Each
+manager plugs in its own runtime adapter. The fixture is a test instrument:
+it is not an implementation, defines nothing normative, and is not the
+production observer.
+
 ## Release status
 
 `1.0.0-rc.14` is a draft candidate. Portable remains the default CLI-only mode.
