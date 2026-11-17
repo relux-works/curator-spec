@@ -44,7 +44,11 @@ classification, gate coverage, exact A1 expectations and baseline blob/hash
 identity, with valid neighbors and malformed-metadata controls. Those semantic
 checks are separate from JSON Schema validation. For each baseline clause, the
 union of its split trace rows must retain every vector assigned by the pinned
-joint skeleton; a clause-to-catalog match alone is insufficient. The external
+joint skeleton; a clause-to-catalog match alone is insufficient. The skeleton
+file `protocol/profile-generations.md` at
+c59ec5f4a7e78e0f0ce90b92a3be831b2a9d0ace has Git blob
+46318fd64c927a86121128653c8460b257cd3bb8 and SHA-256
+f5d5182f1ce333996af7f22f73111ebe8b34d746a31f09894576b2c3e1be645e. The external
 checker includes a dropped-coverage control for that independent requirement.
 
 The following repository-root command validates shape only, using the existing

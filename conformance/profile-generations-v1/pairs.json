@@ -832,7 +832,7 @@
         "PG-P-093",
         "PG-STRICT-01"
       ],
-      "paired_requirement": "A after allowed invocation activation / forbidden fixed-path activation: simultaneous A→A/B→B only if qualified; otherwise pending/refusal while active or retained-resumable A protected",
+      "paired_requirement": "A after allowed invocation activation / forbidden fixed-path activation: simultaneous A->A/B->B only if qualified; otherwise pending/refusal while active or retained-resumable A protected",
       "pending_gates": [
         "PG-P-041",
         "PG-P-042",
@@ -852,7 +852,7 @@
       "execution": "not-run",
       "input_files": [],
       "paired_extensions": [
-        "Two checkouts, one profile × runtime authority: give each checkout its own admitted binding/generation projection and prepared lease, sharing the same approved auth/session/history authority. A single-checkout same-composition launch is the positive control. Concurrent A→A/B→B across checkouts is permitted only after independent native-channel and state-access qualification; otherwise B stays pending or refuses while A is active/unknown/retained-resumable, without rebinding A or losing either checkout's lease roots. No authority need be provisioned for an unused profile/runtime. Strict trust must not approve the other checkout, and its retained history must not become selected context; those assertions await the strict roster/certification rather than being inferred from native-project success.",
+        "Two checkouts, one profile x runtime authority: give each checkout its own admitted binding/generation projection and prepared lease, sharing the same approved auth/session/history authority. A single-checkout same-composition launch is the positive control. Concurrent A->A/B->B across checkouts is permitted only after independent native-channel and state-access qualification; otherwise B stays pending or refuses while A is active/unknown/retained-resumable, without rebinding A or losing either checkout's lease roots. No authority need be provisioned for an unused profile/runtime. Strict trust must not approve the other checkout, and its retained history must not become selected context; those assertions await the strict roster/certification rather than being inferred from native-project success.",
         "Independently challenge native-home memory, appended/profile root, native base/role and previously unvisited nested instruction scopes on the same live A at the claimed barriers; record default root snapshot behavior and supported rebuild/compaction, resume and child entries separately. Wrong next-stage source and stale/replayed challenge controls must detect their intended mismatch for each channel beside valid A-to-A controls. Nested reads, generic file echo or a one-shot replacement do not qualify root/base/role continuity; unsupported observations remain inconclusive."
       ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
@@ -901,7 +901,7 @@
         "conformance/environment-store-verification-v2/vectors/environments-store-boundary.json"
       ],
       "paired_extensions": [
-        "Levels/repair: existing nonstructural home drift without repair warns/non-current at L1 and refuses at L2–L4; a current home is the valid neighbor. Unknown loader controls refuse at L3 and L4; a measured typed trust write preserves unrelated approved controls.",
+        "Levels/repair: existing nonstructural home drift without repair warns/non-current at L1 and refuses at L2-L4; a current home is the valid neighbor. Unknown loader controls refuse at L3 and L4; a measured typed trust write preserves unrelated approved controls.",
         "Verified-native inventory: undeclared skill/MCP output, wrong expected hash or an unapproved base refuses; exact declared output plus an explicitly approved base passes. An explicit allowed-extra scope/digest permits only that disclosed extra, never an inferred baseline.",
         "Seed compatibility: applying the new control policy does not strip/refresh/relabel an existing seed or marker; unsupported controls refuse pending explicit migration. A separately approved migration preserves the old source and follows the seed-owning lifecycle."
       ],
@@ -1055,8 +1055,8 @@
       "execution": "not-run",
       "input_files": [],
       "paired_extensions": [
-        "Authority scope: in one custody namespace, two checkouts and successive generations for one profile × runtime retain the same approved authority and its native auth/sessions/history; per-launch, per-generation or per-checkout authority substitution refuses. A distinct approved profile/runtime may have its own stable authority.",
-        "Compatibility: an old checkout × profile × environment project home retains its old binding and is not silently relabelled. A separately approved successor migration binds the stable authority and preserves the legacy source."
+        "Authority scope: in one custody namespace, two checkouts and successive generations for one profile x runtime retain the same approved authority and its native auth/sessions/history; per-launch, per-generation or per-checkout authority substitution refuses. A distinct approved profile/runtime may have its own stable authority.",
+        "Compatibility: an old checkout x profile x environment project home retains its old binding and is not silently relabelled. A separately approved successor migration binds the stable authority and preserves the legacy source."
       ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
     },
