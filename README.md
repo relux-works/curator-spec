@@ -405,8 +405,8 @@ own result stream and against this suite's published manifest.
 
 ## Probe tooling
 
-[curator-spec-probe-observer](https://github.com/relux-works/curator-spec-probe-observer)
-is a helper repository, not part of the specification. It holds a neutral
+`relux-works/curator-spec-probe-observer` (private; access through the
+curator-spec owners) is a helper repository, not part of the specification. It holds a neutral
 observer fixture that the runtime probes for the profile-generations chapter
 use to judge a probe session from outside the agent: it journals the start,
 binds the session to the exact process by kernel identity, detects a crash,
