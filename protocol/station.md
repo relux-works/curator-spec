@@ -285,7 +285,7 @@ only for a present latch that mismatches.
 | process exits | SH | SH reports that the lead process started under R03 or bound by R04 exited. SH owns no record for it; DI records R05. |
 | liveness reading missed | CU | A scheduled reading of the bound tuple, or the reading of a bind attempt, is missing or unreadable. |
 | liveness restored | CU | The first reading equal in all four fields to the tuple of R04 after a missed reading recorded since that bind. A missed bind-attempt reading in `starting` is not since the bind, so this event cannot fall in `running`. Equal readings with no such missed reading before them stay in CU's reading log and are not events. |
-| instruction received | AL | A message addressed to the station identity passed J2 at receipt (section 11). |
+| instruction received | AL | A message addressed to the station identity is reported for the J2 check at receipt (section 11); G9 spends the J2 refusal codes. |
 | run start | SH | The session host is about to open a run for the oldest queued instruction (K5). |
 | run end | SH | The open run ended: the harness confirmed its end, or DI ordered its end because its grant was revoked or expired or the session authority closed, or its delivery was refused, or the J2-again check of G15 refused it terminally after R21 with outcome `not_started` and no delivery. |
 | stop requested | the requester, or DI as the actor of U5, of a clock of section 4.5 or of section 7.1 | An authorized stop of the station; section 7.1 lists every trigger and its bound. Its record (R08, or the entering record of a cell into `stopping`) carries the stop operation identity the coming P1 must name. |
