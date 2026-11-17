@@ -19,7 +19,7 @@ proposal only; they bind nobody until the owner adopts this file.
 | --- | --- | --- | --- | --- |
 | OQ20 | Runs: whether the proposed run model of this file is adopted, and whether conversation state may be carried across runs. | Adopt as proposed; each run starts from a fresh conversation. | Adopt as proposed; conversation state is carried, with a rule for what a later grant may read. | Owner. |
 | Row 12 | Runs inside a station (row 12 of the comparison of what the action profile hands to the station contract): whether a standing station takes follow-up work as runs under per-instruction grants at all, as this file proposes. | Adopt this file (with OQ20 answered) and merge its table additions, vocabulary and rules into the station contract. | Do not adopt: a standing station's work input is then defined by a later contract, and this file is retired. | Owner. |
-| store-loss recovery: v2 | Restoring a station after a store loss, fence or restore instead of the station/1 version 1 cut (every station in `lost`, exit only by operator re-provision from scratch; the same open item in the station contract, section 15): a proof of its principal, pin and owner binding from an effect owner, and the cells that would spend it. Nothing in this companion spends it. | Define that proof and its carrying cells in version 2 of the station contract, and let a proved station leave `lost` by them. | Keep the version 1 cut indefinitely: `lost` is terminal and a station returns only by re-provision from scratch under a new generation. | Owner. |
+| store-loss recovery: v2 | Restoring a station after a store loss, fence or restore instead of the station/1 version 1 cut (every station in `lost`, exit only by operator re-provision from scratch for a name the key service has never bound; the same open item in the station contract, section 15): a proof of its principal, pin and owner binding from an effect owner, and the cells that would spend it. Handing a lost name's retained keys to a new principal is a version 2 owner question under this item; version 1 never hands them over. Nothing in this companion spends it. | Define that proof and its carrying cells in version 2 of the station contract, and let a proved station leave `lost` by them; only there decide any hand-over of a lost name's retained keys to a new principal. | Keep the version 1 cut indefinitely: `lost` is terminal for a key-service-bound name, and any other station returns only by re-provision from scratch under a new generation or a new name. | Owner. |
 
 Until OQ20 and Row 12 are decided, station/1 v1 defines no instruction
 delivery and no run. A standing station's work input is out of scope of v1.
@@ -71,8 +71,11 @@ R24; proof of the run outcome (completed or did not happen) to `running` on
 R18 (G13); operator teardown order to `stopping` on R19 (G14); every
 proposal refused `station_held`, every unexpected proof refused
 `station_proof_unexpected`, and liveness restored recorded as cannot occur
-(no missed reading is recorded in that row). On adoption this row is to be
-re-walked against the lifecycle table as it then stands.
+(no missed reading is recorded in that row). On adoption this row, the
+proposed columns table above (which lists no `lost` row), and this
+row's journal-lost cell (to `held:stop` on R23, against the station
+contract's entry of every record into `lost` on that event) are all to
+be re-walked against the lifecycle table as it then stands.
 
 Proposed event definitions (reported to the dispatcher; the dispatcher alone
 would commit the cell):
