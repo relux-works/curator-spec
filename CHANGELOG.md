@@ -85,6 +85,40 @@ Versioning for the complete specification set.
   archive bytes and observations. Mapping controls reject both a path row
   relabelled as Git and a dry-run Git row relabelled as path.
 
+### Portable Go execution policy (section 4.2.1)
+
+- Clarify the "frozen snapshot plus identity re-verification" row in
+  [Protocol Core section 4.2.1](protocol/core.md): a change present at a
+  verification checkpoint (the identity verification before launch and the
+  re-verification after the last child exits), or reported by a change
+  notification that the manager observes during the operation, rejects the
+  operation before publication. A process that already holds write access
+  to a snapshot or toolchain file, or a writable shared mapping of one, can
+  change that file and restore it between the checkpoints without a
+  reported notification; the portable mechanism does not detect such a
+  change, and preventing it belongs to the deferred guarantee
+  `read-only-source-and-toolchain`. Qualify the same claim in section 4.2
+  (a change found by that re-verification, or reported by a change
+  notification during the operation, rejects the operation before
+  publication) and in section 8.2 (the tree remains unchanged as checked by
+  the identity re-verification of section 4.2.1, which states the changes
+  that mechanism does not detect). Add one informative, non-normative note
+  after the table with the 2026-11-05 measured outcomes per platform
+  (Windows UNMEASURED). Compatibility impact: wording only; no allowance is
+  added, nothing that was rejected becomes accepted, and the deferred
+  guarantee still must not reject, be named as a control, or enter
+  evidence. Security impact: the specification now discloses a detection
+  gap: an implementation must no longer claim that it detects a change
+  restored between checkpoints without a reported notification. No schema,
+  vector, inventory, or evidence change. The `source_integrity.means`
+  strings in `conformance/v1` (frozen) and in
+  `conformance/go-native-controls-v2` (unreleased), generated from one
+  source in `tools/generate-vectors/main.go`, keep the earlier sentence
+  ("a change to either before publication is detected and rejects the
+  operation") and are not changed here; the protocol text above states the
+  narrower meaning. Whether the unreleased v2 string is aligned in a
+  separate vector change is the custodian's decision.
+
 ### Added
 
 - 2026-11-10: follow [a2a PR #438](https://github.com/relux-works/a2a-swarm/pull/438)
