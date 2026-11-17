@@ -104,20 +104,28 @@ that ruling: no source before it names one owner of the station state.
 
 SR2. Every allowed cell of section 3 is one compare-and-set on the state
 version, committed by DI together with the record, and only with the record,
-the cell names; that set is at exactly one place, the end of the cell, after
-its gate set has been evaluated on the version read. A proposal from a
-requester or from CRO carries the expected version it read; the comparison
-of that expected version with the version at DI is a read, not the set. Two
-transitions attempted from one state version: exactly one commits. The loser
-is defined for every kind of event: for a proposal that carries an expected
-version, DI returns `station_state_stale`, returns no gate verdict evaluated
-above the failed set, changes nothing, and the proposer re-reads; for an
-event reported by another service, which carries no expected version, a lost
-set is not a refusal and is never returned to the reporter: DI queues the
-event in its journal and commits it against the state it re-reads, and the
-event is consumed only by that commit. Delivered-once and host-wide events
-(section 2) and every observation reading take the second form, so a reading
-is recorded whatever the version it raced [DEC D1 as amended].
+the cell names; that set is at exactly one place: for a start at the R03
+line of section 6.2, after the before-record part of its gate set, and for
+every other cell at the end of the cell, after its gate set has been
+evaluated on the version read. For every proposed cell the expected-version
+comparison is the first check, before any gate: where the version a
+proposal carries differs from the version DI reads, DI refuses
+`station_state_stale` before any gate, no later gate is asked, and nothing
+changes; where they are equal the gate set runs, and a set lost at the end
+also returns `station_state_stale`, with no gate verdict returned from
+above the failed set (section 4.4). A create that loses the create-if-absent
+race is answered by the row it finds (SR4), not by this refusal. Two
+transitions attempted from one state version: exactly one commits, and the
+losing proposer re-reads. DI's own proposals (a clock of section 4.5, U1 or
+U5, section 7.1) are proposals in this sense: on a lost set DI re-proposes
+against the row it re-reads until the cell commits or that row has no such
+cell. For an event reported by another service, which carries no expected
+version, a lost set is not a refusal and is never returned to the reporter:
+DI queues the event in its journal and commits it against the state it
+re-reads, and the event is consumed only by that commit. Delivered-once and
+host-wide events (section 2) and every observation reading take the second
+form, so a reading is recorded whatever the version it raced
+[DEC D1 as amended].
 
 SR3. No other service commits a station state. This rule governs every effect
 a cell of section 3 names; maintenance that no cell names and that changes no
@@ -127,34 +135,59 @@ it closes or opens a capability. CRO is a client that proposes
 transitions to DI. UM, KS, CU, LA through DI, and every other service perform
 an effect for a station only under an operation that DI recorded first, and
 report the outcome to DI; the report is an event of section 2.2. Every effect
-request carries the operation identity and, as its epoch, the state version
-at which DI wrote that operation's record. The epoch of an operation is that
-recording version for the whole operation: self-loop commits and phase
+request carries the operation identity and, as its epoch, the pair (journal
+generation, journal position of that operation's record). The epoch of an
+operation is that pair for the whole operation: self-loop commits and phase
 writes under the operation (for example the phases of R03, which are appends
-under R03 and not state-version bumps) do not stale it. An effect owner
-stores durably, before performing the effect, the highest operation epoch it
-has accepted for that operation identity, and refuses a request whose
-operation epoch is lower than the value stored for the same operation
-identity or whose operation DI no longer shows open. Epochs are compared per
-operation identity, never as one highest epoch per station: a stop operation
-recorded inside a held row therefore fences nothing of the row's own open
-operation (its P5 presentation, its R17 undo, its next step or its retry all
-carry that operation's own identity and epoch). The owner's refusal after the
-record is reported to DI and arrives as proof P4 in the row of the effect in
-flight, carrying `station_state_stale` in its detail (section 2); only a
+under R03 and not state-version bumps) do not move it and do not stale it.
+An operation is open from its record until the record that accepts its
+outcome, or a later record that names it superseded: R01, R02, R12 and R14
+are closed by the R18 that accepts their P3 or P4 in their own or their
+held row, or by an R19 entering `retiring` from that held row that names
+the operation superseded; R03 by R04 (its P2 accepted), by the R18 of its
+P4, or by a record
+entering `stopping` or `retiring` downward that names it superseded; R15 by
+R16, or by an R19 entering `retiring` that names it superseded; R19 by the
+R09 that accepts the stop it ordered into `stopping`, or by R16 where it
+entered `retiring`; a stop operation by R09, or as section 4.1 states on an
+entry into `provisioned`, `stopped` or `retired`. Until its closing record
+commits, R03 is open in `held:start` for its P2. An effect owner stores
+durably, before performing the effect, the highest operation epoch it has
+accepted for that operation identity, and refuses a request whose operation
+epoch is lower than the value stored for the same operation identity or
+whose operation DI no longer shows open in this sense. Epochs are compared
+per operation identity, never as one highest epoch per station: a stop
+operation recorded inside a held row therefore fences nothing of the row's
+own open operation (its P5 presentation, its R17 undo, its next step or its
+retry all carry that operation's own identity and epoch). The owner's
+refusal after the record is reported to DI and arrives as proof P4 in the
+row of the effect in flight, carrying `station_state_stale` in its detail
+(section 2), evaluated in that case by the refusing effect owner; only a
 proposal that has written no record receives `station_state_stale` directly
-[DEC D1 as amended]. Continuity: an epoch, being a journal position of DI's
-state journal for the name, never repeats across a crash or a restore. A
-restore or a fenced journal opens a new journal generation recorded ahead of
-any earlier generation in DI's protected configuration, epochs compare as
-(journal generation, position), and a DI that cannot prove its new generation
-is ahead of every epoch it ever issued stays closed (section 17, daemon
-configuration) and admits no cell but a hold. Loss or rollback never re-admits
-a provision of a name whose reservation R00 cannot be proved absent by
-inverse inventory of accounts, bindings and receipts; until that proof exists
-the name is held, never absent again, and gate G1 refuses its provision with
-`station_name_held`, evaluated by DI from that inverse inventory after any
-journal generation change (section 4.4).
+from DI [DEC D1 as amended]. Continuity: an epoch, being a (journal
+generation, position) pair of DI's state journal for the name, never repeats
+across a crash or a restore. A restore or a fenced journal opens a new
+journal generation recorded ahead of any earlier generation in DI's
+protected configuration, epochs compare as that pair, and a DI that cannot
+prove its new generation is ahead of every epoch it ever issued stays
+closed (section 17, daemon configuration) and admits no cell but a hold.
+After any journal generation change DI runs the inverse inventory -- UM's
+account inventory, KS's binding inventory and LA's receipt inventory. For
+every name that inventory finds with no surviving record, DI creates the
+record by create-if-absent in `held:stop` (in `held:account` where no
+enroll line is found in that inventory), writing R23 with an open absence
+debt; from that commit the name has every cell of that held row (its stop
+request, its stop confirmed, its capability report and its operator
+teardown order included), so a surviving account is never read as `absent`
+for any event. Until that inventory proves a name's reservation R00 absent
+by showing no trace of the name in any of the three inventories, loss or
+rollback never re-admits its provision: that check applies for `absent`
+only, while the store is at a journal generation opened by a restore or a
+fence, and gate G1 refuses with `station_name_held` (section 4.4); the
+create-if-absent commit that follows a traceless inventory is that name's
+clearance. A `retired` name pays no such check: its record and its R00
+survived by definition of the row, and G1 spends only its principal check
+there.
 
 SR4. A start is atomic: DI commits [stopped x start] by the compare-and-set
 of SR2 at the record line of section 6.2, and the physical start request
@@ -162,21 +195,27 @@ carries that operation's epoch and the execution identity of R03. DI owns the
 start fence of each generation: closed from the generation's `active` append
 until phase `start_requested` of R03 opens it for that one execution alone.
 When the station commits any cell out of `starting`, the same commit closes
-the fence for that execution and records the start as withdrawn. LA
-revalidates fence, epoch and execution identity with DI immediately before
-writing the start receipt and dropping privilege, under the generation lock:
-a withdrawn, superseded or already-receipted execution starts nothing and is
-refused with `station_state_stale` in the detail. Past that revalidation
-point a start can no longer be withdrawn, and its process is handled only by
-the ordinary reading, exit and stop cells [DEC D1 as amended; HP 7]. Before a
-name's first provision, DI holds its durable reservation: [absent x provision]
-is create-if-absent on the station name in DI's record store, writing R00 and
-R01 in one commit; the losing create re-reads and is then answered by the row
-it finds. So the first transition has a store record to race on even though
-`absent` names no committed station record yet. [retired x provision] races
-on the state version of the record `retired` retains, under the reservation
-R00 that already exists for the name; it reuses that reservation and amends
-its principal only under the recorded owner act of G1.
+the fence for that execution: the execution gets no receipt after that
+commit, so a start not yet receipted at that commit is withdrawn, while a
+receipt already revalidated before it stands and is handled only by the
+ordinary cells. LA revalidates fence, epoch and execution identity with DI
+immediately before writing the start receipt and dropping privilege, under
+the generation lock: a withdrawn, superseded or already-receipted execution
+starts nothing and is refused with `station_state_stale` in the detail,
+evaluated in that case by LA. A revalidation DI does not answer starts
+nothing: LA writes no receipt and drops no privilege until DI admits the
+revalidation. Past that revalidation point a start can no longer be
+withdrawn, and its process is handled only by the ordinary reading, exit
+and stop cells [DEC D1 as amended; HP 7]. Before a name's first provision,
+DI holds its durable reservation: [absent x provision] is create-if-absent
+on the station name in DI's record store, writing R00 and R01 in one commit;
+the losing create re-reads and is then answered by the row it finds. So the
+first transition has a store record to race on even though `absent` names no
+committed station record yet. [retired x provision] races on the state
+version of the record `retired` retains, under the reservation R00 that
+already exists for the name; it reuses that reservation, never amends its
+principal, and is admitted only for the principal R00 retains (G1). Any
+other principal needs a new name.
 
 SR5. A read that only classifies (a journal read, an observation, a proof
 check) is not an effect and needs no prior record. Between an outcome becoming
@@ -194,10 +233,11 @@ clearance), and every slot clearance cites an entry of this record (R09),
 never the reverse. On a fact both a board description and this record touch,
 this record decides. Loss of the session journal is therefore loss or fencing
 of this record's own store: the fence entry R23 is delivered once to every
-station record that survives it, a name whose record does not survive is held
-under SR3 by inverse inventory and is never read as absent, and no cell
-reconstructs from a surviving board description a session the journal no
-longer proves. This is the OQ18 ruling carried into SR1, and no part of OQ18
+station record that survives it, a name whose record does not survive gets
+a held-row record under SR3 from effect-owner inventories (UM accounts, KS
+bindings, LA receipts) with R23 and an open debt and is never read as
+absent, and no cell reconstructs from a surviving board description a
+session the journal no longer proves. This is the OQ18 ruling carried into SR1, and no part of OQ18
 remains open.
 
 ## 2. Reading a cell
@@ -207,9 +247,11 @@ A cell has exactly one of three forms.
 - `NEXT; DI; Rnn; GATE` - the transition is allowed. `NEXT` is the one next
   state. `DI` is the one service that commits it (SR2); a proposal by CRO or
   by a requester is not a commit. `Rnn` (section 4.1) is the durable record
-  written in that commit, before the effect it names. `GATE` is the closed
-  gate set of section 4.4, or `no gate` when the event is an observation or
-  a recovery step that is recorded and never refused.
+  written in that commit, before the effect it names; the one named
+  exception is [absent x provision], whose R01 commit also writes the
+  reservation R00 in the same commit (SR4). `GATE` is the closed gate set of
+  section 4.4, or `no gate` when the event is an observation or a recovery
+  step that is recorded and never refused.
 - `refused: code` - the pair is not allowed; nothing changes; DI returns the
   closed code to the proposer. A refusal of a reported event is recorded by
   DI and spends the report as section 4.4 states; `station_state_stale` is
@@ -222,10 +264,14 @@ refusal of an effect owner under the recorded operation: it is a known outcome,
 never an unknown one; it arrives as proof P4 in the row of the effect in
 flight and carries the same code.
 
-A replay of an operation with the same operation identity and the same
-arguments is not a new event: it returns the recorded outcome and the current
-state. A replay with different arguments refuses `station_operation_conflict`
-[UM 3; HL06; C24 "Lifecycle and failure handling", create].
+A replay with the same effect identity and the same arguments is not a new
+event: it returns the recorded outcome and the current state. A replay of
+that effect identity with different arguments refuses
+`station_operation_conflict` [UM 3; HL06; C24 "Lifecycle and failure
+handling", create]. A request recorded against an open operation under a
+new effect identity (section 4.1) is not a replay: it is a new effect under
+the same operation, and a replay of that new effect identity returns its
+own recorded outcome.
 
 Host-wide events (host reboot, session journal lost, capability report) are
 delivered once to every existing station record of the host. Delivered once
@@ -233,7 +279,10 @@ means DI consumes each only by a commit against the row it re-reads (SR2):
 the loser of a race for such an event is never the event itself. `retired`
 is the one exception to "every station goes to a held row" on a lost journal:
 it has no account and no P1 to take, stays `retired` on R23, and opens no
-debt; `absent` has no record to deliver to until R00 exists.
+debt; `absent` has no record to deliver to until R00 exists, except that a
+name the SR3 inventory finds after a journal generation change first gets
+its held-row record with R23 under SR3 and is delivered to in that row from
+that commit on.
 
 ### 2.1 States
 
@@ -244,7 +293,7 @@ occupied slot is always written "session held" [ADD B].
 
 | State | Meaning |
 | --- | --- |
-| `absent` | No committed station record exists for the name yet; [absent x provision] creates it by create-if-absent with reservation R00 (SR4), so no account, generation, home or binding can precede that commit. |
+| `absent` | No committed station record exists for the name yet and, at a journal generation opened by a restore or a fence, the SR3 inverse inventory has shown no trace of it (a name with a trace is in a held row under SR3, never here); [absent x provision] creates it by create-if-absent with reservation R00 (SR4), so no account, generation, home or binding can precede that commit. |
 | `provisioning` | A create is in flight under R01: an account and a `creating` generation may already exist. |
 | `provisioned` | The account exists at an `active` generation and the home skeleton is installed and verified; the enroll inventory of R02 is not complete, so the station is not usable; nothing runs. |
 | `enrolling` | An enroll is in flight under R02: some bindings may already be durable. |
@@ -297,16 +346,16 @@ the latch's absence, only for a present latch that mismatches.
 | start | the requester | Request to start a process incarnation; a restart is the same event (section 6). |
 | proof: incarnation match | CU | CU presents proof P2 for the start of R03. A bind that CU refused is not this event: an unequal reading is "process appears" and an unreadable one is "liveness reading missed". |
 | process appears | CU or UM | A kernel reading shows a task with the account in any uid field that the state does not explain. In `running` that is a task outside the resource group of the bound execution [BK05 "Load: a resource group per generation"]; in every other state it is any task not covered by a presented P2. |
-| process exits | SH | SH reports that the lead process started under R03 or bound by R04 exited. SH owns no record for it; DI records R05. |
+| process exits | SH | SH reports that the lead process started under R03 or bound by R04 exited, including a late report for the previous generation's lead process that arrives in a row after a bump or a re-provision. SH owns no record for it; DI records R05. |
 | liveness reading missed | CU | A scheduled reading of the bound tuple, or the reading of a bind attempt, is missing or unreadable. |
 | liveness restored | CU | The first reading equal in all four fields to the tuple of R04 after a missed reading recorded since that bind. A missed bind-attempt reading in `starting` is not since the bind, so this event cannot fall in `running`. Equal readings with no such missed reading before them stay in CU's reading log and are not events. |
 | stop requested | the requester, or DI as the actor of U5, of a clock of section 4.5 or of section 7.1 | An authorized stop of the station; section 7.1 lists every trigger and its bound. Its record (R08, or the entering record of a cell into `stopping`) carries the stop operation identity the coming P1 must name. |
 | stop confirmed | UM | UM presents the absence proof P1, alone or inside the never-started evidence P5, naming the stop operation (or the R02, R14 or retire operation) it answers and the quiet interval it covers. |
 | starter crash | the restarted service, or DI for it | A service that owned an operation, an effect, an execution or a bind attempt of this station died or restarted: CRO, DI, LA, UM, CU as observer, KS or SH. A dispatcher restart is this column and never "capability report". |
 | host reboot | DI | The host restarted; the boot identifier DI reads changed. |
-| capability report | KS, MG, AL, SH, CB, UM, or DI for GC | A service the station depends on reports one capability of the station closed or open again, including at its own restart [ADD A.5]. The capabilities are: signing, carrier channel, model forwarding, input delivery, session authority, qualification. GC's revocation, expiry, seal and unreadable-state reports for the session grant, UM's report of a revoked qualification (as the capability qualification, with DI as the actor of the stop that follows), GC's and any service's verified-time-lost report, and DI's policy-removed report enter only by this column (as session authority, qualification or a time closure recorded in R24) and by the stop cell DI then commits under section 7.1; there is no other revocation path into the table. |
+| capability report | KS, MG, AL, SH, CB, UM, or DI for GC or for an operator order | A service the station depends on reports one capability of the station closed or open again, including at its own restart [ADD A.5]. The capabilities are: signing, carrier channel, model forwarding, input delivery, session authority, qualification. GC's revocation, expiry, seal and unreadable-state reports for the session grant, UM's report of a revoked qualification (as the capability qualification, with DI as the actor of the stop that follows), GC's and any service's verified-time-lost report, DI's policy-removed report, the operator's total-stop order (as session authority closed, reason total stop, at every station, section 7.1) and MG's and CB's account block after a leak match (as model forwarding closed, reason account block) enter only by this column (as session authority, qualification, model forwarding or a time closure recorded in R24) and by the stop cell DI then commits under section 7.1; there is no other revocation path into the table. |
 | session journal lost | DI | The dispatcher's session journal is lost, fenced or restored from a copy [ADD A.4]. |
-| profile update approved | the requester, which may be the station itself | An approved release newer than the installed pin is to be installed [C24 dec 3]. A station's own trigger is a proposal to DI through its caller channel, evaluated by G6 like any other requester's, installs only an already-approved release, and is a no-op refusal `station_release_not_approved` when none exists; in a running row it refuses `station_busy` and may be proposed again once stopped. The station installs nothing itself. |
+| profile update approved | the requester, which may be the station itself | An approved release newer than the installed pin is to be installed [C24 dec 3]. A station's own trigger is a proposal to DI through CRO (its caller channel in version 1; the station has no direct call to DI that this cell relies on), evaluated by G6 like any other requester's, installs only an already-approved release, and is a no-op refusal `station_release_not_approved` when none exists; in a running row it refuses `station_busy` and may be proposed again once stopped. The station installs nothing itself. |
 | key rotation | the requester | Request to bind the station name to a new key. |
 | generation bump | the requester | Request for the same-account generation bump [UM 6]. |
 | retire | the requester | Request to remove the station. |
@@ -330,10 +379,10 @@ admits a P1 there only when it names the operation that row awaits.
 
 | State | provision | enroll | start | proof: incarnation match | process appears | process exits | liveness reading missed | liveness restored | stop requested | stop confirmed | starter crash | host reboot | capability report | session journal lost | profile update approved | key rotation | generation bump | retire | unknown or stranded outcome | proof: effect completed | proof: effect did not happen | operator teardown order |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| absent | provisioning; DI; R01; G1 | refused: station_absent | refused: station_absent | refused: station_proof_unexpected | cannot occur: no account uid is reserved for the name | cannot occur: no start was ever requested for the name | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_absent | refused: station_proof_unexpected | cannot occur: no operation or execution of this station is in flight | cannot occur: no station record exists to deliver the event to | cannot occur: no station record exists to deliver the event to | cannot occur: no station record exists to deliver the event to | refused: station_absent | refused: station_absent | refused: station_absent | refused: station_absent | cannot occur: no effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | refused: station_not_held |
+| absent | provisioning; DI; R01; G1 | refused: station_absent | refused: station_absent | refused: station_proof_unexpected | cannot occur: no station record exists to deliver the event to | cannot occur: no station record exists to deliver the event to | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_absent | refused: station_proof_unexpected | cannot occur: no station record exists to deliver the event to | cannot occur: no station record exists to deliver the event to | cannot occur: no station record exists to deliver the event to | cannot occur: no station record exists to deliver the event to | refused: station_absent | refused: station_absent | refused: station_absent | refused: station_absent | cannot occur: no effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | refused: station_not_held |
 | provisioning | refused: station_busy | refused: station_busy | refused: station_busy | refused: station_proof_unexpected | held:provision; DI; R06; no gate | cannot occur: no start was requested for this generation | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_not_running | refused: station_proof_unexpected | provisioning; DI; R10; no gate | provisioning; DI; R11; no gate | provisioning; DI; R24; no gate | held:provision; DI; R23; no gate | refused: station_busy | refused: station_not_enrolled | refused: station_busy | refused: station_busy | held:provision; DI; R17; no gate | provisioned; DI; R18; G13 | retired; DI; R18; G13 | refused: station_not_held |
-| provisioned | refused: station_exists | enrolling; DI; R02; G2 | refused: station_not_enrolled | refused: station_proof_unexpected | held:account; DI; R06; no gate | cannot occur: no start was requested for this generation | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_not_running | refused: station_proof_unexpected | cannot occur: no operation or execution of this station is in flight | provisioned; DI; R11; no gate | provisioned; DI; R24; no gate | held:account; DI; R23; no gate | refused: station_not_enrolled | refused: station_not_enrolled | refused: station_not_enrolled | retiring; DI; R15; G5 | cannot occur: no effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | refused: station_not_held |
-| enrolling | refused: station_exists | refused: station_busy | refused: station_not_enrolled | refused: station_proof_unexpected | held:enroll; DI; R06; no gate | cannot occur: no start was requested for this generation | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_not_running | enrolling; DI; R09; G11 | enrolling; DI; R10; no gate | enrolling; DI; R11; no gate | enrolling; DI; R24; no gate | held:enroll; DI; R23; no gate | refused: station_busy | refused: station_not_enrolled | refused: station_busy | refused: station_busy | held:enroll; DI; R17; no gate | stopped; DI; R18; G13 | provisioned; DI; R18; G13 | refused: station_not_held |
+| provisioned | refused: station_exists | enrolling; DI; R02; G2 | refused: station_not_enrolled | refused: station_proof_unexpected | held:account; DI; R06; no gate | provisioned; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_not_running | refused: station_proof_unexpected | cannot occur: no operation or execution of this station is in flight | provisioned; DI; R11; no gate | provisioned; DI; R24; no gate | held:account; DI; R23; no gate | refused: station_not_enrolled | refused: station_not_enrolled | refused: station_not_enrolled | retiring; DI; R15; G5 | cannot occur: no effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | refused: station_not_held |
+| enrolling | refused: station_exists | refused: station_busy | refused: station_not_enrolled | refused: station_proof_unexpected | held:enroll; DI; R06; no gate | enrolling; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_not_running | enrolling; DI; R09; G11 | enrolling; DI; R10; no gate | enrolling; DI; R11; no gate | enrolling; DI; R24; no gate | held:enroll; DI; R23; no gate | refused: station_busy | refused: station_not_enrolled | refused: station_busy | refused: station_busy | held:enroll; DI; R17; no gate | stopped; DI; R18; G13 | provisioned; DI; R18; G13 | refused: station_not_held |
 | stopped | refused: station_exists | refused: station_already_enrolled | starting; DI; R03; G3 | refused: station_proof_unexpected | held:stop; DI; R06; no gate | stopped; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_not_running | refused: station_proof_unexpected | cannot occur: no operation or execution of this station is in flight | stopped; DI; R11; no gate | stopped; DI; R24; no gate | held:stop; DI; R23; no gate | updating; DI; R12; G6 | refused: station_rotation_unavailable | bumping; DI; R14; G8 | retiring; DI; R15; G5 | cannot occur: no effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | refused: station_not_held |
 | starting | refused: station_exists | refused: station_already_enrolled | refused: station_incarnation_exists | running; DI; R04; G10 | held:start; DI; R06; no gate | stopping; DI; R05; no gate | starting; DI; R06; no gate | cannot occur: no bound tuple exists to compare a reading with | stopping; DI; R08; G4 | refused: station_proof_unexpected | starting; DI; R10; no gate | stopping; DI; R11; no gate | starting; DI; R24; no gate | held:stop; DI; R23; no gate | refused: station_busy | refused: station_rotation_unavailable | refused: station_busy | refused: station_busy | held:start; DI; R17; no gate | refused: station_proof_unexpected | stopping; DI; R18; G13 | refused: station_not_held |
 | running | refused: station_exists | refused: station_already_enrolled | refused: station_incarnation_exists | refused: station_proof_unexpected | held:stop; DI; R06; no gate | stopping; DI; R05; no gate | held:live; DI; R06; no gate | cannot occur: a missed reading since the bind would have left this row for held:live, and a bind-attempt reading is not since the bind | stopping; DI; R08; G4 | refused: station_proof_unexpected | running; DI; R10; no gate | stopping; DI; R11; no gate | running; DI; R24; no gate | held:stop; DI; R23; no gate | refused: station_busy | refused: station_rotation_unavailable | refused: station_busy | refused: station_busy | cannot occur: no recorded lifecycle effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | refused: station_not_held |
@@ -342,9 +391,9 @@ admits a P1 there only when it names the operation that row awaits.
 | bumping | refused: station_exists | refused: station_already_enrolled | refused: station_busy | refused: station_proof_unexpected | held:bump; DI; R06; no gate | bumping; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_not_running | bumping; DI; R09; G11 | bumping; DI; R10; no gate | bumping; DI; R11; no gate | bumping; DI; R24; no gate | held:bump; DI; R23; no gate | refused: station_busy | refused: station_rotation_unavailable | refused: station_busy | refused: station_busy | held:bump; DI; R17; no gate | provisioned; DI; R18; G13 | stopped; DI; R18; G13 | refused: station_not_held |
 | retiring | refused: station_retiring | refused: station_retiring | refused: station_retiring | refused: station_proof_unexpected | retiring; DI; R06; no gate | retiring; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_retiring | retiring; DI; R09; G11 | retiring; DI; R10; no gate | retiring; DI; R11; no gate | retiring; DI; R24; no gate | held:retire; DI; R23; no gate | refused: station_retiring | refused: station_retiring | refused: station_retiring | refused: station_retiring | held:retire; DI; R17; no gate | retired; DI; R16; G12 | retiring; DI; R20; G13 | refused: station_not_held |
 | retired | provisioning; DI; R01; G1 | refused: station_retired | refused: station_retired | refused: station_proof_unexpected | cannot occur: no account uid is reserved for the name | retired; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | refused: station_retired | refused: station_proof_unexpected | cannot occur: no operation or execution of this station is in flight | retired; DI; R11; no gate | retired; DI; R24; no gate | retired; DI; R23; no gate | refused: station_retired | refused: station_retired | refused: station_retired | refused: station_retired | cannot occur: no effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | refused: station_not_held |
-| held:provision | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:provision; DI; R06; no gate | cannot occur: no start was requested for this generation | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | held:provision; DI; R08; G4 | held:provision; DI; R09; G11 | held:provision; DI; R10; no gate | held:provision; DI; R11; no gate | held:provision; DI; R24; no gate | held:provision; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:provision; DI; R17; no gate | provisioned; DI; R18; G13 | retired; DI; R18; G13 | retiring; DI; R19; G14 |
-| held:enroll | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:enroll; DI; R06; no gate | cannot occur: no start was requested for this generation | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | held:enroll; DI; R08; G4 | held:enroll; DI; R09; G11 | held:enroll; DI; R10; no gate | held:enroll; DI; R11; no gate | held:enroll; DI; R24; no gate | held:enroll; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:enroll; DI; R17; no gate | stopped; DI; R18; G13 | provisioned; DI; R18; G13 | retiring; DI; R19; G14 |
-| held:account | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:account; DI; R06; no gate | cannot occur: no start was requested for this generation | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | held:account; DI; R08; G4 | provisioned; DI; R09; G11 | held:account; DI; R10; no gate | held:account; DI; R11; no gate | held:account; DI; R24; no gate | held:account; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:account; DI; R17; no gate | refused: station_proof_unexpected | refused: station_proof_unexpected | retiring; DI; R19; G14 |
+| held:provision | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:provision; DI; R06; no gate | held:provision; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | held:provision; DI; R08; G4 | held:provision; DI; R09; G11 | held:provision; DI; R10; no gate | held:provision; DI; R11; no gate | held:provision; DI; R24; no gate | held:provision; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:provision; DI; R17; no gate | provisioned; DI; R18; G13 | retired; DI; R18; G13 | retiring; DI; R19; G14 |
+| held:enroll | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:enroll; DI; R06; no gate | held:enroll; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | held:enroll; DI; R08; G4 | held:enroll; DI; R09; G11 | held:enroll; DI; R10; no gate | held:enroll; DI; R11; no gate | held:enroll; DI; R24; no gate | held:enroll; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:enroll; DI; R17; no gate | stopped; DI; R18; G13 | provisioned; DI; R18; G13 | retiring; DI; R19; G14 |
+| held:account | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:account; DI; R06; no gate | held:account; DI; R05; no gate | cannot occur: no incarnation is bound | cannot occur: no missed reading is recorded | held:account; DI; R08; G4 | provisioned; DI; R09; G11 | held:account; DI; R10; no gate | held:account; DI; R11; no gate | held:account; DI; R24; no gate | held:account; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:account; DI; R17; no gate | refused: station_proof_unexpected | refused: station_proof_unexpected | retiring; DI; R19; G14 |
 | held:start | refused: station_held | refused: station_held | refused: station_held | running; DI; R04; G10 | held:start; DI; R06; no gate | stopping; DI; R05; no gate | held:start; DI; R06; no gate | cannot occur: no bound tuple exists to compare a reading with | stopping; DI; R08; G4 | refused: station_proof_unexpected | held:start; DI; R10; no gate | stopping; DI; R11; no gate | held:start; DI; R24; no gate | held:stop; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:start; DI; R17; no gate | held:start; DI; R17; G13 | stopping; DI; R18; G13 | stopping; DI; R19; G14 |
 | held:live | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:stop; DI; R06; no gate | stopping; DI; R05; no gate | held:live; DI; R06; no gate | running; DI; R06; no gate | stopping; DI; R08; G4 | refused: station_proof_unexpected | held:live; DI; R10; no gate | stopping; DI; R11; no gate | held:live; DI; R24; no gate | held:stop; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | cannot occur: no recorded lifecycle effect is in flight in this row | refused: station_proof_unexpected | refused: station_proof_unexpected | stopping; DI; R19; G14 |
 | held:stop | refused: station_held | refused: station_held | refused: station_held | refused: station_proof_unexpected | held:stop; DI; R06; no gate | held:stop; DI; R05; no gate | held:stop; DI; R06; no gate | held:stop; DI; R06; no gate | stopping; DI; R08; G4 | stopped; DI; R09; G11 | held:stop; DI; R10; no gate | stopping; DI; R11; no gate | held:stop; DI; R24; no gate | held:stop; DI; R23; no gate | refused: station_held | refused: station_held | refused: station_held | refused: station_held | held:stop; DI; R17; no gate | refused: station_proof_unexpected | refused: station_proof_unexpected | stopping; DI; R19; G14 |
@@ -369,39 +418,58 @@ no source defines them. R07, R21 and R22 are not used in version 1; their
 identifiers are reserved for the proposed companion records of section 7.2
 and no cell writes or reads them. A cell that enters `stopping` writes, as
 part of the record it names (R05, R08, R11, R18 for a start, or R19), the stop
-operation: its identity (the record's operation identity), the generation,
-and the request to UM for the stop effect whose P1 must name that identity.
+operation: its identity (a new operation's identity, or the open operation's
+where one is open), its new effect identity, the generation, and the request
+to UM for the stop effect whose P1 must name that operation.
 There is no entry into `stopping` that awaits a proof nobody requested. At
 most one stop operation of a station is open at a time: a stop-requested
 commit, and a record entering `stopping`, creates that operation only where
 none is open; where one is open the commit records its request against the
-open operation's identity and writes no second operation. R09 closes every
-open stop operation of the station (R09).
+open operation's identity and writes no second operation. Every request
+recorded against an open operation (a stop request, an entering record,
+R19, or a P5 request) carries a new effect identity, recorded in that
+record. UM answers each such request with a fresh stop effect and a fresh
+proof, whose quiet interval begins after that request, still naming the
+operation. A replay of the same effect identity returns the recorded proof
+(section 2); a P1 or a P5 that G11 refuses is spent, and DI requests the
+proof again under the open operation with a new effect identity, recorded
+as an append under that operation's record (R08 or the record that entered
+`stopping` for a stop, R02 for P5, R15 or R19 for a retire step) before UM
+is asked; such an append moves no state version. An R11 in
+`stopping` requests the fresh P1 itself under the open stop operation, so
+the awaited P1 of `stopping` is admitted again after a reboot in `stopping`
+with the new boot identifier; an R11 in `enrolling` or `held:enroll`
+requests the fresh P5 itself under R02. R09 closes every open stop
+operation of the station (R09); and every cell into `provisioned`,
+`stopped` or `retired` closes every open stop operation of the station,
+and its record names the operations it closes, so no stop identity opened
+in a held row outlives that row's upward exit into another generation or
+account.
 
 | Id | Content | Precedes | Effect owners and their own write-ahead | Source |
 | --- | --- | --- | --- | --- |
 | R00 | Name reservation: the station name, the principal the provision grant names, and the journal generation and position of the create-if-absent commit. Written with R01 in that one commit (SR4) and retained for the life of the name, through `retired`. | The create request of R01 and every later use of the name. | DI: the store entry the create-if-absent races on. | NEW (SR4) |
-| R01 | Create operation: operation identity, station name, host, project, profile pin, the reference of the validated binding, and for a re-provision of a retired name either the principal match against R00 and R16 or the recorded owner act that reassigns the name. | The request for an account. | DI: request and effect identity. UM: caller-scoped effect intent and the `creating` append before any account mutation; `active` only after identity, skeleton, persistence denial and static deny are verified. | C24 "Lifecycle and failure handling", create; UM 3; UM 4 |
-| R02 | Enroll operation: the closed enroll inventory, one line per binding with its owner: name latch (CU), one key binding per purpose (KS, each line recording the key identifier of that purpose), message link (AL), owner binding (DI: the principal copied from the validated binding of R01, never named by the proposer), slot entry (DI), and never-started evidence (UM: P5 for this generation, requested by DI under this record once the generation is `active`, after every other line that can run a task, and presented through [enrolling, held:enroll x stop confirmed]). After a bump the lines classify as: latch record survives and its name file is published again byte-identical (made again, from the record); key bindings are made before `active` under R14 and only confirmed here, with the same key identifiers recorded per purpose against the latest R02 or R16 (KY6); message link lived in the destroyed home and is made again; owner binding and slot entry live in DI's record, survive, and are only confirmed; P5 is requested again for the new generation. | Every binding, and DI's request for P5. | CU: latch record in manager state before the name file is published. KS: binding record for the exact (uid, generation). AL: registry entry before a station link is emitted [C32 "Recommendation"]. DI: slot table entry, owner binding from R01's binding, and the P5 request. UM: the P5 evidence over LA's receipts, P1 and DI's fence record (SR4). | C24 "Lifecycle and failure handling", create; C24 "Ownership and records"; UM 6.2; BK24 "Owner channel"; DEC D4 |
-| R03 | Start operation: new operation, request, execution and lease-request identities, the state version as epoch, the binding reference, the release identity of the last completed R12 (or the provision pin of R01 where no R12 completed), and, where a human stop (an R08 whose reason is the owner stop of section 7.1) stands, the lifting of that stop by this start where gate 11 admits it; phase `lease_requested` before the first lease acquire [HL21]; phase `start_requested` before the physical-start request, opening the start fence for this execution alone (SR4). Phases are appends under R03 and move no state version (SR3). NEW phase `start_requested`: without it a recovery cannot tell whether a request was sent. | The lease acquire and the physical start. | CU: prepared lease record, blocking before the acquire is acknowledged [HL06]. DI: request and effect identity with the consumed binding. LA: start receipt with the execution number, written as root before privileges are dropped; a second start of the same execution is rejected [BK05 "Transition from root to agent"]. | HL21; HL06; BK07 "Dispatcher and the one-shot transaction" |
+| R01 | Create operation: operation identity, station name, host, project, profile pin, the reference of the validated binding, and for a re-provision of a retired name the principal match against R00 (R16 repeats that principal for the `retirement` origin; a `create_no_effect` origin has no R16 and the match is against R00 alone). | The request for an account. | DI: request and effect identity. UM: caller-scoped effect intent and the `creating` append before any account mutation; `active` only after identity, skeleton, persistence denial and static deny are verified. | C24 "Lifecycle and failure handling", create; UM 3; UM 4 |
+| R02 | Enroll operation: the closed enroll inventory, one line per binding with its owner: name latch (CU), one key binding per purpose (KS; R02 is written before the bindings, and DI appends to each key line, on KS's P3 for that line, the key identifier of that purpose that P3 reports), message link (AL), owner binding (DI: the principal copied from the validated binding of R01, never named by the proposer), slot entry (DI), and never-started evidence (UM: P5 for this generation, requested by DI under this record once the generation is `active`, after every other line that can run a task, and presented through [enrolling, held:enroll x stop confirmed]; an R11 in `enrolling` or `held:enroll`, or a P5 that G11 refuses, makes DI request P5 again under R02 with a new effect identity). After a bump the lines classify as: latch record survives and its name file is published again byte-identical (made again, from the record); key bindings are made before `active` under R14 and only confirmed here, with the same key identifiers recorded per purpose against the latest R02 or R16 (KY6); message link lived in the destroyed home and is made again; owner binding and slot entry live in DI's record, survive, and are only confirmed; P5 is requested again for the new generation. | Every binding, and DI's request for P5. | CU: latch record in manager state before the name file is published. KS: binding record for the exact (uid, generation). AL: registry entry before a station link is emitted [C32 "Recommendation"]. DI: slot table entry, owner binding from R01's binding, and the P5 request. UM: the P5 evidence over LA's receipts, P1 and DI's fence record (SR4). | C24 "Lifecycle and failure handling", create; C24 "Ownership and records"; UM 6.2; BK24 "Owner channel"; DEC D4 |
+| R03 | Start operation: new operation, request, execution and lease-request identities, its epoch (SR3), the binding reference, and the release identity of the last completed R12 (or the provision pin of R01 where no R12 completed); where a human stop (an R08 whose reason is the owner stop of section 7.1) stands and gate 11 admits its lifting by this start, the lifting is written as an append under R03 when gate 11 admits it, below the record line, like the phases. CRO is the HL21 lease requester under this record: acting only under the recorded R03 it writes its `lease_requested` phase and replays the identical acquire, and DI acquires no lease itself. Phase `lease_requested` before the first lease acquire [HL21]; phase `start_requested` before the physical-start request, opening the start fence for this execution alone (SR4). Phases, and the gate 11 lifting append, are appends under R03 and move no state version (SR3). NEW phase `start_requested`: without it a recovery cannot tell whether a request was sent. | The lease acquire and the physical start. | CU: prepared lease record, blocking before the acquire is acknowledged [HL06]. DI: request and effect identity with the consumed binding. LA: start receipt with the execution number, written as root before privileges are dropped; a second start of the same execution is rejected [BK05 "Transition from root to agent"]. | HL21; HL06; BK07 "Dispatcher and the one-shot transaction" |
 | R04 | Bound holder: the digest of proof P2 and the exact `{pid, uid, boot_id, start_time}`. | The opening of the input fence. | CU: bound lease [HL07]. SH: the fence stays closed until R04 exists. | HL07; HL22; HL observer |
 | R05 | Exit observation from SH, with the incarnation it concerns; where its cell enters `stopping`, it carries the stop operation (section 4.1 head). | Where its cell enters `stopping`, the request for the absence proof, which this record itself makes to UM; in a self-loop row it precedes nothing but the record. | DI: on an entry into `stopping` only, the journaled end of the session and the stop effect identity. UM: stop effect on that entry. | C24 "Lifecycle and failure handling"; BK05 "Load: a resource group per generation" |
 | R06 | One observer reading: its class (unexplained process, missed, unreadable, restored), its producer and evidence digest, the origin state, the held case, and the effect identity or "none: observation". A reading of an unexplained process opens an absence debt (U1). | Any reaction to the reading. | CU or UM: the reading itself, kept in its own store. | HL08; HL observer; DEC D4 |
-| R08 | Stop operation: operation identity, reason (section 7.1), requester, the incarnation and lease it targets. This is the operation a coming P1 names, except where another record entering `stopping` carries the stop operation (section 4.1 head). | The stop effect. The input fence and the start fence of the generation are closed first. | SH: fence closed. DI: stop effect; the journaled end of the session, and with it the clock `end_to_absence`, only where the cell enters `stopping`; in a held self-loop row this record requests the stop effect and writes no journaled end. UM: stop effect. | C24 "Lifecycle and failure handling", down; BK07 "Permission for a successor"; HP 4.7 |
+| R08 | Stop operation: operation identity, the new effect identity of this stop request (section 4.1 head), reason (section 7.1), requester, the incarnation and lease it targets. This is the operation a coming P1 names, except where another record entering `stopping` carries the stop operation (section 4.1 head). | The stop effect. The input fence and the start fence of the generation are closed first. | SH: fence closed. DI: stop effect; the journaled end of the session, and with it the clock `end_to_absence`, only where the cell enters `stopping`; in a held self-loop row this record requests the stop effect and writes no journaled end. UM: stop effect. | C24 "Lifecycle and failure handling", down; BK07 "Permission for a successor"; HP 4.7 |
 | R09 | Absence acceptance: UM's proof P1 or P5 with the operation it names, its coverage, its quiet interval with both ends, boot identifier and the fences held. Its commit closes every open stop operation of the station. It answers only absence debts whose reading precedes the beginning of that interval, with both fences closed across the interval (U1); an acceptance merely written after a reading whose interval closed before it answers nothing. | The release of the home lease [HL09; HL10] and of the execution claim; in retirement, the removal of the home. | UM: its own absence record. CU: release event and tombstone. DI: claim release and the clearance of the slot, which cites this proof [AP 7]. | UM 5; UM 6.1; HL09; BK07 "Dispatcher and the one-shot transaction" |
-| R10 | Recovery entry: the operation found, its recorded phase, the classification taken. It releases nothing. Where the classification is unknown, the event "unknown or stranded outcome" follows and writes R17. | Any resumed step. | Each effect owner reconciles its own journal before new work [UM 3; BK07 "Dispatcher and the one-shot transaction"]. | C24 "Lifecycle and failure handling"; HL21; HL22 |
-| R11 | Boot record: the boot identifier now read and the one in R04 or R03; where its cell enters `stopping`, it carries the stop operation (section 4.1 head). | The request for the absence proof, which this record itself makes to UM where it carries a stop operation. | DI: where the cell enters `stopping`, the journaled end of the session and the stop effect identity; none in any other row. UM: stop effect on that entry. | HL05; BK07 "Wake-up and context transfer" |
+| R10 | Recovery entry: the operation found, its recorded phase, the classification taken. It releases nothing. Where the classification is unknown, the event "unknown or stranded outcome" follows and writes R17; in the running rows no lifecycle effect stays in flight after R04, and an unknown classification there is left to the liveness readings (K4), which is why [running, held:live x unknown or stranded outcome] cannot occur. | Any resumed step. | Each effect owner reconciles its own journal before new work [UM 3; BK07 "Dispatcher and the one-shot transaction"]. | C24 "Lifecycle and failure handling"; HL21; HL22 |
+| R11 | Boot record: the boot identifier now read and the one in R04 or R03; where its cell enters `stopping`, it carries the stop operation (section 4.1 head). In `stopping` this record itself requests a fresh P1 from UM under the open stop operation with a new effect identity; in `enrolling` or `held:enroll` it requests a fresh P5 under R02 with a new effect identity (section 4.1 head). | The request for the absence proof, which this record itself makes to UM where it carries a stop operation, and in `stopping`, `enrolling` and `held:enroll` as just stated. | DI: where the cell enters `stopping`, the journaled end of the session and the stop effect identity; in `stopping` and the enroll rows, the fresh proof request with its new effect identity and no journaled end; none in any other row. UM: stop effect on an entry into `stopping` and on a fresh P1 request in `stopping`. | HL05; BK07 "Wake-up and context transfer" |
 | R12 | Update operation: approved release identity and the full control inventory with digests, and on P3 a completion mark. Only a completed R12 is the amendment record of the plan pins (section 9.1) and the release R03 and a later bump name; a rolled-back R12 amends nothing. | The first replaced control; the trust pin is published last. | CU: composition intent. UM: skeleton install effect through trusted descriptors. | UM 7; C24 "Platform controls and approved updates"; HL14 |
 | R13 | Reserved: rotation record of the key service. No cell of station/1 writes it: the key service authorizes no rotation today [OWN-KS]. | Nothing in station/1. | KS, in a later unit. | OWN-KS |
-| R14 | Bump operation: the target generation, and the three conditions that UM holds before the successor is `active`: account-wide absence (proved to this operation by [bumping x stop confirmed]), the complete external-object inventory, and the two key-service confirmations, which MUST carry for each purpose the same key identifier as the latest R02 or R16 records for the name under KY6; a confirmation with another identifier does not hold the condition and the bump cannot complete on it. The new home is installed at the release of the last completed R12, or at the provision pin of R01 where no R12 completed. A completed bump ends in `provisioned`; how each enroll line is treated there is in R02. | The request to bump. | UM: effect intent and the `retiring` append for the old generation before stop or reset. KS owner: re-admission and new binding confirmations. | UM 6; UM 6.1; UM 6.2 |
+| R14 | Bump operation: the target generation, and the three conditions that UM holds before the successor is `active`: account-wide absence (proved to this operation by [bumping x stop confirmed]), the complete external-object inventory, and the two key-service confirmations, which MUST carry for each purpose the same key identifier as the latest R02 or R16 records for the name under KY6, against the recorded identifier DI passes to KS from that latest record; a confirmation with another identifier does not hold the condition and the bump cannot complete on it. The new home is installed at the release of the last completed R12, or at the provision pin of R01 where no R12 completed. A completed bump ends in `provisioned`; how each enroll line is treated there is in R02. | The request to bump. | UM: effect intent and the `retiring` append for the old generation before stop or reset. KS owner: re-admission and new binding confirmations. | UM 6; UM 6.1; UM 6.2 |
 | R15 | Retire operation: the export obligation and how it is discharged (an operator waiver reference; a recorded export receipt counts as a discharge only from the decision recorded in OQ14, and no cell of this draft produces or verifies one), the obligations check, and for a one-task station the explicit release by the raising orchestrator (section 12). UM removes no home under this operation before its own P1 for the operation is accepted as R09 in `retiring`. | The request to retire. | UM: effect intent and the `retiring` append before stop or deletion; the stop and P1 of this operation before any home removal. | UM 5; C24 "Lifecycle and failure handling", retire |
-| R16 | Retired acceptance: UM's terminal result `removed` after verified cleanup and account absence. | The release of the account claim and of the slot entry. The station record and the name record are retained, with the last key identifier per purpose. | UM: the `removed` append. DI: claim and slot release. | UM 5; GJ 4; BK06 "The account ends, the identity remains" |
-| R17 | Hold record: held case, origin state, the effect and its identity, what was sent, what was observed, and any carried owner code. For a known partial enroll or update it carries the outcome of every inventory line and DI's undo request to each owner whose line completed under this operation alone; each undo request carries its own undo effect identity, recorded in this record for that line, and a later hold record for the same operation and line reuses the recorded undo identity and mints no second one, so an undo is never re-sent as a new effect under the operation's own identity. A line's undo is its owner's rollback of its own binding of this operation, and resources whose ownership is uncertain are never undone. A journal loss that lands a station in `held:stop` deliberately forgets the start outcome it fences: no later cell reconstructs it, and only P1 resolves the row. | Every effect, release and resumed step after it. Nothing is released by it. | none | C24 "Lifecycle and failure handling", unknown; HL08 |
-| R18 | Proof acceptance: which proof (section 4.2), its producer, its evidence digest, its kind and carried code, the one effect identity it answers. A P4 for a create releases the account claim and the capacity charge of R01 on the entry into `retired` (the reservation R00 and the record stay). Where its cell enters `stopping` (a start that did not happen), it carries the stop operation (section 4.1 head). | The state change. | CU: lease release event where the proof allows it [HL09]. DI: where the cell enters `stopping`, the journaled end of the session and the stop effect identity. UM: stop effect on that entry. | HL09; HL10 |
-| R19 | Operator order: the authenticated, exact-content operator act for this station; where its cell enters `retiring` it carries the export waiver and the disposition of open obligations that a retire would need at G5, and where its cell enters `stopping` it carries the stop operation (section 4.1 head). An R19 that enters `retiring` for a station with no session writes no journaled end and starts no `end_to_absence` clock: its absence acceptance is the R09 of [retiring x stop confirmed] under the retire operation, by that row's own path, so the retiring cell never waits silently for a clock nobody started. | The teardown. | UM: operator retire act with its recorded waiver where used [UM 5]; stop effect where the cell enters `stopping`. DI: journaled end where the cell enters `stopping`. | UM 2; UM 5; HL12; BK06 "The operator signs one action" |
-| R20 | Forward step entry: a retirement step proved not done; the same effect identity runs it again. | The repeated step. | UM: its step log. | UM 3; UM 5 |
-| R23 | Journal fence entry: the dispatcher's report that its session journal is lost, fenced or restored. It opens an absence debt for every state that has an account. Nothing is recorded as ended. | Every later step. | DI: its own fence mark. | ADD A.4; AP 10; BK07 "Dispatcher and the one-shot transaction" |
-| R24 | Capability entry: the capability, `closed` or `open`, the reporter and its reason; for a session-authority report from the revocation feed, the feed snapshot number and time it rests on (section 7.1); for a first closure of the session authority because the revocation state is unreadable, the operator alarm DI raised at that entry (section 7.1). | The gates that read the flag and every later cell of section 7.1. | The reporter's own closure record; for a report that section 7.1 makes a stop trigger, DI's write-ahead stop order, committed as R08 in the row's stop-requested cell before any stop effect. | ADD A.5; BK09 "Model provider through the gateway"; BK06 "Message key and its attestation" |
+| R16 | Retired acceptance: UM's terminal result `removed` after verified cleanup and account absence, and the names of every open stop operation its entry into `retired` closes (section 4.1 head). | The release of the account claim and of the slot entry. The station record and the name record are retained, with the last key identifier per purpose. | UM: the `removed` append. DI: claim and slot release. | UM 5; GJ 4; BK06 "The account ends, the identity remains" |
+| R17 | Hold record: held case, origin state, the effect and its identity, what was sent, what was observed, and any carried owner code. For a known partial enroll or update it carries the outcome of every inventory line and DI's undo request to each owner whose line completed under this operation alone; each undo request carries its own undo effect identity, recorded in this record for that line, and a later hold record for the same operation and line reuses the recorded undo identity and mints no second one, so an undo is never re-sent as a new effect under the operation's own identity. A line's undo is its owner's rollback of its own binding of this operation, and resources whose ownership is uncertain are never undone. | Every effect, release and resumed step after it. Nothing is released by it. | none | C24 "Lifecycle and failure handling", unknown; HL08 |
+| R18 | Proof acceptance: which proof (section 4.2), its producer, its evidence digest, its kind and carried code, the one effect identity it answers, and, where its cell enters `provisioned`, `stopped` or `retired`, the names of every open stop operation that entry closes (section 4.1 head). A P4 for a create releases the account claim and the capacity charge of R01 on the entry into `retired` (the reservation R00 and the record stay). Where its cell enters `stopping` (a start that did not happen), it carries the stop operation (section 4.1 head). | The state change. | CU: lease release event where the proof allows it [HL09]. DI: where the cell enters `stopping`, the journaled end of the session and the stop effect identity. UM: stop effect on that entry. | HL09; HL10 |
+| R19 | Operator order: the authenticated, exact-content operator act for this station; where its cell enters `retiring` it carries the export waiver and the disposition of open obligations that a retire would need at G5, and where its cell enters `stopping` it carries the stop operation (section 4.1 head). An R19 that enters `retiring` for a station with no session writes no journaled end and starts no `end_to_absence` clock; it does start `effect_bound` where it enters `retiring` (section 4.5): its absence acceptance is the R09 of [retiring x stop confirmed] under the retire operation, by that row's own path, and on expiry of that bound DI commits [retiring x unknown or stranded outcome], so the retiring cell never waits silently. | The teardown. | UM: operator retire act with its recorded waiver where used [UM 5]; stop effect where the cell enters `stopping`. DI: journaled end where the cell enters `stopping`. | UM 2; UM 5; HL12; BK06 "The operator signs one action" |
+| R20 | Forward step entry: a retirement step proved not done; the same effect identity runs it again. `effect_bound` runs from this record to the repeated step's proof (section 4.5). | The repeated step. | UM: its step log. | UM 3; UM 5 |
+| R23 | Journal fence entry: the dispatcher's report that its session journal is lost, fenced or restored. It opens an absence debt for every state that has an account, and it is the record DI writes for a name it places in a held row by the SR3 inverse inventory after a journal generation change, with that debt open. Nothing is recorded as ended. A journal loss that lands a station in `held:stop` deliberately forgets the start outcome it fences: no later cell reconstructs it, and only P1 resolves the row. | Every later step. | DI: its own fence mark. | ADD A.4; AP 10; BK07 "Dispatcher and the one-shot transaction" |
+| R24 | Capability entry: the capability, `closed` or `open`, the reporter and its reason; for a session-authority report from the revocation feed, the feed snapshot number and time it rests on (section 7.1); for a first closure of the session authority because the revocation state is unreadable, the operator alarm DI raised at that entry (section 7.1); for a total stop, session authority `closed` with reason total stop at every station, which stands until an operator-signed report records it `open` again in R24, and which no service restart lifts (section 7.1). | The gates that read the flag and every later cell of section 7.1. | The reporter's own closure record; for a report that section 7.1 makes a stop trigger, DI's write-ahead stop order, committed as R08 in the row's stop-requested cell before any stop effect. | ADD A.5; BK09 "Model provider through the gateway"; BK06 "Message key and its attestation" |
 
 ### 4.2 Proofs
 
@@ -409,7 +477,7 @@ Only these proofs change a state. Each has one producer.
 
 | Id | Name | What it is | Producer | Source |
 | --- | --- | --- | --- | --- |
-| P1 | absence proof | Bound to one operation: it names the stop operation identity it answers (from R08 or from the record entering `stopping`, or the R02, R14 or retire operation whose stop step it is), the account and generation, the boot identifier, and the quiet interval it covers with both ends. Zero tasks with the account in the real, effective, saved or filesystem uid field, for the whole configured quiet interval, from a complete root-readable enumeration of every task with stable process handles. Every thread is a task and counts. On Linux an empty resource group stands for this only where qualification showed it equal to account-wide absence. A partial, denied, unreadable or timed-out enumeration is not a proof. NEW condition: the proof is valid only while the input fence and the start fence of the generation stay closed; the reason is that a task could otherwise be created during the enumeration. The proof is per account, so one session per slot is assumed [AP 7]. It is the effect of the user manager's stop (enumerate, signal by stable handle with incarnation revalidation, prove by enumeration); nothing drops into the account to kill [OWN-UM]. | UM | UM 5 step 2; UM 6.1; HP 4.7; BK05 "Load: a resource group per generation" |
+| P1 | absence proof | Bound to one operation: it names the stop operation identity it answers (from R08 or from the record entering `stopping`, or the R02, R14 or retire operation whose stop step it is) and the effect identity of the request it answers (section 4.1 head), the account and generation, the boot identifier, and the quiet interval it covers with both ends, which begins after that request for a fresh proof under an open operation. Zero tasks with the account in the real, effective, saved or filesystem uid field, for the whole configured quiet interval, from a complete root-readable enumeration of every task with stable process handles. Every thread is a task and counts. On Linux an empty resource group stands for this only where qualification showed it equal to account-wide absence. A partial, denied, unreadable or timed-out enumeration is not a proof. NEW condition: the proof is valid only while the input fence and the start fence of the generation stay closed; the reason is that a task could otherwise be created during the enumeration. The proof is per account, so one session per slot is assumed [AP 7]. It is the effect of the user manager's stop (enumerate, signal by stable handle with incarnation revalidation, prove by enumeration); nothing drops into the account to kill [OWN-UM]. | UM | UM 5 step 2; UM 6.1; HP 4.7; BK05 "Load: a resource group per generation" |
 | P2 | incarnation match | A bind-time proof only. CU's own kernel reading of `pid`, `uid`, `boot_id` and `start_time`, taken in one pass, is byte-equal to the manager observation and to the requested holder, AND the proving manager's evidence that the process is the actual harness of this execution is present. Tuple equality alone does not bind. It is not a liveness reading (K4). | CU | HL observer; HL07 |
 | P3 | recorded result | The recorded terminal result of the same effect identity, read from the effect owner's journal (observation state `recorded`). For an enroll and for an update it is P3 from every owner listed in the inventory of R02 or R12. It answers only the effect identity it names, never a stop operation. | the effect owner, read by DI | UM 3; HP 2; BK05 "Account, generation and journal"; BK07 "Queue and questions of the harness" |
 | P4 | no-effect proof | One of three kinds, kept in R18. (a) An authoritative refusal of the effect by its owner under the recorded operation, with its closed code and no trace of the effect (for a start: no start receipt). (b) Observation state `rolled_back`, verified. (c) Observation state `not_recorded` with complete coverage. The states `unavailable` and `contradictory` are not this proof. For an enroll and for an update it is P4 from every owner of the inventory, where a line that completed under the operation counts only by kind (b) rolled back through the undo recorded in R17; that composite is exactly how a known partial enroll or update reaches this proof, and until every line is refused or rolled back the held row stays. For a bump it exists only while the old generation is still `active`. It answers only the effect identity it names, never a stop operation. | the effect owner, read by DI | HP 2; HL09; HL21; HL23; UM 3; UM 6.2; BK05 "Account, generation and journal" |
@@ -425,9 +493,12 @@ account is denied by qualification and not by the reboot.
 
 One closed set for the lifecycle cells; codes of other contracts appear only
 verbatim where section 10 says so. Every code has exactly one evaluating
-service, which is the only service whose verdict produces it; the advice
-check of section 6.2 only relays the evaluator's code from its one position
-and evaluates nothing in this sense. Before a record DI returns the
+service, which is the only service whose verdict produces it; the one named
+split is `station_state_stale`, evaluated by DI on a proposal before a
+record, and by the refusing effect owner in the post-record case of SR3 and
+SR4, where it arrives in the P4 or receipt detail. The advice check of
+section 6.2 only relays the evaluator's code from its one position and
+evaluates nothing in this sense. Before a record DI returns the
 evaluator's code unchanged to the proposer; after a record the code arrives
 in P4 (section 2). The `station_*` names, and the two retained `message_*` names of the bridge submit endpoint (KY4), are NEW; the instruction codes of the proposed companion are not codes of version 1; codes of other
 contracts are carried unchanged in the detail and never renamed [DEC D8].
@@ -447,10 +518,10 @@ contracts are carried unchanged in the detail and never renamed [DEC D8].
 | `station_incarnation_exists` | DI | A start is in flight, bound or not yet proved gone. | none |
 | `station_proof_unexpected` | DI | No recorded effect or hold of this row awaits this proof. | none |
 | `station_proof_mismatch` | DI | The proof is not about the recorded effect identity or the open stop operation, is not from its producer, names another account, generation or boot identifier, or does not cover the whole inventory. | none |
-| `station_principal_mismatch` | DI | The principal of the validated binding J1 produced for a re-provision of a retired name is not the principal R00 and R16 retain for the name, and no recorded owner act reassigns it. | none |
-| `station_name_held` | DI | After a journal generation change, inverse inventory of accounts, bindings and receipts does not prove the name's reservation R00 absent, so the name is held and never absent again (SR3). | none |
-| `station_operation_conflict` | DI | Same operation identity, different arguments. | UM `request_id_conflict`; HL `request_conflict` |
-| `station_state_stale` | DI | The compare-and-set lost, or the request carries a stale epoch. | the effect owner's own stale-request detail |
+| `station_principal_mismatch` | DI | The principal of the validated binding J1 produced for a re-provision of a retired name is not the principal R00 retains for the name (R16 repeats it for the `retirement` origin; a `create_no_effect` origin has no R16). | none |
+| `station_name_held` | DI | For `absent` only, while the store is at a journal generation opened by a restore or a fence, UM's account inventory, KS's binding inventory and LA's receipt inventory do not together show no trace of the name, so its reservation R00 is not proved absent (SR3); a name with a trace and no surviving record is in a held row under SR3, never `absent`. | none |
+| `station_operation_conflict` | DI | Same effect identity, different arguments. | UM `request_id_conflict`; HL `request_conflict` |
+| `station_state_stale` | DI, or the refusing effect owner in the post-record case of SR3 and SR4 | The expected-version comparison failed as the first check, the compare-and-set lost, or the request carries a stale epoch or names an operation no longer open. | the effect owner's own stale-request detail |
 | `station_absence_unproven` | DI | An absence debt the presented interval does not answer is open, or the presented proof is not P1 (alone, or inside P5 where the cell requires P5), or the entry into `stopped` lacks R09. | UM `processes_remain`; HL `environment_lease_release_unconfirmed` |
 | `station_bump_committed` | DI | A no-effect proof was presented for a bump whose old generation is no longer `active`. | none |
 | `station_rotation_unavailable` | DI | No key rotation is authorized in station/1. | none |
@@ -463,7 +534,7 @@ contracts are carried unchanged in the detail and never renamed [DEC D8].
 | `station_owner_unbound` | DI | The owner binding is not durable. | none |
 | `station_credential_mode_refused` | DI | The plan does not select the mode without secrets at the agent. | none |
 | `station_link_unregistered` | DI | The station link is not admitted. | C32 `native-environment-not-registered` |
-| `session_home_lease_unavailable` | CU | The home lease was not acquired for this R03's lease-request identity and admitted digest; this is the existing code of HL21 and HL23, verbatim. DI relays CU's verdict and evaluates nothing, and a terminal replay answer (`ok:true` for an earlier, terminal lease identity) is not such an acquisition and admits nothing at gate 8. | Curator's lease code and reason |
+| `session_home_lease_unavailable` | CU | The home lease was not acquired for this R03's lease-request identity and admitted digest; this is the existing code of HL21 and HL23, verbatim. Refines HL21, HL23: CU's acquire verdict is the input, relayed by DI under R03 in place of curator-run's verdict of those clauses, and DI evaluates nothing. CRO is the HL21 requester acting only under the recorded R03 (R03). A terminal replay answer (`ok:true` for an earlier, terminal lease identity) is not such an acquisition and admits nothing at gate 8. | Curator's lease code and reason |
 | `station_identity_mismatch` | CU | The name file, the latch record and the carried name are not byte-equal. | none |
 | `station_home_leased` | CU | A lease holder (prepared, bound or unknown) blocks the change. | HL `environment_home_leased` |
 | `station_release_not_approved` | CU | The release is not an approved release newer than the pin. | none |
@@ -476,7 +547,7 @@ contracts are carried unchanged in the detail and never renamed [DEC D8].
 | `station_restart_budget_exhausted` | DI | The restart budget is spent. | none |
 | `station_plan_changed` | DI | A fixed start field differs from the recorded value. | none |
 | `station_qualification_required` | DI | The host qualification for the required guarantees is not current. | none |
-| `station_capacity_unavailable` | DI | Capacity or policy does not admit the start; an unread pause state is a pause. | none |
+| `station_capacity_unavailable` | DI | Capacity or policy does not admit the start; an unread pause state is a pause, and a standing total-stop entry in R24 is a pause no start passes (gate 14). | none |
 | `station_account_shared` | DI | The slot table already maps the account to another recipient. | none |
 | `station_generation_inactive` | LA | The exact (uid, generation) is not `active`. | HP `generation_not_active` |
 | `station_account_not_quiet` | LA | Tasks of the account exist, or a prior execution or stop claim is unresolved, or the scan is partial. | none |
@@ -487,7 +558,7 @@ contracts are carried unchanged in the detail and never renamed [DEC D8].
 | `station_bump_stranded` | UM | The bump was refused terminally after its commit point. | UM `processes_remain`, `bump_uid_not_clean`, `bump_key_admission_unconfirmed` |
 | `station_cleanup_refused` | UM | Cleanup is not admitted or not verified. | UM `cleanup_not_admitted`, `cleanup_pending`, `path_is_link`, `backend_failed` |
 | `station_key_unbound` | KS | No binding for the exact (uid, generation) and purpose. | KS `binding_not_found`, `generation_inactive`, `generation_mismatch`, `peer_identity_unavailable`, `peer_binding_mismatch` |
-| `station_rotation_unrecorded` | KS | The key identifier of a purpose differs from the one the latest R02, or R16 where a retirement is the latest record, holds for the name. | none |
+| `station_rotation_unrecorded` | KS | The key identifier of a purpose differs from the one DI passes to KS from the latest R02, or R16 where a retirement is the latest record, for the name. | none |
 | `station_gateway_unready` | MG | The gateway path is not ready, or its readiness is unknown. | none |
 | `message_envelope_unsigned` | AL | The submit endpoint received something that is not a complete signed envelope. | none |
 | `message_audience_mismatch` | AL | The envelope is not for the endpoint's own room and recipients. | none |
@@ -511,7 +582,7 @@ compare-and-set, which never spends a reported or delivered-once event (SR2).
 
 | Gate | Cells | Before the record, in order | After the record, in order |
 | --- | --- | --- | --- |
-| G1 | [absent, retired x provision] | `station_operation_conflict`; then GC, J1: `station_grant_refused`, `station_revocation_unknown`; then, for `retired` only, DI: `station_principal_mismatch` (the principal of the validated binding J1 produced is not the principal R00 and R16 retain and no recorded owner act reassigns the name); and, after any journal generation change, DI from inverse inventory of accounts, bindings and receipts: `station_name_held` (the inventory does not prove R00 absent for the name, SR3) | DI: `station_session_journal_fenced`, `station_binding_stale`, `station_account_shared`, `station_qualification_required`, `station_capacity_unavailable`. UM: `station_backend_unqualified`, `station_quota_exceeded`. |
+| G1 | [absent, retired x provision] | `station_operation_conflict`; then GC, J1: `station_grant_refused`, `station_revocation_unknown`; then, for `retired` only, DI: `station_principal_mismatch` (the principal of the validated binding J1 produced is not the principal R00 retains for the name; R16 repeats it for the `retirement` origin and a `create_no_effect` origin has no R16); and, for `absent` only, while the store is at a journal generation opened by a restore or a fence, DI refuses `station_name_held` unless UM's account inventory, KS's binding inventory and LA's receipt inventory show no trace of the name (SR3); the create-if-absent commit that follows is the clearance. A `retired` name is never refused `station_name_held`. | DI: `station_session_journal_fenced`, `station_binding_stale`, `station_account_shared`, `station_qualification_required`, `station_capacity_unavailable`. UM: `station_backend_unqualified`, `station_quota_exceeded`. |
 | G2 | [provisioned x enroll] | `station_operation_conflict`; GC, J1 for the enroll under the provision grant: `station_grant_refused`, `station_revocation_unknown`; then `station_identity_mismatch` (the latch record against the carried name only, and only for a present latch that mismatches, section 2.2; the published name file cannot be compared before R02 publishes it, so its byte comparison is the after-record check below), `station_rotation_unrecorded` | CU: `station_identity_mismatch` (the name file published under R02, byte for byte against the latch record; a mismatch is that line's refusal and reaches the row as P4 or as a known partial under R17). KS: `station_key_unbound`. DI: `station_link_unregistered`, `station_owner_unbound`, `station_account_shared`. The owner binding it checks is DI's copy of the principal from R01's validated binding (R02). |
 | G3 | [stopped x start] | the start gates 1 to 7 of section 6.2 | the start gates 8 to 18 of section 6.2 |
 | G4 | every [state x stop requested] that is not a refusal | `station_stop_not_authorized` | none: a stop effect is never refused after its record; its unknown outcome is the column "unknown or stranded outcome" |
@@ -519,30 +590,34 @@ compare-and-set, which never spends a reported or delivered-once event (SR2).
 | G6 | [stopped x profile update approved] | `station_release_not_approved`, `station_home_leased`, `station_update_recovery_required` | none |
 | G8 | [stopped x generation bump] | `station_bump_not_authorized`, `station_export_unresolved`, `station_home_leased` | UM, while the old generation is still `active`: `station_backend_unqualified`. After the old generation is `retiring` nothing is a refusal: a terminal refusal is `station_bump_stranded` in the column "unknown or stranded outcome". |
 | G10 | [starting, held:start x proof: incarnation match] | `station_proof_mismatch`, `station_absence_unproven` | none |
-| G11 | every [state x stop confirmed] that is not a refusal | DI: `station_proof_mismatch` (the proof does not name the one operation the row awaits - in `stopping` the stop operation carried by the record that entered `stopping`; in a held row the stop operation requested in that row or, for the P5 presentation, R02; for the bump step R14; for a retire step R15 or R19 - or it names a closed operation, or another account, generation or boot identifier), then `station_absence_unproven` (not P1 alone or inside P5 where required, or a debt whose reading is not before the interval began, or a fence open across it) | none |
+| G11 | every [state x stop confirmed] that is not a refusal | DI: `station_proof_mismatch` (the proof does not name the one operation the row awaits: in `stopping` the stop operation carried by the record that entered `stopping`; in `enrolling` or `held:enroll`, for the P5 presentation, R02; in `held:stop`, the stop operation open on entry, carried in from `stopping`; in any other held row the stop operation requested in that row; for the bump step R14; for a retire step R15 or R19; or it names a closed operation, or another account, generation or boot identifier), then `station_absence_unproven` (not P1 alone or inside P5 where required, or a debt whose reading is not before the interval began, or a fence open across it) | none |
 | G12 | [retiring, held:retire x proof: effect completed] | `station_proof_mismatch`, `station_absence_unproven`, `station_cleanup_refused` | none |
 | G13 | every other proof cell | `station_proof_mismatch` (including a proof that names a stop operation, which no proof column ever answers), `station_bump_committed`, `station_absence_unproven` | none |
 | G14 | every [held row x operator teardown order] | `station_operator_act_invalid`; then, only where the cell leads to `retiring`: `station_export_unresolved`, `station_obligations_open` (the order skips no check a retire needs; both are carried by R19; the export check is vacuous and is skipped where DI's record shows the station never completed an enroll and never started, exactly as at G5) | none |
 
-`station_state_stale` is the verdict of no gate: it is returned only by the
-compare-and-set at the end of a cell, to a proposer whose expected version
-lost, with no gate verdict returned from above that set (SR2). Every proposal
-gate set begins with the expected-version read (gate 1 of section 6.2 for a
-start, and the same read first for G1, G2, G4, G5, G6, G8 and G14): the read
-itself returns no code, the gates are then evaluated on the version read, and
-the set at the end of the cell returns `station_state_stale` to the losing
-proposer, so a stale proposal against an also-failing gate returns the gate
-verdict of no gate and exactly that one code. Events
-reported by another service carry no expected version: for them DI retries
-the cell against the state it re-reads and never returns `station_state_stale`
-to the reporter, and an observation reading is appended whatever the race
-and committed against the row then current.
+For every proposed cell the expected-version comparison is the first check
+(gate 1 of section 6.2 for a start, and the same check first for G1, G2, G4,
+G5, G6, G8 and G14): where the versions differ DI refuses
+`station_state_stale` before any gate and no later gate is asked, so a stale
+proposal against an also-failing gate returns exactly that one code. Where
+they are equal the gate set runs, and a set lost at the end (for a start, at
+the R03 line) also returns `station_state_stale`, with no gate verdict
+returned from above the failed set (SR2). A create that loses the
+create-if-absent race is answered by the row it finds (SR4), not by this
+code. The same code name is carried, after a record, in the detail of the
+refusing effect owner's P4 and of LA's receipt refusal (SR3, SR4); those are
+its post-record cases, not gate verdicts above a set. Events reported by
+another service carry no expected version: for them DI retries the cell
+against the state it re-reads and never returns `station_state_stale` to
+the reporter, and an observation reading is appended whatever the race and
+committed against the row then current.
 
 `station_absence_unproven` in G10, G12 and G13 guards only the cells whose
 next state is `running`, `stopped`, `provisioned` or `retired`; a cell that
 leads down (to `stopping`, `held:stop` or `retiring`) is never refused by it.
-It is returned in four cases, in this order: an absence debt is open that the
-proof or the last R09 does not answer under U1's interval rule; the cell
+It is returned in four cases, in this order: an absence debt is open that no
+R09 answers under U1's interval rule (the proof presented in this cell is
+not an R09 and answers no debt by itself); the cell
 enters `stopped` from a held row and no answering R09 was written after the
 hold record [DEC D4]; the cell enters `stopped` from `enrolling` or
 `held:enroll` and no R09 carrying P5 for this generation was written after
@@ -560,21 +635,23 @@ section 7.2.
 
 Every bound is in clock time and has one actor. When a bound expires, the
 actor is DI, and its one action is to commit the cell named, as a proposal
-from itself under SR2. No value is defined here except where a row gives one;
+from itself under SR2, re-proposed against the re-read row after a lost set
+until the cell commits or that row has no such cell. No value is defined
+here except where a row gives one;
 a value that no source gives is an open question, the bound and the actor are
 not [ADD A.1; DEC D11].
 
 | Clock | Runs from, to | On expiry DI commits | Value | Source |
 | --- | --- | --- | --- | --- |
-| `effect_bound` | The record of an effect in flight (R01, R02, R12, R14, R15), to its proof. | [provisioning, enrolling, updating, bumping, retiring x unknown or stranded outcome] | The owner's configured bounds; no implicit default [UM 3]. | UM 3 |
+| `effect_bound` | From R01, R02, R12, R14, R15, R20, or R19 where it enters `retiring`, to its proof. | [provisioning, enrolling, updating, bumping, retiring x unknown or stranded outcome] | The owner's configured bounds; no implicit default [UM 3]. | UM 3 |
 | `start_detect` | Phase `start_requested` of R03, to P2 or P4. | [starting x unknown or stranded outcome] | The `detect` bound of the dispatcher policy [DF A]. | DF A; HL22 |
 | `end_to_absence` | The dispatcher's journaled end of a session (written under R05, R08, R11, R18 or R19 where it enters stopping, and in no other row), to R09. This clock runs only in `stopping`. An R19 that enters `retiring` with no session starts no such clock (R19). | [stopping x unknown or stranded outcome] | PROPOSED OQ21 option B, the dispatcher owner's answer pending the user-manager owner's confirmation: the dispatcher policy's stop bound plus the user manager's published quiet interval; until that confirmation, the `stop` bound of the dispatcher policy alone [DF A]. | ADD A.1; AP 6; OWN-DI |
 | `liveness_interval` | One reading of the bound tuple, to the next. | [running x liveness reading missed], reported by CU | OPEN OQ4. | DEC D11; HL observer |
 | `silence_deadline` | The entry into `held:live`, to "liveness restored". | [held:live x stop requested], with DI as requester and reason `liveness_silence` | OPEN OQ4. | DEC D11 |
-| `revocation_to_stop` | DI's commit of the capability report that records a section 7.1 stop trigger, to DI's commit of the stop request it orders. | [starting, running, held:live, held:start x stop requested] with DI as requester; in any other row with a live or possibly live process the same through that row's stop-requested cell | 300 seconds, decided; the suspension that precedes the stop is effective at the report's commit and no later than the snapshot propagation bound of BK13. | Owner decision on OQ5; BK13 "Revocation and unknown state"; BK05 "Qualification revocation" |
+| `revocation_to_stop` | DI's commit of the capability report that records a section 7.1 stop trigger, recorded in R24 (for a total stop the R24 entry at that station, session authority closed with reason total stop), to DI's commit of the stop request it orders. | [starting, running, held:live, held:start x stop requested] with DI as requester; in any other row with a live or possibly live process the same through that row's stop-requested cell | 300 seconds, decided; the suspension that precedes the stop is effective at the report's commit and no later than the snapshot propagation bound of BK13. | Owner decision on OQ5; BK13 "Revocation and unknown state"; BK05 "Qualification revocation" |
 | `verified_time_loss` | The first R24 entry recording verified time lost, to its recovery. | [row x stop requested] for everything that depends on time, through that row's stop-requested cell | At most 10 minutes by the monotonic clock, decided; not reset by restarts inside the loss. | BK13 "Renewal without widening"; owner decision on OQ6 |
-| `account_bound` | R01 of a task-lifetime (including one-task) station, to R16 or to the R18 that releases its claim. | [starting, running x stop requested] with DI as requester, and no new start afterwards: gate 14 refuses it as policy | 24 hours by default, at most 7 days. | BK07 "Dispatcher and the one-shot transaction" |
-| `execution_bound` | R04 of a task-lifetime (including one-task) station, to its R09. | [running x stop requested] with DI as requester | 4 hours by default, at most 12. | BK07 "Dispatcher and the one-shot transaction" |
+| `account_bound` | R01 of a task-lifetime (including one-task) station, to R16 or to the R18 that releases its claim. | [starting, running, held:start, held:live x stop requested] with DI as requester, and no new start afterwards: gate 14 refuses it as policy | 24 hours by default, at most 7 days. | BK07 "Dispatcher and the one-shot transaction" |
+| `execution_bound` | R04 of a task-lifetime (including one-task) station, to its R09. | [running, held:live x stop requested] with DI as requester | 4 hours by default, at most 12. | BK07 "Dispatcher and the one-shot transaction" |
 
 NEW: the action at `silence_deadline` is a stop request. The reason is that
 down is the one direction that is safe without the reading; nothing is
@@ -587,17 +664,25 @@ whether or not a bind was attempted and whatever compare-and-set race it
 lost on the way in (SR2), and every journal fence entry (R23) for a state
 that has an account is recorded. Each opens an absence debt in the station
 record. A debt is answered only by an R09 whose proof names the operation
-the row awaits (G11) and whose quiet interval began after the
-reading that opened the debt and closed with both fences closed across it;
-an R09 that merely accepts an older proof after the reading answers nothing.
+the row awaits (G11), is for the debt's account and generation, and whose
+quiet interval began after the reading that opened the debt and closed with
+both fences closed across it; an R09 that merely accepts an older proof
+after the reading answers nothing.
 Comparison is by the interval and by the boot identifier the proof carries,
 never by the time the acceptance was written. While a
 debt is open, every cell gated by G10, G12 or G13 that leads to `running`,
 `stopped`, `provisioned` or `retired` refuses `station_absence_unproven`
-[DEC D4]. A debt opened in `retiring` is not left without a requester: in the same
-commit that records it (R06 or R23), DI requests a fresh P1 from UM under the
-open retire operation (R15 or R19), and [retiring x stop confirmed] answers
-it. In a quiet row the same reading moves the
+[DEC D4]. No such debt is left without a requester. In the same commit that
+opens a debt in `held:retire` or `retiring`, or that carries one into
+`retiring` (by R20, or by R19 where its cell enters `retiring`), DI
+requests a fresh P1 from UM under the open retire operation (R15 or R19),
+with a new effect identity recorded in that commit. For a debt opened in,
+or carried on an entry into, `held:start`, DI requests the stop at once
+through [held:start x stop requested] as the immediate next commit, which
+U5 also states for every entry into that row with an open debt.
+[retiring, held:retire x stop confirmed] answers it under G11; P2 loses
+nothing in `held:start`, since it cannot bind while the debt is open. In a
+quiet row the same reading moves the
 station to a held row, so no quiet row ever carries an open debt:
 [provisioned x process appears], [stopped x process appears],
 [provisioning, enrolling, updating, bumping x process appears].
@@ -648,14 +733,14 @@ gives is.
 | Held row | Entered by | Actor and first action | Leaves upward by |
 | --- | --- | --- | --- |
 | `held:provision` | unknown create; a reading or a lost journal during a create | DI observes the create effect at UM and, on every entry into this row, requests the stop [held:provision x stop requested], whether or not a debt is already open, so no exit of this row waits for an R09 nobody requested | P3 to `provisioned`; P4 to `retired`. A proved rollback admits no new provision by itself: that is a fresh operation [BK05 "Account, generation and journal"]. |
-| `held:enroll` | unknown or partial enroll; a reading or a lost journal during an enroll | DI observes every owner of the R02 inventory and, on every entry into this row, requests P5 under R02 as there stated (with an open debt it also requests the stop in the row [held:enroll x stop requested]), so no exit of this row waits for evidence nobody requested. On a known partial outcome DI writes the per-line outcomes and the undo requests of R17 before anything else proceeds. | P3 from every owner to `stopped`; P4 from every owner to `provisioned`, a completed line counting only rolled back through the R17 undo. While one binding is durable and another is not, the row stays; resources of uncertain ownership are never deleted [C24 "Lifecycle and failure handling", create]. No exit of this row waits for a stop nobody requested: the P1 cases enter through the self-loop stop request of the row or through the R02 request for P5. |
+| `held:enroll` | unknown or partial enroll; a reading or a lost journal during an enroll | DI observes every owner of the R02 inventory and, on every entry into this row, requests P5 under R02 as there stated; an R11 in this row, or a P5 that G11 refuses, makes DI request P5 again under R02 with a new effect identity. With an open debt it also requests the stop in the row [held:enroll x stop requested], so no exit of this row waits for evidence nobody requested. On a known partial outcome DI writes the per-line outcomes and the undo requests of R17 before anything else proceeds. | P3 from every owner to `stopped`; P4 from every owner to `provisioned`, a completed line counting only rolled back through the R17 undo. While one binding is durable and another is not, the row stays; resources of uncertain ownership are never deleted [C24 "Lifecycle and failure handling", create]. No exit of this row waits for a stop nobody requested: the P1 cases enter through the self-loop stop request of the row or through the R02 request for P5. |
 | `held:account` | a process or a lost journal at `provisioned` | DI requests the stop [held:account x stop requested] | P1 to `provisioned`. |
-| `held:start` | unknown start; an unexplained process during a start | DI observes its own start effect at LA and never sends a second start request. Entering this row is a commit out of `starting`, so the same commit closes the fence and records the start as withdrawn (SR4): a launcher that revalidates the receipt after that commit refuses and starts nothing. A process whose receipt already passed revalidation before the withdrawal is not started again; it is accounted only by the ordinary cells of this row - P2 for that receipted execution, an exit report, or the stop and P1 path - and by no second start request [BK07 "Dispatcher and the one-shot transaction"] | P2 to `running`, only with no open debt. Down only: a stop request, an exit, a reboot or P4 leads to `stopping` and the entering record carries the stop operation; there is no direct P1 to `stopped` in this row (section 3 head). A start receipt alone (P3) keeps the row: a started process is not a bound one. |
+| `held:start` | unknown start; an unexplained process during a start | DI observes its own start effect at LA and never sends a second start request; on every entry into this row with an open debt, DI requests the stop [held:start x stop requested] at once (U1), so a live unbound process is never left without an actor in this row. Entering this row is a commit out of `starting`, so the same commit closes the fence and the execution gets no receipt after it (SR4): a launcher that revalidates after that commit refuses and starts nothing, and a revalidation DI does not answer starts nothing. A process whose receipt already passed revalidation before the withdrawal is not started again; it is accounted only by the ordinary cells of this row - P2 for that receipted execution, an exit report, or the stop and P1 path - and by no second start request [BK07 "Dispatcher and the one-shot transaction"] | P2 to `running`, only with no open debt. Down only: a stop request, an exit, a reboot or P4 leads to `stopping` and the entering record carries the stop operation; there is no direct P1 to `stopped` in this row (section 3 head). A start receipt alone (P3) keeps the row: a started process is not a bound one. |
 | `held:live` | a missed or unreadable reading of the bound tuple | CU reads again at `liveness_interval`; at `silence_deadline` DI requests the stop | "liveness restored" to `running` (U3's one reading exit); down by a stop request to `stopping` and only there P1 to `stopped` (section 3 head). |
-| `held:stop` | a process outside the bound execution; a lost journal; an unknown stop; two unknowns at once | DI requests the stop at once [held:stop x stop requested] | P1 to `stopped`. |
+| `held:stop` | a process outside the bound execution; a lost journal; an unknown stop | DI requests the stop at once [held:stop x stop requested] | P1 to `stopped`. |
 | `held:update` | unknown or partial update; a reading or a lost journal during an update | DI observes CU and UM over the R12 inventory, writes the per-line outcomes and undo requests of R17 on a known partial outcome, and, on every entry into this row, requests the stop in the row [held:update x stop requested], whether or not a debt is already open, so the R09 its exits need is always asked for in the row | P3 (every control at the new release, pin published) or P4 (every control at the old release) to `stopped`, each only with an R09 that answers every debt of the hold under U1. The next start verifies every digest again (section 6.2). |
 | `held:bump` | unknown or stranded bump | DI observes the bump effect at UM and, on every entry into this row, requests the stop in the row [held:bump x stop requested], whether or not a debt is already open, so the R09 its exits may need is always asked for in the row | P3 to `provisioned`; P4 to `stopped` only while the old generation is `active` (`station_bump_committed` otherwise). A stranded bump leaves only by the operator teardown order to `retiring`, which is the ordinary-retirement fallback of UM 6.1. No proof returns a generation that reached `retiring` or `removed` [UM 6.2; GJ 4; DEC D5]. |
-| `held:retire` | unknown retirement step; a lost journal during retirement | DI observes the retire effect at UM | P3 to `retired`. P4 leads to `retiring`, where the step runs again. |
+| `held:retire` | unknown retirement step; a lost journal during retirement | DI observes the retire effect at UM and, on every entry into this row with an open debt, requests a fresh P1 from UM under the open retire operation with a new effect identity (U1), so no exit of this row waits for a proof nobody requested | P3 to `retired`. P4 leads to `retiring`, where the step runs again and a debt carried there is requested again under U1. |
 
 ## 6. Restart rule
 
@@ -677,8 +762,8 @@ and restart"; DF B.3]. The order of a restart is fixed: end, prove empty
 `stopping`, [stopping x stop confirmed] to `stopped`, and only then
 [stopped x start]. Where the end is unknown or the proof fails, the restart
 refuses: every held row refuses "start" with `station_held`, the station
-stays in its held row, and nothing without an operator act (the teardown
-order, or a proof the row admits) frees it for a later start. A restart is
+stays in its held row, and nothing but the operator teardown order or a
+proof the row admits frees it for a later start. A restart is
 never a generation bump: a new conversation or a new incarnation MUST NOT
 cause a bump [UM 6].
 
@@ -698,24 +783,29 @@ section, and only those, are: a repeated start by host reconciliation after
 a crash or a reboot, an automatic successor, a permanent-team start from the
 signed team description DI reconciles, and any second start of a one-task
 station. A first start proposed by the party responsible, and the single
-start of a one-task station, need none. Gate 11 spends the permission and
-budget check on exactly that list, and its human-stop check on every class
-of start without exception, a manual repeated start by the party responsible
-included:
+start of a one-task station, need none; every other start not in that list
+(a manual repeated start by the party responsible included) needs none
+either. Gate 11 spends the permission and budget check on exactly that
+list, and its human-stop check on every class of start without exception, a
+manual repeated start by the party responsible included:
 
 - the party responsible for the station, named by the grant (the raising
   orchestrator or the operator) [C24 dec 4];
 - the operator, for a station of a permanent team, from the signed team
-  description that the dispatcher reconciles, also after a reboot [BK05 "Homes
-  and results"; BK07 "Dispatcher and the one-shot transaction"];
+  description that the dispatcher reconciles, also after a reboot; a start
+  DI so derives from the signed team description is a derived start of gate
+  11, never a start proposed directly by the operator for this station
+  [BK05 "Homes and results"; BK07 "Dispatcher and the one-shot transaction"];
 - the host after a crash or a reboot, only within a lifecycle permission that
   the owner granted for this station; without that permission a start is
   single and nobody may repeat it [BK07 "Permission for a successor"; BK07
   "Wake-up and context transfer"];
-- nobody but the party responsible or the operator, when the station was
-  stopped by a human: their start lifts the human stop and R03 records the
-  lifting (gate 11); no automatic, host-recovery or permanent-team start
-  lifts it. Nobody, when the lifecycle permission was withdrawn by owner
+- nobody but the party responsible or the operator proposing directly for
+  this station, when the station was stopped by a human: that direct start
+  lifts the human stop and the lifting is appended under R03 where gate 11
+  admits it; no automatic, host-recovery or permanent-team start, and no
+  other derived start, lifts it. Nobody, when the lifecycle permission was
+  withdrawn by owner
   cancellation, owner retirement, chain revocation, signed retirement of
   the station or a maintenance stop [BK07 "Permission for a successor"].
 
@@ -735,7 +825,7 @@ failure arrives as P4 in [starting x proof: effect did not happen], leads to
 
 | # | Gate | Check | Code | Evaluator | Source |
 | --- | --- | --- | --- | --- | --- |
-| 1 | expected version | The version the proposal carries equals the version DI reads. This is a read, not the set: the one compare-and-set is at the R03 line below, and where it loses, DI returns `station_state_stale` and no verdict of gates 2 to 7 (SR2). | `station_state_stale` | DI | DEC D1 as amended |
+| 1 | expected version | The expected-version comparison is the first check: where the version the proposal carries differs from the version DI reads, DI refuses `station_state_stale` before gate 2 and no later gate is asked. Where they are equal gates 2 to 7 run; the one compare-and-set is at the R03 line below, and where it loses, DI also returns `station_state_stale` and no verdict of gates 2 to 7 (SR2, section 4.4). | `station_state_stale` | DI | DEC D1 as amended |
 | 2 | J1 | The grant chain covers this start for this principal, host, account and plan, and the revocation verdict for the exact chain is "not revoked". "Revoked" refuses `station_grant_refused`; "unavailable" refuses `station_revocation_unknown`. The verdict is the validated binding (section 11). | `station_grant_refused`, `station_revocation_unknown` | GC | RUL-2; DEC D9; BK13 "Revocation and unknown state" |
 | 3 | identity latch | The name file equals, byte for byte, the latch record and the name the start carries (section 9.2). | `station_identity_mismatch` | CU | section 9.2 (PROPOSED) |
 | 4 | key bindings | A binding for the exact (uid, generation) exists for each key purpose of section 10. This is a read; the key service decides again at every connection (KY3). The dispatcher caller is not a purpose of this gate whichever way OQ27 is decided: under OQ24 option A the installer-made caller key file is checked only at gate 18, never as a key-service binding; under the no-readable-key alternative DI authenticates its single caller by kernel peer uid and there is again nothing for this gate to check. Under the later purpose-6 unit its binding joins this read. | `station_key_unbound` | KS | BK06 "The kernel establishes the peer"; GJ 4; OWN-KS |
@@ -743,13 +833,13 @@ failure arrives as P4 in [starting x proof: effect did not happen], leads to
 | 6 | credential mode | The plan DI holds for this start selects the mode without secrets at the agent. The code is this contract's, evaluated by DI; no curator-run verdict produces it. | `station_credential_mode_refused` | DI | BK09 "Mode without secrets at the agent" |
 | 7 | gateway readiness | Gateway address, service lease, listener of this generation, qualified adapter. Unknown readiness refuses. | `station_gateway_unready` | MG | BK08 "Readiness before launch" |
 | R03 | record line | Gates 1 to 7 are above this line and change nothing. R03 is written here by the one compare-and-set on the state version; if the set loses, the refusal is `station_state_stale` and no gate verdict above the line is returned. Gates 8 to 18 are below it. | none | DI | HL21; DEC D1 as amended |
-| 8 | home lease | The lease is acquired for this R03's lease-request identity and the admitted digest. CU's verdict is relayed by DI, and a terminal replay answer (`ok:true` returned for an earlier, terminal lease identity under HL06, HL21 or HL23) is not an acquisition for this identity and never admits; it refuses with this gate's code in P4. | `session_home_lease_unavailable` | CU, relayed by DI | HL06; HL21 |
+| 8 | home lease | The lease is acquired for this R03's lease-request identity and the admitted digest. Refines HL21, HL23: CU's lease answer is the input, and DI is the relaying producer of this gate's refusal under R03; CRO is the HL21 requester acting only under the recorded R03. A terminal replay answer (`ok:true` returned for an earlier, terminal lease identity under HL06, HL21 or HL23) is not an acquisition for this identity and never admits; it refuses with this gate's code in P4. | `session_home_lease_unavailable` | CU, relayed by DI | HL06; HL21; HL23 |
 | 9 | session journal | The dispatcher's session journal is intact, or the slot has a clearance. | `station_session_journal_fenced` | DI | ADD A.4; AP 10 |
 | 10 | binding | The validated binding named in R03 exists, is unconsumed, is for this operation and is not older than the allowed age. | `station_binding_stale` | DI | RUL-2; ADD A.3 |
-| 11 | lifecycle | Every class of start, in two checks in this order. First, for every start: where a human stop stands (the latest R08 whose reason is the owner stop of section 7.1, not yet lifted), only a start proposed by the party responsible or the operator passes, and that start lifts the human stop, recorded in R03; every other proposer, a manual repeated start by anyone else included, refuses here. Second, only for a start in section 6.1's named list (a repeated, automatic, host-recovery or permanent-team start, or a one-task station's second start): a lifecycle permission covers this start and the restart budget is not exhausted; a one-task station has no such permission, so its second start refuses here. A first start by the party responsible and a one-task station's single start spend only the first check. | `station_lifecycle_not_permitted`, `station_restart_budget_exhausted` | DI | BK07 "Permission for a successor" |
+| 11 | lifecycle | Every class of start, in two checks in this order. First, for every start: where a human stop stands (the latest R08 whose reason is the owner stop of section 7.1, not yet lifted), the check passes and lifts the stop only for a start proposed directly by the party responsible or the operator for this station after the stop, and the lifting is appended under R03 at this gate; a start DI derives from a lifecycle permission, a host reconciliation or a signed team description is never such a start, refuses while the stop stands, and lifts nothing; every other proposer, a manual repeated start by anyone else included, also refuses here. Second, only for a start in section 6.1's named list exactly (a repeated start by host reconciliation after a crash or a reboot, an automatic successor, a permanent-team start from the signed team description DI reconciles, or any second start of a one-task station): a lifecycle permission covers this start and the restart budget is not exhausted; a one-task station has no such permission, so its second start refuses here. Every other start, a first start by the party responsible, a manual repeated start by the party responsible, and a one-task station's single start included, spends only the first check. | `station_lifecycle_not_permitted`, `station_restart_budget_exhausted` | DI | BK07 "Permission for a successor" |
 | 12 | fixed fields | The fixed start fields of section 9.1 equal the values recorded at provision as last amended by the last completed R12; R03 names that R12. | `station_plan_changed` | DI | BK07 "Permission for a successor"; DF A |
 | 13 | qualification | The host qualification for the required guarantees is current. | `station_qualification_required` | DI | BK05 "Qualification revocation"; UM 1 |
-| 14 | capacity | Capacity and policy admit the start; an unread pause state is a pause. | `station_capacity_unavailable` | DI | BK07 "Dispatcher and the one-shot transaction" |
+| 14 | capacity | Capacity and policy admit the start; an unread pause state is a pause. While a total-stop entry stands in R24 (session authority closed, reason total stop, section 7.1), this gate refuses every start; only an operator-signed report that records that entry open again in R24 reopens it, and a service restart does not. | `station_capacity_unavailable` | DI | BK07 "Dispatcher and the one-shot transaction"; BK06 "Total stop" |
 | 15 | generation | The exact (uid, generation) is `active`, read under the generation lock. | `station_generation_inactive` | LA | GJ 1; GJ 6.1; HP 7 |
 | 16 | quiet account | Zero tasks of the account and no unresolved prior execution or stop claim; a failed or partial scan keeps the start closed. | `station_account_not_quiet` | LA | HP 7 |
 | 17 | profile digests | Under the generation lock: the trust pin equals trusted approved-release metadata; every platform control equals its approved digest; the admitted runtime mapping lists every discovery path the harness can load, in the home and in the work directories. In explicit native-project mode (C24 dec 8) the mapping lists the project's own loadable paths in the clone as project controls of that mode, per mapping: a listed project control may be station-writable, is loaded as project instruction and never as platform authority, and the mode's visible non-isolation notice stands. This gate refuses only a loadable, station-writable path that the mapping neither lists as a project control of the selected mode nor classifies as data; in any other mode no path is a project control unless its mode's mapping says so. Missing, unreadable, extra effective or mismatching controls refuse before provider execution. The checked objects are bound to the admitted start. | `station_profile_digest_mismatch` | LA | C24 dec 2; C24 dec 8; UM 7; DEC D3; DEC D10 |
@@ -762,8 +852,13 @@ open question on the evaluator (OQ9), pending the confirmation of the
 user-manager owner, which is not recorded yet. DI MAY run the same two checks
 as advice; CRO's own pre-checks are proposal hygiene and produce no contract
 code. The advice check has exactly one position in the order, between gates
-16 and 17: it runs only where gates 1 to 16 all passed, and its result is
-returned only then, in place of asking the launcher for gates 17 and 18. The
+16 and 17: it is DI's check, owned by the dispatcher's standing-runtime
+unit, not by any curator-run unit, and LA's interface is split for it at that
+position: LA returns its gate 15 and 16 verdicts under the generation lock
+it retains, DI runs the advice check there, and where DI then asks, LA
+evaluates gates 17 and 18 under the same lock. It runs only where gates 1
+to 16 all passed, and its result is returned only then, in place of asking
+the launcher for gates 17 and 18. The
 launcher remains the only evaluator in the registry sense of section 4.3: an
 advice refusal is DI relaying the code the launcher is bound to return for
 the same objects, and the launcher repeats the checks whenever it is asked;
@@ -815,12 +910,12 @@ inventory [DF B]. Each row names the cells that carry it.
 | Rule | Statement | Carrying cells | Source |
 | --- | --- | --- | --- |
 | K1 session identity | Four things are distinct. The station identity (name, account, generation, keys) is stable for the life of the station. A process incarnation is one bound kernel tuple; a restart consumes it and creates a new one. A harness session is conversation state in the home. One live incarnation per station: the state record admits one start per state version (SR2, SR4), and the launcher refuses an account that is not quiet. | [stopped x start]; [starting x proof: incarnation match]; [starting, running, stopping x start]; every held row x start | DF B.1; HL07; DEC D1; HP 7 |
-| K2 lifetime | The horizon of a station is the validity of the session's grant: the grant that authorizes the start and the holding [AP 12]. It replaces the one-shot runtime bound. A persistent station has no time bound per incarnation and is outside the quotas of temporary work [BK05 "Homes and results"; BK07 "Dispatcher and the one-shot transaction"]; what remains per incarnation is the clocks of section 4.5, the term of the message-key attestation (at most 86400 s, renewed by the key service ahead of expiry; a missed renewal closes the capability signing, not the station) [BK06 "Message key and its attestation"], and the model credential lease held by the gateway (K7). A task-lifetime station keeps the published bounds: account 24 hours by default and at most 7 days, one execution 4 hours by default and at most 12, each as a clock with DI as actor (`account_bound` and `execution_bound` of section 4.5) [BK07 "Dispatcher and the one-shot transaction"]. Renewal: the dispatcher re-signs the leaf under the current chains and the broker replaces the binding of the same account and generation, old removed before new; the new scope is the intersection of the current chains with the originally admitted request; only a member of the existing chain may renew; a revoked right is never re-issued by maintenance [BK13 "Renewal without widening"]. How far ahead renewal happens is OPEN OQ2. Renewal of the dispatcher policy window, which the landed policy keeps finite [DF A], is OPEN OQ26. At expiry, decided (OQ1 closed, option A): the capability session authority closes at expiry, gate 2 refuses every start from expiry, and a running station is stopped through [running x stop requested] committed by DI within the same 300 second bound as the other stop triggers of section 7.1. | [stopped x start] gate 2; [running x capability report]; [running x stop requested] | DF A; DF B.2; owner decision on OQ1 |
+| K2 lifetime | The horizon of a station is the validity of the session's grant: the grant that authorizes the start and the holding [AP 12]. It replaces the one-shot runtime bound. A persistent station has no time bound per incarnation and is outside the quotas of temporary work [BK05 "Homes and results"; BK07 "Dispatcher and the one-shot transaction"]; what remains per incarnation is the clocks of section 4.5, the term of the message-key attestation (at most 86400 s, renewed by the key service ahead of expiry; a missed renewal closes the capability signing, not the station) [BK06 "Message key and its attestation"], and the model credential lease held by the gateway (K7). An unknown outcome of attestation issuance closes the capability signing with no fallback to the earlier attestation; a lost carrier channel closes the capability carrier channel; both enter as [state x capability report], are recorded in R24, change no state, and the station is never reported reachable on a capability that is recorded closed [BK06 "Message key and its attestation"]. A task-lifetime station keeps the published bounds: account 24 hours by default and at most 7 days, one execution 4 hours by default and at most 12, each as a clock with DI as actor (`account_bound` and `execution_bound` of section 4.5) [BK07 "Dispatcher and the one-shot transaction"]. Renewal: the dispatcher re-signs the leaf under the current chains and the broker replaces the binding of the same account and generation, old removed before new; the new scope is the intersection of the current chains with the originally admitted request; only a member of the existing chain may renew; a revoked right is never re-issued by maintenance [BK13 "Renewal without widening"]. How far ahead renewal happens is OPEN OQ2. Renewal of the dispatcher policy window, which the landed policy keeps finite [DF A], is OPEN OQ26. At expiry, decided (OQ1 closed, option A): the capability session authority closes at expiry, gate 2 refuses every start from expiry, and a running station is stopped through [running x stop requested] committed by DI within the same 300 second bound as the other stop triggers of section 7.1. | [stopped x start] gate 2; [running x capability report]; [running x stop requested] | DF A; DF B.2; owner decision on OQ1 |
 | K3 restart rule | Section 6. The same account, generation and home are reused. A lost start is unknown: a held row, never a blind retry. | [stopped x start]; [starting x starter crash]; [starting x unknown or stranded outcome]; the `held:start` row | DF B.3; section 6 |
 | K4 liveness | Two different things [DEC D11]. P2 is the bind-time proof and is produced once per incarnation. A liveness reading is CU's periodic kernel reading of the four fields, compared with the tuple of R04; "alive" means that reading is equal. A self-report, an a2a heartbeat, an answered message or a live bridge process is not liveness and is never merged into a termination verdict [BK24 "What the bridge consists of"]. A missed or unreadable reading is unknown, never a stop and never a release: the station enters `held:live`. CU reads again at `liveness_interval`; at `silence_deadline` DI requests the stop (section 4.5). | [running x liveness reading missed]; [held:live x liveness restored]; [held:live x stop requested] | DF B.4; HL observer; HL08 |
 | K5 follow-up work | Section 7.2: version 1 defines no instruction delivery and no run, and no cell carries follow-up work. | no cell | DF B.5 |
 | K6 revocation while running | Section 7.1. | [running x capability report]; [running x stop requested]; [stopped x start] gate 2 | DF B.6; RUL-2; DEC D9 |
-| K7 credential and gateway lease | The station holds no model credential: the gateway holds the lease and the station holds a stub bound to one generation, one start and one account [BK09 "Model provider through the gateway"]. When the gateway's lease renewal fails, forwarding closes and the gateway reports the capability model forwarding closed; R24 records it, and no start is admitted while gateway readiness is closed or unknown (gate 7) until the gateway reports it open again. A running station is not stopped by that failure. NEW: the book states waiting for a needed provider login [BK07 "Wake-up and context transfer"]; the renewal case is applied by analogy. Whether a bounded wait escalates to a stop is OPEN OQ7. An account block after a leak match is different: it stops the session through [running x stop requested] [BK09 "Leak tripwire"]. | [running x capability report]; [stopped x start] gate 7 | DF B.7 |
+| K7 credential and gateway lease | The station holds no model credential: the gateway holds the lease and the station holds a stub bound to one generation, one start and one account [BK09 "Model provider through the gateway"]. When the gateway's lease renewal fails, forwarding closes and the gateway reports the capability model forwarding closed; R24 records it, and no start is admitted while gateway readiness is closed or unknown (gate 7) until the gateway reports it open again. A running station is not stopped by that failure. NEW: the book states waiting for a needed provider login [BK07 "Wake-up and context transfer"]; the renewal case is applied by analogy. Whether a bounded wait escalates to a stop is OPEN OQ7. An account block after a leak match is different: it enters as model forwarding closed, reason account block (section 7.1), and stops the session through [running x stop requested] [BK09 "Leak tripwire"]. | [running x capability report]; [stopped x start] gate 7 | DF B.7 |
 | K8 home and state | State that survives a restart lives only in the station-writable paths of section 8. Retirement duty: the work product is exported before the home is removed; a partial, unknown or failed export keeps the home, and only a recorded operator act waives the duty [BK07 "Dispatcher and the one-shot transaction"; UM 5]. Gate G5 admits a retire only with that waiver; a recorded export receipt counts as a discharge only from the decision recorded in OQ14, and no cell of this draft produces or verifies one, so an out-of-contract receipt admits nothing. Who runs the export is OPEN OQ14; until it is decided no cell starts an export execution, so in this draft a retire is admitted only with the operator waiver, as in the first slice of the user manager [UM 5]. The account stays reserved and fenced until P1. Homes are never archived; keeping a retired home is a separate operator operation outside retirement [BK05 "Homes and results"]. | [provisioned, stopped x retire] gate G5; [retiring x stop confirmed]; [retiring x proof: effect completed] gate G12 | DF B.8 |
 | K9 capacity | NEW: a station holds two claims; the sources name an account quota and an execution claim and do not join them for a station. The account claim lasts from R01 to R16 (or, for a create that did not happen, to the R18 that accepts its P4 and releases it on the entry into `retired`; R00 is retained and is not a claim) and is charged once across bumps [UM 6]. The execution claim lasts from R03 to R09 on every path, including a start that did not happen, and is never released from unknown [BK07 "Dispatcher and the one-shot transaction"]. A reclaim is a stop requested or a retire through this table; it is never a signal sent outside the table, and decided (OQ8 closed, option A) it is the operator's alone: DI never requests the stop of a standing station to reclaim its claim, inside no policy; it may only report the claim standing. Removal or re-creation of a persistent station needs the operator [BK05 "Homes and results"]. The cost of an unkillable task is in U4. | [running x stop requested]; [stopping x stop confirmed]; [retiring x proof: effect completed] | DF B.9; C24 "Host budget" |
 
@@ -829,13 +924,18 @@ inventory [DF B]. Each row names the cells that carry it.
 Every trigger enters the table through the cell named; there is no
 revocation column because every report of this section is a capability
 report or a stop request and nothing else (section 2.2). A suspension is the
-capability session authority recorded closed (R24): no start is admitted
-(gate 2), and the process is not stopped by that entry itself; for every
-stop trigger below the decided stop follows the suspension. The stop itself
-is a write-ahead order of DI: in the commit that records the trigger, or as
-its immediate next commit in the same row, DI records the stop operation as
-R08 in the row's stop-requested cell, with itself as requester, before any
-stop effect is requested; no stop effect of this section precedes its order.
+capability session authority recorded closed (R24): the process is not
+stopped by that entry itself, and which start gate refuses a new start is
+named per trigger below (gate 2 for the grant checker's session-authority
+triggers, gate 14 for the total stop, gate 13 for qualification, gate 7 for
+the account block's closed model forwarding, gates 11 and 14 for policy
+removal); for every stop trigger below the decided stop follows the
+suspension or closure. The stop itself is a write-ahead order of DI: as its
+immediate next commit after the commit that records the trigger, in the same
+row (the trigger commit names R24 and records no stop), DI records the stop
+operation as R08 in the row's stop-requested cell, with itself as requester,
+before any stop effect is requested; no stop effect of this section precedes
+its order.
 The decided bounds are one pair: from a validated revocation, expiry,
 seal-spend or policy-removal report to the suspension is at most the
 snapshot propagation bound max(S + A, F) with A at most 60 seconds
@@ -850,24 +950,29 @@ DEC D9]; that feed is a new seam and does not exist yet [DF C]. The feed
 carries a snapshot number and time, recorded in R24 with every session-
 authority report it produces. A feed snapshot older than the propagation
 bound above proves nothing about revocation: DI then records the session
-authority under the unreadable case below (hold, operator alarm, no new
-start, no stop) until a fresh snapshot arrives. At every restart of DI, DI
+authority under the unreadable case below (hold, operator alarm, no stop)
+until a fresh snapshot arrives; DI's own stale-feed entry produces no
+refusal code, and new starts in that case are decided by gate 2's live J1
+verdict alone (unavailable refuses by GC's code there; a fresh "not
+revoked" verdict passes that gate, and no other start gate is displaced by
+the entry). At every restart of DI, DI
 resyncs the complete snapshot from the grant checker before it admits any
 start or clears any suspension, so reports missed while DI was down are
-recovered by resync and never by waiting for the next push. OQ1, OQ5a to
-OQ5e and OQ6 are closed by the owner decisions below and are no longer in
-section 15.
+recovered by resync and never by waiting for the next push. OQ1, OQ5a,
+OQ5b, OQ5d, OQ5e and OQ6 are closed by the owner decisions below and are no
+longer in section 15; OQ5c (a run's grant) is closed in the proposed
+companion of section 7.2, not below.
 
 | Trigger | Observed by | Decided | Enters by | Open |
 | --- | --- | --- | --- | --- |
-| Owner stop of one station | DI, on the proposal of the party responsible or the operator | Stop; the station stays stopped until the party responsible or the operator starts it, and that start lifts this human stop, recorded in R03 at gate 11 [BK07 "Wake-up and context transfer"]. | [running x stop requested] | none; completion is bounded by `end_to_absence` |
-| Total stop of the installation (OQ5a, closed) | Each service directly: UM freezes generations and closes ingress, SH stops sessions, DI ceases starts, MG closes uses [BK06 "Total stop"] | Stop of every station within 300 seconds of the order, each through its stop-requested cell; resumption only by operator signature; a service restart does not lift it. | [running x stop requested] for each station, DI as actor | none |
-| Qualification revoked | UM, the qualification reconciler [UM 1; BK05 "Qualification revocation"] | New starts close at detection; a running station is narrowed with confirmation or stopped within 300 seconds of detection, not reset by retries or restarts. UM reports the revocation as the capability qualification closed in this column; DI, as requester, then commits the stop order under `revocation_to_stop`. | [running x capability report], then [running x stop requested]; gate 13 for starts | none |
-| Account block after a leak match (OQ5b, closed) | MG and CB [BK09 "Leak tripwire"] | Stop through [running x stop requested] within 300 seconds of the block report. | [running x capability report], then [running x stop requested] | none |
+| Owner stop of one station | DI, on the proposal of the party responsible or the operator | Stop; the station stays stopped until the party responsible or the operator starts it directly for this station, and only that direct start lifts this human stop, the lifting appended under R03 at gate 11 [BK07 "Wake-up and context transfer"]. | [running x stop requested] | none; completion is bounded by `end_to_absence` |
+| Total stop of the installation (OQ5a, closed) | Each service directly: UM freezes generations and closes ingress, SH stops sessions, DI ceases starts, MG closes uses [BK06 "Total stop"]; for the station record, DI on the operator's total-stop order | A total-stop order enters as a capability report at every station (session authority closed, reason total stop), recorded in R24; `revocation_to_stop` runs from that commit to DI's stop order, so every station with a live or possibly live process is stopped through its stop-requested cell within that bound, completing under `end_to_absence`. Gate 14 refuses every start while the R24 entry stands; only an operator-signed report that records it open again in R24 reopens it, and a service restart does not lift it. | [state x capability report] at every station recorded in R24, then that row's stop-requested cell, DI as actor; gate 14 for starts | none |
+| Qualification revoked | UM, the qualification reconciler [UM 1; BK05 "Qualification revocation"] | New starts close at detection; in version 1 a running station is always stopped within 300 seconds of detection, not reset by retries or restarts (narrowing with confirmation has no cell in version 1). UM reports the revocation as the capability qualification closed in this column; DI, as requester, then commits the stop order under `revocation_to_stop`. | [running x capability report], then [running x stop requested]; gate 13 for starts | none |
+| Account block after a leak match (OQ5b, closed) | MG and CB [BK09 "Leak tripwire"] | The block enters as the capability model forwarding closed, reason account block, recorded in R24; from that commit `revocation_to_stop` runs and DI stops the station through [running x stop requested] within 300 seconds. Starts refuse at gate 7 while forwarding stands closed for this reason. | [running x capability report], then [running x stop requested]; gate 7 for starts | none |
 | The session's grant revoked or sealed (OQ5d, closed) | GC, through its feed to DI; the seal by the verifying service on its own chain node [BK14 "Revocation"] | Suspension at the report's commit, then stop within 300 seconds: on a gateway-backed host revocation suspends at once [RUL-2; DEC D9], and the decided stop follows it, so suspension is containment, never the end state of a revoked session. Starts refuse at gate 2. The lifecycle permission is withdrawn [BK07 "Permission for a successor"]. | [running x capability report], then [running x stop requested] under `revocation_to_stop` | none |
-| The session's grant expired (OQ1, closed: option A) | GC, by the verified-time watermark [BK13 "Renewal without widening"] | Stop at expiry: suspension at expiry, then stop within 300 seconds; starts refuse from expiry. | [running x capability report], then [running x stop requested] | none |
+| The session's grant expired (OQ1, closed: option A) | GC, by the verified-time watermark [BK13 "Renewal without widening"] | Stop at expiry: suspension at expiry, then stop within 300 seconds; starts refuse from expiry at gate 2. | [running x capability report], then [running x stop requested]; gate 2 for starts | none |
 | Policy removed while running (OQ5e, closed) | DI, by policy identity and revision [DF A] | Stop, not merely suspension: suspension at the report's commit, then stop within 300 seconds. Starts refuse at gate 11 and gate 14. | [running x capability report], then [running x stop requested]; [stopped x start] | none |
-| Revocation state unreadable (OQ6 first case, closed) | GC, or DI itself where the feed snapshot is stale under the freshness bound above | Hold with no time limit: starts refuse `station_revocation_unknown`, because "unavailable" is a refusal and a lost connection is not absence of revocation [BK13 "Revocation and unknown state"]; no new start is admitted, and no stop is ordered for unreadability alone, so a running station keeps running under a grant that may in fact be revoked, which is the accepted cost of the hold. DI raises an operator alarm at the first such entry and records it in R24. Restarts inside the outage neither lift the hold nor clear the alarm; a fresh feed snapshot is the only exit. | gate 2; [running x capability report] with the alarm of R24 | none |
+| Revocation state unreadable (OQ6 first case, closed) | GC, or DI itself where the feed snapshot is stale under the freshness bound above | Hold with no time limit and no stop ordered for unreadability alone, so a running station keeps running under a grant that may in fact be revoked, which is the accepted cost of the hold. New starts are decided by gate 2's live J1 verdict: where GC's verdict is "unavailable" it refuses `station_revocation_unknown` there, because "unavailable" is a refusal and a lost connection is not absence of revocation [BK13 "Revocation and unknown state"]; DI's own stale-feed entry produces no code of its own. DI raises an operator alarm at the first such entry and records it in R24. Restarts inside the outage neither lift the hold nor clear the alarm; a fresh feed snapshot is the only exit from the hold. | gate 2; [running x capability report] with the alarm of R24 | none |
 | Verified time lost (OQ6 second case, closed) | every service that checks time | The book's rule unchanged [BK13 "Renewal without widening"]: hold at most 10 minutes by the monotonic clock, then stop everything that depends on time. This is not the unreadable case above and takes none of its no-limit hold. | [running x capability report], then [row x stop requested] under `verified_time_loss` | none |
 
 ### 7.2 Work input of a standing station (out of scope in version 1)
@@ -952,7 +1057,7 @@ group S and no supplementary membership [UM 7].
 | Host (the receiving dispatcher) | Fixed. | Nobody: another host is another station, by a new provision [DF A]. |
 | Account and generation | Fixed at every restart. | The generation changes only through [stopped x generation bump], on the operator or dispatcher authority of UM 2 and UM 6. |
 | Plan pins (worker plan, profile, harness, execution profile) | Fixed at every restart; the pin fields of the plan are reused byte for byte. The model selection and reasoning effort fields below are not pin fields and may change at a restart without touching this row. | A pin changes only through [stopped x profile update approved]; the completed R12 is the amendment record that gate 12 compares against, and the next start is a new admission under J1 [C24 dec 3; BK07 "Permission for a successor"]. |
-| The principal the grant names | Fixed, and retained in R00 and R16 through retirement. | Nobody: a station does not change hands by an edit, and a retired name is re-provisioned only for that same principal or under a recorded owner act (G1, `station_principal_mismatch`). NEW: no source states this rule; the reason is that retirement retains the name's keys, so a new principal must not receive them by re-provision (KY6). |
+| The principal the grant names | Fixed, and retained in R00 through retirement (R16 repeats it for the `retirement` origin; a `create_no_effect` origin has no R16). | Nobody: a station does not change hands by an edit, and a retired name is re-provisioned only for the principal R00 retains; any other principal needs a new name (G1, `station_principal_mismatch`). NEW: no source states this rule; the reason is that retirement retains the name's keys, so a new principal must not receive them by re-provision (KY6). |
 | Station name | Fixed (section 9.2). | Nobody. |
 | Model selection inside the catalog; reasoning effort | May change at a restart. | NEW: the party responsible for the start, inside the catalog and the grant; J1 admits it. The sources name the fields [DF A] and not the approver. |
 | Prompt | May change at a restart. | The party responsible for the start; a goal is set by the caller, never by the station [BK07 "A goal does not belong to the agent"]. |
@@ -1067,16 +1172,17 @@ no rotation today: the key is stable per independent root, epoch and path
 [OWN-KS]. Every [state x key rotation] refuses, and R13 is reserved for a
 later unit. R02 records the key identifier of each purpose at every enroll (section
 4.1). At enroll, and again in the key-service confirmations of a bump
-(R14), the key identifier of each purpose MUST equal the one the latest
-R02, or R16 where a retirement is the latest record, holds for the name,
-where one is recorded; otherwise gate G2 refuses
+(R14), the key identifier of each purpose MUST equal the one DI passes to
+KS from the latest R02, or R16 where a retirement is the latest record, for
+the name, where one is recorded; otherwise gate G2 refuses
 `station_rotation_unrecorded` at enroll and the bump condition does not hold
 at a bump, so KY6 is enforced on both paths and no successor generation
 becomes `active` under another key. Retiring an account does not revoke a
 persistent identity, and a later enroll of the same name returns the same key
 [BK06 "The account ends, the identity remains"; UM 5], which is exactly why
-re-provision of a retired name needs its original principal or a recorded
-owner act (G1). Stated plainly, because the rule above has this cost: this
+re-provision of a retired name is admitted only for the principal R00
+retains, and any other principal needs a new name (G1). Stated plainly,
+because the rule above has this cost: this
 contract contains no remedy for a compromised station key short of retiring
 the name itself and raising a new name under new keys; retiring only the
 account returns the same key. This closes the earlier open question on
@@ -1164,12 +1270,12 @@ owner through the owner's interface and records its own request [C24
 
 | Responsibility | Owner | Others may only | Source |
 | --- | --- | --- | --- |
-| Station state record: state, state version, epochs, start and stop journal, unknown-outcome reconciliation, records R00 to R24 | DI, under its own service account in a protected state directory over a kernel-peer-checked socket | propose transitions (CRO for a requester); report events; perform effects only under an operation DI recorded. The station description in the workbench registry on the board is read-only to DI and is owned there, outside this record. SH reports liveness and owns none of it. A record file edited directly under the requester's account produces no state any effect owner accepts. | BK07 "Workbench"; DEC D1 as amended by the OQ18 ruling; OWN-DI; OWN-CR |
+| Station state record: state, state version, epochs, start and stop journal, unknown-outcome reconciliation, records R00 to R24 except the reserved R07, R21 and R22, which no cell of version 1 writes or reads | DI, under its own service account in a protected state directory over a kernel-peer-checked socket | propose transitions (CRO for a requester); report events; perform effects only under an operation DI recorded. The station description in the workbench registry on the board is read-only to DI and is owned there, outside this record. SH reports liveness and owns none of it. A record file edited directly under the requester's account produces no state any effect owner accepts. | BK07 "Workbench"; DEC D1 as amended by the OQ18 ruling; OWN-DI; OWN-CR |
 | Station operations: proposal and client-side phase tracking | CRO | DI commits or refuses every proposed cell; the session host and the party responsible request operations through CRO or directly from DI | OWN-CR; DEC D1 as amended (C24 dec 9 names curator-run owner of the lifecycle; the OQ18 ruling refines it: CRO proposes and tracks, DI alone commits, SR1) |
 | Station operations: reconciliation of the authoritative record | DI | effect owners report outcomes to DI | DEC D1 as amended |
 | Account and generation | UM | read the generation journal; the dispatcher requests create, bump and retire within its role, which is not in the landed dispatcher slice | C24 dec 9; UM 1; UM 2; GJ 1; OWN-DI |
 | Home: paths, owners, modes, removal | UM | none write; the station writes inside its three writable paths | UM 1; UM 7 |
-| Home: content, composition, digests, lease | CU | DI requests and binds leases under R03; nobody edits the lease store | C24 dec 9; HL01; UM 1 |
+| Home: content, composition, digests, lease | CU | CRO is the HL21 lease requester, acting only under DI's recorded R03; DI records R03, relays CU's acquire verdict at gate 8 and binds no lease itself; nobody edits the lease store | C24 dec 9; HL01; HL21; UM 1 |
 | Profile: approved release content and trust pin | CU | a station may request its own update and installs nothing unapproved | C24 dec 3; UM 7 |
 | Session record, slot table, capacity claims | DI | read; the slot entry is requested by the enroll | RUL-2; ADD A.2 |
 | Start and stop: physical authority, consumption of the validated binding | DI | CRO and the session host ask; no second privileged path exists | C24 "Ownership and records"; BK05 "Two narrow privileged entries"; RUL-2 |
@@ -1202,10 +1308,10 @@ valid control in the owning implementation.
 
 | Forbidden outcome | Enforcing cell and code | Valid control beside it |
 | --- | --- | --- |
-| Two transitions from one state version | SR2: exactly one commits; a losing proposal refuses `station_state_stale` with no gate verdict, a losing reported or delivered-once event is queued by DI and committed against the re-read row | one transition from one state version commits, and a reported reading that raced it is still recorded |
-| Two provisions of one name, or a name re-admitted after record loss | SR4: create-if-absent on R00; the losing create is answered by the row it finds; SR3: no provision while R00's absence is unproved after loss | one provision creates the reservation and proceeds |
+| Two transitions from one state version | SR2: exactly one commits; a proposal whose expected version differs refuses `station_state_stale` as the first check before any gate, a set lost at the end returns the same code with no gate verdict, and a losing reported or delivered-once event is queued by DI and committed against the re-read row | one transition from one state version commits, and a reported reading that raced it is still recorded |
+| Two provisions of one name, or a name re-admitted after record loss | SR4: create-if-absent on R00; the losing create is answered by the row it finds; SR3 and G1: for `absent` only at a journal generation opened by a restore or a fence, no provision while the UM, KS and LA inventories do not show no trace of the name, and a name with a trace gets a held row, never `absent` | one provision creates the reservation and proceeds, beside a retired name whose record survived re-provisioning with no `station_name_held` check |
 | A state produced by editing a record file under the requester's account | SR1: only DI writes the record, under its own account in a protected directory; an edited file is no record and every effect owner takes state only from DI over its peer-checked socket | a proposal over that socket commits a cell |
-| A physical start running after the station left `starting` | SR4: leaving `starting` closes the fence and records the withdrawal in the same commit; LA revalidates fence and epoch before the receipt and starts a withdrawn execution never | a start revalidated while still in `starting` binds one incarnation |
+| A physical start revalidated after the station left `starting` | SR4: leaving `starting` closes the fence in the same commit and the execution gets no receipt after it; LA revalidates fence and epoch before the receipt, a revalidation DI does not answer starts nothing, and a withdrawn execution never starts | a start revalidated while still in `starting` binds one incarnation, and its process accounted in `held:start` is not started again |
 | Two processes of one station at once | [stopped x start] is the only start and is one compare-and-set; [starting, running, stopping x start] `station_incarnation_exists`; every held row x start `station_held`; gate 16 `station_account_not_quiet`; the launcher rejects a second start of one execution | a start from `stopped` binds one incarnation |
 | `stopped` reached while a process may run | no cell enters `stopped` without R09 (U4); G13 `station_absence_unproven` | a quiet account reaches `stopped` by P1 |
 | A process reading that is lost | [every row with an account x process appears] writes R06 | a bind with an equal reading writes R04 |
@@ -1221,7 +1327,7 @@ valid control in the owning implementation.
 | Release of an account while any thread runs under its uid | [stopping x stop confirmed] gate G11 and [retiring x proof: effect completed] gate G12, `station_absence_unproven` | a quiet account reaches `stopped` and `retired` |
 | A generation that reached `retiring` or `removed` returned to use | [bumping, held:bump x proof: effect did not happen] gate G13, `station_bump_committed` | a bump refused before its commit returns to `stopped` |
 | A retired name enrolled with a different key | [provisioned x enroll] gate G2, `station_rotation_unrecorded`, and the same identifier check in R14's bump confirmations | the same key enrolls and bumps |
-| A retired name handed to a new principal with its retained key | [retired x provision] gate G1, `station_principal_mismatch`, without the original principal of R00 and R16 or a recorded owner act | the original principal re-provisions and enrolls with the same key |
+| A retired name handed to a new principal with its retained key | [retired x provision] gate G1, `station_principal_mismatch`, for every principal other than the one R00 retains, a claimed owner act included: version 1 admits no owner-act exception and any other principal needs a new name | the principal R00 retains re-provisions and enrolls with the same key |
 | A process under station A signing with station B's key | key service: the request names no identity; `binding_not_found` or `signer_identity_mismatch` before any signature | station A signs as station A |
 | Two stations sharing one account | [absent x provision] and [provisioned x enroll], `station_account_shared` | one station per account provisions and enrolls |
 | A lost start retried blindly | [starting x starter crash] sends no second request; [starting x unknown or stranded outcome]; [held:start x start] `station_held` | a crash at phase `lease_requested` resumes the same acquire once |
@@ -1242,8 +1348,9 @@ they stand in the proposed companion of section 7.2 for the owner.
 Closed since the previous draft: OQ9 (section 6.2, pending one confirmation),
 OQ12 (section 9.2), OQ13 (KY6) and OQ17 (KY4). Closed in this draft by owner
 decision and removed from the table: OQ1 (option A, stop at expiry, K2 and
-section 7.1), OQ5a to OQ5e (stop within 300 seconds in every case, section
-7.1), OQ6 (split: unreadable revocation state holds without a time limit
+section 7.1), OQ5a, OQ5b, OQ5d and OQ5e (stop within 300 seconds, section
+7.1; OQ5c, a run's grant, is closed in the proposed companion of section
+7.2), OQ6 (split: unreadable revocation state holds without a time limit
 under an operator alarm, lost verified time stops after at most 10 minutes
 monotonic, section 7.1), OQ8 (option A, operator-only reclaim, K9), OQ16
 (option B for the first step, explicit release by the raising orchestrator,
@@ -1265,8 +1372,8 @@ record, SR1, SR6 and section 13).
 | OQ22 | Entries a harness creates in `H/.harness/` beside `state/` (section 8). | None are admitted; the adapter redirects them into `state/`. | A closed list of entry classes per runtime mapping, each classified as data. | Curator and the user-manager owner. |
 | OQ23 | Repository-native discovery beyond the first wave (section 8, gate 17). Wave 1 is explicit native-project mode by C24 dec 8 and is not this question; what the mapping classifies there is decided in gate 17. | Strict mode as the follow-up: nothing in the clone is loaded as a project control once a runtime is qualified for it. | Native-project mode indefinitely, with every loadable path listed as a project control per mapping. | Curator; operator. |
 | OQ24 | The dispatcher caller key of an orchestrator station (KY1). PROPOSED: option A, the key service owner's answer for the first enforcing run, then the purpose-6 unit; adoption also needs OQ27. | Keep the installer-made file, pinned by the static statement, at a path the installer contract publishes, for the first enforcing run, until custody moves. | Move caller signing to the key service (purpose 6, station-caller) before the first enforcing run. | Key service owner (answered A, then the purpose-6 unit) and dispatcher owner. |
-| OQ27 | May the first enforcing run deviate from C24 decision 1, "The station can request signing but MUST NOT be able to read the key file", by keeping a station-readable dispatcher caller key file (OQ24 option A, KY1)? | Yes: record the owners' amendment of decision 1 for this one key and run; gate 18 admits the one file by metadata until the purpose-6 unit. | No: no station-readable caller key exists in the first run; DI authenticates its single caller by kernel peer uid until the purpose-6 station-caller unit, and gate 18 refuses any such file. | Owner. |
 | OQ26 | Renewal of the dispatcher policy window for a persistent station (K2). | The window is renewed with the grant, by the same act. | A persistent station carries no finite policy window. | Dispatcher owner; operator. |
+| OQ27 | May the first enforcing run deviate from C24 decision 1, "The station can request signing but MUST NOT be able to read the key file", by keeping a station-readable dispatcher caller key file (OQ24 option A, KY1)? | Yes: record the owners' amendment of decision 1 for this one key and run; gate 18 admits the one file by metadata until the purpose-6 unit. | No: no station-readable caller key exists in the first run; DI authenticates its single caller by kernel peer uid until the purpose-6 station-caller unit, and gate 18 refuses any such file. | Owner. |
 
 ## 16. Alignment with the Swarma book
 
@@ -1307,7 +1414,7 @@ at the pinned commit.
 | One owner of the station state with a compare-and-set: the dispatcher; the station description in the workbench registry on the board, read-only to it; the session host reporting liveness and owning no record | `07-zapusk-i-host-sessiy.md`, line 161 "Workbench"; line 151 "Wake-up and context transfer" | refines: the book gives the registry the launch description and the dispatcher the start and stop effects; the ruling joins them as SR1 and SR6 state |
 | Stop within 300 seconds on revocation, expiry, seal, policy removal, total stop and account block; hold without limit and an operator alarm while the revocation state is unreadable | `05-polzovatel-i-set.md`, line 283; `13-doverennosti.md`, line 94 | refines: the 300 seconds are the book's qualification bound extended by owner decision; the 10 minute bound stays only on lost verified time, `13-doverennosti.md`, line 124 |
 | Name latch and synthetic name | none | new (PROPOSED) |
-| The single lifecycle table, the held rows, records R00 to R24 | none | new |
+| The single lifecycle table, the held rows, records R00 to R24 except the reserved R07, R21 and R22 | none | new |
 
 ## 17. Implementation units
 
@@ -1326,7 +1433,7 @@ statement shows; nothing was run.
 | curator | Latch record and name file | new | 1 | the two confirmations of section 9.2 | one changed byte in the name file refuses the start and leaves the file as found |
 | curator | Approved-release composition and updater (R12, pin last) | new | 2 | user-manager skeleton interface | an update under a blocking lease refuses with no control changed |
 | curator-agent-launcher | Station operations with phases, including `start_requested`, as the proposing client of the dispatcher's record | extends the launcher lifecycle record named in C24 "Current state"; new | 3 | curator lease store; the dispatcher's standing-runtime mode below, which owns the record, the compare-and-set and the epochs: there is no separate station-state service and no row for one | a crash after `start_requested` yields `held:start` and no second start request; a record file edited under the requester's account commits nothing |
-| curator-agent-launcher | Start gate order as proposal hygiene and the advice check at its one position between gates 16 and 17; advice only, producing no contract code (section 6.2) | new | 1 (owner) | the launcher's gates 15 to 18 | the advice answer for a mismatching digest is returned only at the advice position and names no verdict of its own; the launcher's gate 17 refusal remains the one that binds, before provider execution |
+| curator-agent-launcher | Start gate order as proposal hygiene only, producing no contract code (section 6.2); the advice check at its one position between gates 16 and 17 is DI's, in the dispatcher's standing-runtime unit below, over LA's split interface | new | 1 (owner) | the launcher's gates 15 to 18 | a hygiene answer for a mismatching digest names no verdict of its own and admits nothing; the launcher's gate 17 refusal remains the one that binds, before provider execution |
 | curator-agent-launcher | Session-manager observation: process, termination and no-start on every command | contract and one consumer landed (owner); remainder new | 1 (owner) | none | an observation without a process tuple cannot bind |
 | curator-agent-launcher | Station link admission proposal | no existing element (owner): only a presence check of a credential file | 1 | OQ10, OQ11 | a legacy credential directory yields no admitted start: DI refuses `station_link_unregistered` at gate 5 on the proposal |
 | curator-agent-launcher | Full typed identity latch (PROPOSED) | new | 2 (owner) | the latch record; the owner's admission | the same name with a changed kind or origin yields no admitted start: CU refuses `station_identity_mismatch` at gate 3 and the station record stands as found |
@@ -1334,12 +1441,12 @@ statement shows; nothing was run.
 | swarma-user-manager | Stop, P1 and the external-object inventory | contract exists: UM 6.1; new | 3 | qualified Linux backend | a double-forked survivor yields `processes_remain` and no release |
 | swarma-user-manager | P5, the never-started evidence | new | 1 | the launcher's receipts and DI's start-fence record of SR4, from the dispatcher's standing-runtime unit | a generation with a start receipt gets no P5 |
 | swarma-user-manager | Skeleton install with `H/.identity/` | contract exists: UM 7; new | 2 | section 8 | a station cannot replace a managed file through its sticky parent |
-| swarma-user-manager | Launcher: start receipt and gates 15 to 18 | new | 2 | none | a second start of one execution is rejected |
+| swarma-user-manager | Launcher: start receipt and gates 15 to 18, with the split return after gates 15 and 16 for DI's advice check (section 6.2) | new | 2 | none | a second start of one execution is rejected |
 | swarma-user-manager | Static deny rule and test-uid probe | not yet opened (owner) | not sized | none | not stated by the owner |
 | swarma-user-manager | Service-account creation | not yet opened (owner) | not sized | none | not stated by the owner |
 | swarma-user-manager | Per-account firewall rules | not yet opened (owner) | not sized | none | not stated by the owner |
 | swarma-dispatcher | Daemon configuration unit | on the owner's board | 2 to 3 (owner) | none; precedes any standing-runtime work | with any seam unpinned in protected configuration the daemon stays closed and capacity-only and admits no start; a latched must-exit of the launcher ends the dispatcher process exactly as a journal sync failure does; a missing state file after a crash is never read as "fresh" (owner's stated negative) |
-| swarma-dispatcher | Standing-runtime mode beside the one-launch budget, holding the authoritative station state record (SR1) with its compare-and-set, epochs, start fence and journal continuity, and DI's own evaluation of start gates 5 and 6 and of the link and owner checks of G2 (no contract code of those checks is produced by any client) | new [DF C] | 5 to 8 (owner) | the unit above; K1 to K4 | a second start of one station is refused; two transitions from one state version: exactly one commits; a name whose reservation may exist is never re-admitted as absent; a start withdrawn by leaving `starting` never reaches a receipt |
+| swarma-dispatcher | Standing-runtime mode beside the one-launch budget, holding the authoritative station state record (SR1) with its compare-and-set, epochs, start fence and journal continuity, and DI's own evaluation of start gates 5 and 6, DI's advice check at its one position between gates 16 and 17 over LA's split interface, and the link and owner checks of G2 (no contract code of those checks is produced by any client) | new [DF C] | 5 to 8 (owner) | the unit above; K1 to K4 | a second start of one station is refused; two transitions from one state version: exactly one commits; a name whose reservation may exist is never re-admitted as absent; an execution gets no receipt after the commit that leaves `starting`, beside a start revalidated before that commit that binds |
 | swarma-dispatcher | Consumption of the validated binding at every start | hooks exist for one-shot executions (owner); new for restarts | 1 (owner) | OQ19 | a stale binding admits no start |
 | swarma-dispatcher | Revocation feed, consumer side | new [DF C] | 2 (owner) | the producer below; the closed decisions of section 7.1 | an unknown revocation state never counts as "not revoked": it holds with an operator alarm and stops nothing; a revoked session grant is suspended at once and stopped within 300 seconds |
 | swarma-dispatcher | Claims for the life of a station and reclaim through a stop | new | 1 (owner) | none: reclaim is operator-only (K9) | a reclaim sends no signal outside a stop request, and the dispatcher alone reclaims nothing |
