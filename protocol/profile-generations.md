@@ -1,4 +1,4 @@
-# Profile generations — agreed semantic draft
+# Profile generations - agreed semantic draft
 
 Unreleased N-only successor draft. Baseline **S = ab6b1b0960473b359c84d96e7c7749b9be6011e0**;
 authoring skeleton **c59ec5f4a7e78e0f0ce90b92a3be831b2a9d0ace**.
@@ -7,12 +7,14 @@ The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT,
 RECOMMENDED, NOT RECOMMENDED, MAY and OPTIONAL are interpreted as RFC 2119/8174
 when written in capitals.
 
-Every semantic clause has a stable `PG-…` ID. **N** marks agreed semantics;
+Every semantic clause has a stable `PG-...` ID. **N** marks agreed semantics;
 **P** marks an unresolved placeholder with named dependency. N/P mixed skeleton
 sections keep their semantic obligations and technical placeholders separate.
 No P placeholder allocates production bytes, version numbers, home variables,
 control rosters, transport or executable defaults. No CIP/decision number is
 reserved here. Concrete runtime probes still await operators.
+P text is informative only; any prohibition stated in a P entry restates an
+N clause and adds no obligation of its own.
 
 New prose, examples, vectors and implementation notes use neutral roles only:
 manager, consumer, native authority, session custodian, observer, auditor, issuer,
@@ -60,9 +62,9 @@ signatures, headers and conformance expectations. It MUST NOT relabel an old obj
 accept new authority semantics in a closed old carrier. New required semantics MUST use
 a separately understood capability and complete versioned carrier; unsupported required
 semantics MUST refuse atomically. Snapshot-v1 home bindings and source-home digest MUST
-retain their original meaning. Existing checkout × profile × environment project homes
-and registrations in project-context §5/§5.1 MUST retain their meaning. Migration to the
-profile × runtime native authority MUST be explicit through a successor capability; a
+retain their original meaning. Existing checkout x profile x environment project homes
+and registrations in project-context section 5/section 5.1 MUST retain their meaning. Migration to the
+profile x runtime native authority MUST be explicit through a successor capability; a
 consumer MUST NOT reinterpret old home identity or registration in place.
 
 ### 1.3 Explicit registration and consumer mode
@@ -84,8 +86,13 @@ mode through an interface flag alone MUST NOT require a new carrier. A consumer 
 accept new authority, generation, provenance or variant semantics as unrecognized
 additions to an old carrier; it MUST require their owning successor capability.
 
+Editorial: a reused existing registration carrier supplies only the mode
+it already expresses; its `home_ref` keeps its checkout-scoped legacy
+meaning under PG-COMPAT-02. Binding the stable profile x runtime
+authority requires the successor carrier at PG-P-013/PG-P-044.
+
 <a id="pg-p-013"></a>
-**PG-P-013 (P — placeholder).** Shared carrier editors: exact successor
+**PG-P-013 (P - placeholder).** Shared carrier editors: exact successor
 registration/fragment members, mode/variant flags and migration dispatch; completion
 also depends on the consumer entry probes and PG-P-044.
 
@@ -95,6 +102,13 @@ Editorial terminology: **G1** means the shared native binding probes; **G2**
 means the integrated specification-drafting stage. A stage label conveys neither
 execution permission nor native qualification. In this document G2 drafts only
 agreed N semantics; each P allocation remains pending its named evidence/decision.
+
+Editorial role mapping: in this chapter, manager means the environment
+manager that publishes generations and holders. The session manager named
+in `protocol/home-leases.md` HL05/HL09 (manager_id, manager_registered_at,
+manager observer) corresponds to the session custodian and observer roles
+here; session-manager in PG-TERMS-01, PG-BINDING-01 and PG-HOLDER-01 names
+that session-side role and counter, not the environment manager.
 
 <a id="pg-terms-01"></a>
 **PG-TERMS-01 (N).** The native authority is the approved stable private state/backend
@@ -120,7 +134,7 @@ replaces the identified clause.
 
 <a id="pg-package-01"></a>
 **PG-PACKAGE-01 (N).** The initial exchange subset MUST retain the closed manifest-1/2
-vocabulary, context dependencies, modules, selectors and weights of environments §2–§3.
+vocabulary, context dependencies, modules, selectors and weights of environments section 2-section 3.
 Existing skill/MCP declarations MUST be preserved. For the initial schema-2 settings
 subset, consumers MUST accept only absent/empty settings and MUST refuse nonempty
 settings unless a separately adopted owning capability supports them. Manifest,
@@ -136,14 +150,14 @@ collection selector dot retains its separate meaning. Name/source/commit/kind/di
 MUST identify the actual acquired member.
 
 <a id="pg-p-021"></a>
-**PG-P-021 (P — placeholder).** Exchange/carrier editors: complete closed exchange
+**PG-P-021 (P - placeholder).** Exchange/carrier editors: complete closed exchange
 projection and version reservations; preserve the existing manifest settings identifier
 vocabulary rather than inventing new fields.
 
 ### 2.2 Acquisition and content identity
 
 <a id="pg-hash-01"></a>
-**PG-HASH-01 (N).** New raw package content identities MUST use core §8 framing version
+**PG-HASH-01 (N).** New raw package content identities MUST use core section 8 framing version
 2 exactly, including its domain bytes, length framing, unsigned UTF-8 path order and
 byte-preserving file content. The existing version-1 opaque-NUL guard MUST remain
 version-1 behavior. Version 2 MUST hash NUL bytes as data. Framing MUST be compared as
@@ -151,7 +165,7 @@ well as digest; mode/mtime are not added to this hash.
 
 <a id="pg-hash-02"></a>
 **PG-HASH-02 (N).** Acquisition MUST independently refuse escaping, linked, special,
-nonportable or platform-colliding payloads before publication under core §2 and the
+nonportable or platform-colliding payloads before publication under core section 2 and the
 structural rules. A standalone hash algorithm's link omission or per-path hardlink
 record MUST NOT be interpreted as extraction permission. Missing selected content MUST
 NOT fall back to another root.
@@ -167,8 +181,8 @@ initial package evidence does not provide that capability.
 ### 2.3 Graph and overlay union
 
 <a id="pg-compose-01"></a>
-**PG-COMPOSE-01 (N).** Composition MUST preserve core §7 dependency ordering and
-activation union for resolved contributions. If the §2.4 edge-filter capability is
+**PG-COMPOSE-01 (N).** Composition MUST preserve core section 7 dependency ordering and
+activation union for resolved contributions. If the section 2.4 edge-filter capability is
 selected, the manager MUST resolve and pin the complete raw closure before projection;
 conflicting same-name source/commit/directory identities MUST refuse before filters can
 hide them. In contexts-only delivery, only delivered context members MUST be resolved,
@@ -178,7 +192,7 @@ and edge provenance MUST remain attached to surviving requirements.
 
 <a id="pg-compose-02"></a>
 **PG-COMPOSE-02 (N).** Independent surviving contributions MUST unite
-context/runtime/command requirements under core §7. One edge's exclusion MUST NOT remove
+context/runtime/command requirements under core section 7. One edge's exclusion MUST NOT remove
 a full or other requirement imposed through another edge. A full contribution retains
 every command; context plus narrowed runtime retains context and the selected command
 union.
@@ -220,7 +234,7 @@ delivery MUST refuse filter carriers; it MUST NOT emulate filters by silently om
 requirements.
 
 <a id="pg-p-024"></a>
-**PG-P-024 (P — placeholder).** Selection editors and originating rule owner: canonical
+**PG-P-024 (P - placeholder).** Selection editors and originating rule owner: canonical
 tuple byte encoding/order, edge occurrence encoding, required-understanding carrier and
 version. No filter emission or historical compatibility assertion before those
 decisions.
@@ -242,7 +256,7 @@ dependencies or admit an unsupported edge-filter capability. Skill plan parsing 
 command-root metadata MUST NOT by itself authorize runtime activation.
 
 <a id="pg-p-025"></a>
-**PG-P-025 (P — placeholder).** Projection and command-carrier owners: closed
+**PG-P-025 (P - placeholder).** Projection and command-carrier owners: closed
 omission/projection correspondence, capability/version and delivery receipt; no
 production carrier is allocated here.
 
@@ -252,7 +266,7 @@ production carrier is allocated here.
 **PG-RENDER-01 (N).** Rendering MUST use smallest-ready-name dependency order followed
 by stable effective-weight order under declared winner/placement. Equal weights MUST
 retain dependency order under either direction. Module applicability, environment/class,
-module order and the exact LF part/join rules of environments §5 MUST be preserved.
+module order and the exact LF part/join rules of environments section 5 MUST be preserved.
 Absent root context MUST yield no root-context file; present context with zero
 applicable modules MUST yield the defined header-only result.
 
@@ -266,7 +280,7 @@ relabelled as an existing full-lock header hash; frozen headers MUST remain unch
 Editorial: successor header allocation remains PG-P-026.
 
 <a id="pg-p-026"></a>
-**PG-P-026 (P — placeholder).** Exchange editors: common successor render-input/header
+**PG-P-026 (P - placeholder).** Exchange editors: common successor render-input/header
 identity and canonical digest domain, or explicitly limited equal-input comparison.
 Q1-V1 pins the distinction; no new header bytes are frozen here.
 
@@ -280,7 +294,7 @@ NOT relabel or disclose a full private lock as portable content or discard
 required-understanding semantics.
 
 <a id="pg-p-027"></a>
-**PG-P-027 (P — placeholder).** Lock and exchange owners: closed projection/lock
+**PG-P-027 (P - placeholder).** Lock and exchange owners: closed projection/lock
 correspondence and schema dispatch; complete-lock interchange remains outside the
 initial capability.
 
@@ -312,7 +326,7 @@ MUST NOT grant. Failed positive audit MUST NOT automatically become a broad revo
 negative status and issuer authority are separate.
 
 <a id="pg-p-031"></a>
-**PG-P-031 (P — placeholder).** Registry signer, validator and client owners: reserve
+**PG-P-031 (P - placeholder).** Registry signer, validator and client owners: reserve
 rejecting schema number and complete closed subject/policy/check/model/signature fields,
 status validity and canonical fixtures. No production evidence body is allocated by the
 conformance meta-schemas.
@@ -328,7 +342,7 @@ evidence MUST NOT be relabelled reviewed. No implicit model invocation follows f
 verification.
 
 <a id="pg-p-032"></a>
-**PG-P-032 (P — placeholder).** Audit/policy owners: checker/check-set versions, policy
+**PG-P-032 (P - placeholder).** Audit/policy owners: checker/check-set versions, policy
 identifiers/digests, model/review/prompt provenance and complete result/report syntax.
 
 ### 3.3 Independent broad negative matching
@@ -378,7 +392,7 @@ negatives. Legacy advisory policy MUST NOT be silently redefined; an unsupported
 degraded profile policy MUST refuse.
 
 <a id="pg-p-036"></a>
-**PG-P-036 (P — placeholder).** Registry/policy owners: coverage/freshness and rollback
+**PG-P-036 (P - placeholder).** Registry/policy owners: coverage/freshness and rollback
 receipt, required authority set, validity limits and lower-level mapping. L3 refusal
 semantics are agreed; receipt bytes and other-level policy remain open.
 
@@ -387,11 +401,11 @@ semantics are agreed; receipt bytes and other-level policy remain open.
 ### 4.1 Stable native authority
 
 <a id="pg-auth-01"></a>
-**PG-AUTH-01 (N).** Within one custody namespace, a named profile × runtime MUST have at
+**PG-AUTH-01 (N).** Within one custody namespace, a named profile x runtime MUST have at
 most one operator-approved stable native authority holding native auth, sessions and
-history; every successor launch for that profile × runtime MUST bind that authority. Its
+history; every successor launch for that profile x runtime MUST bind that authority. Its
 identity MUST NOT be derived per launch, per generation or per checkout. The manager MAY
-leave unused profile × runtime pairs unprovisioned. The admitted authority MUST retain
+leave unused profile x runtime pairs unprovisioned. The admitted authority MUST retain
 its approved private physical-path/backend/origin identity across content updates.
 Current profile selectors MUST NOT replace captured origin. Adoption of an existing or
 foreign authority MUST require explicit operator action. Profile removal/opt-out MUST
@@ -399,16 +413,16 @@ preserve native credentials by default; explicit logout MUST delete only authori
 by that operation's approved custody namespace.
 
 Amendment boundary at S: this successor changes the native authority scope of
-`protocol/project-context.md:222` (§5 first paragraph). The approved projection at :232
+`protocol/project-context.md:222` (section 5 first paragraph). The approved projection at :232
 and composition/lease/busy rules at :298/:311 attach to the per-checkout binding and
-its generation projection through PG-BINDING-01, separately from §5.1 mode/registration.
+its generation projection through PG-BINDING-01, separately from section 5.1 mode/registration.
 Old homes and registrations keep their original meaning under PG-COMPAT-02. Shared
 fixed-path concurrency remains PG-P-051/073 under PG-ACTIVATE-01; strict worktree trust
 and cross-checkout history confinement remain PG-P-062/093. Exact home-variable and
 auth mappings remain PG-P-051/082.
 
 <a id="pg-auth-02"></a>
-**PG-AUTH-02 (N).** One operator-approved profile × runtime authority across managers is
+**PG-AUTH-02 (N).** One operator-approved profile x runtime authority across managers is
 the target only with qualified common custody, exclusion and refresh coordination.
 Separately approved custody namespaces MAY retain separate stable homes/logins as an
 explicitly selected initial binding while common custody is unqualified. Namespace
@@ -416,7 +430,7 @@ selection does not change PG-AUTH-01's scope. A manager MUST NOT silently fall b
 copy rotating credentials or adopt another authority.
 
 <a id="pg-p-041"></a>
-**PG-P-041 (P — placeholder).** Operator, authority and session-custodian owners: shared
+**PG-P-041 (P - placeholder).** Operator, authority and session-custodian owners: shared
 versus explicitly separate authority mapping; G1 path/backend/rotation and multi-reader
 evidence; actual common exclusion namespace and adoption carrier.
 
@@ -430,7 +444,7 @@ complete generation inputs MUST reuse their content identity subject to verifica
 reuse; the source-home-bound snapshot-v1 digest MUST NOT become that identity.
 
 <a id="pg-p-042"></a>
-**PG-P-042 (P — placeholder).** Generation/carrier editors: complete manifest, digest
+**PG-P-042 (P - placeholder).** Generation/carrier editors: complete manifest, digest
 domain/canonicalization, selected-input closure and correspondence with raw audit
 subjects; no successor manifest fields are allocated here.
 
@@ -443,7 +457,7 @@ be treated as a persistent loader root, not an unconstrained writable seed. Cred
 values/history hashes MUST NOT serve as control evidence.
 
 <a id="pg-p-043"></a>
-**PG-P-043 (P — placeholder).** Per-tuple G1 control/write-back probes plus
+**PG-P-043 (P - placeholder).** Per-tuple G1 control/write-back probes plus
 control-carrier owner: exact keys, types, scopes, approved digests and canonical
 key/channel encoding; see PG-P-062.
 
@@ -456,7 +470,7 @@ private native locator. Portable generation identity, native session-manager cou
 process incarnation MUST remain distinct. Selecting current/latest content MUST NOT
 replace a retained original binding. In the successor, approved project control-item
 projection, composition, lease and busy-update rules MUST attach to the per-checkout
-binding/generation projection, not silently acquire profile × runtime scope from a
+binding/generation projection, not silently acquire profile x runtime scope from a
 shared native authority. Each leased checkout binding MUST have at most one materialized
 composition; concurrent launches on that binding MUST use that composition and require
 qualified concurrent native-state access. Repair, switching, skill/CLI sync or changed
@@ -467,9 +481,13 @@ PG-ACTIVATE-01 and PG-ROOTS-01.
 Scope note: cross-checkout concurrency and shared fixed-path projection are unresolved
 at PG-P-051/073; separate checkout bindings are not evidence of independent native
 reads/writes. The strict trust/history mapping remains PG-P-062/093.
+The project/session binding of PG-TERMS-01 is the per-session relation;
+the checkout binding above is the per-checkout leased relation. Concurrent
+A/B coexistence under PG-ACTIVATE-01 therefore spans distinct bindings,
+not two materialized compositions on one leased checkout binding.
 
 <a id="pg-p-044"></a>
-**PG-P-044 (P — placeholder).** Session, project, fragment and command-carrier owners:
+**PG-P-044 (P - placeholder).** Session, project, fragment and command-carrier owners:
 complete closed successor binding/locator/retention correspondence; G1 native
 resume/child/custody evidence and operator custodian choice.
 
@@ -492,7 +510,7 @@ success/admitting receipt. Interrupted state MUST preserve uncertainty and roots
 authoritative recovery; installed bytes MUST NOT manufacture missing expected evidence.
 
 <a id="pg-p-051"></a>
-**PG-P-051 (P — placeholder).** G1 root/skill/MCP live A/B and native authority probes,
+**PG-P-051 (P - placeholder).** G1 root/skill/MCP live A/B and native authority probes,
 then operator binding choice: invocation projection versus serialized fixed paths, exact
 home-variable mapping and Runtime B confirmation; descriptor/carrier owners allocate the
 realization. Cross-checkout shared-authority projection and concurrency depend on
@@ -508,7 +526,7 @@ without changing live bindings. An active-A launch, if supported, MUST be explic
 disclosed rather than silently substituting A for requested B.
 
 <a id="pg-p-052"></a>
-**PG-P-052 (P — placeholder).** G1 binding and roots/writer race evidence: qualified
+**PG-P-052 (P - placeholder).** G1 binding and roots/writer race evidence: qualified
 activation transaction, pending/active status and readmission carrier; coordinate the
 draft ordinary-launch-refresh proposal without changing its historical text.
 
@@ -517,7 +535,7 @@ draft ordinary-launch-refresh proposal without changing its historical text.
 <a id="pg-level-01"></a>
 **PG-LEVEL-01 (N).** The successor MUST preserve the level meanings, default L3,
 aggregation, global floor/system lock and raise-only minima of
-environment-store-verification-v2 §0. Mismatch MUST win over unavailable at L2–L4; L1
+environment-store-verification-v2 section 0. Mismatch MUST win over unavailable at L2-L4; L1
 MUST warn for either. L2 MUST refuse any definite mismatch and warn for unavailable
 checks; L3 MUST require every required local item to complete and pass. L4 MUST satisfy
 L3 locally and require centre confirmation of every required item. An absent,
@@ -537,17 +555,19 @@ Editorial: this chapter supplies no signed configuration section; successor leve
 remain PG-P-053.
 
 <a id="pg-p-053"></a>
-**PG-P-053 (P — placeholder).** Startup/carrier and registry-policy owners: successor
+**PG-P-053 (P - placeholder).** Startup/carrier and registry-policy owners: successor
 level/minimum field allocation, mapping of generation/control/negative receipts to check
 classes and supported lower-level combinations; retain baseline level semantics.
 Unknown-loader-control mapping below L3 remains pending here; independent structural and
-mandatory gates are unchanged.
+mandatory gates are unchanged. Classification of in-policy compatible drift
+under PG-RUNTIME-01 against the section 0 aggregation in PG-LEVEL-01 also
+remains pending here.
 
 ### 5.4 Home drift and same-pin repair
 
 <a id="pg-repair-01"></a>
 **PG-REPAIR-01 (N).** For the baseline managed-home decision, existing home drift
-without repair MUST warn, remain non-current and start only at L1; L2–L4 MUST refuse.
+without repair MUST warn, remain non-current and start only at L1; L2-L4 MUST refuse.
 Without repair, an absent home MUST refuse at every level. A structural violation MUST
 refuse at every level, including with repair. Explicit repair MUST restore an
 absent/drifted home from completely verified inputs before launch at every level. L3/L4
@@ -562,7 +582,7 @@ claim to heal already consumed live memory. Repair MUST NOT bypass overlapping-w
 protection.
 
 <a id="pg-p-054"></a>
-**PG-P-054 (P — placeholder).** Startup/holder owners and G1 mixed-write/interruption
+**PG-P-054 (P - placeholder).** Startup/holder owners and G1 mixed-write/interruption
 probes: classify successor state-home versus generation drift and decide whether any
 same-pin live restoration can satisfy protected-writer rules. No live repair exception
 is enabled by this draft.
@@ -577,7 +597,7 @@ partial publication. A successful shape check MUST NOT replace content verificat
 required authority evidence.
 
 <a id="pg-p-055"></a>
-**PG-P-055 (P — placeholder).** Adapter and fragment owners after G1: exact projected
+**PG-P-055 (P - placeholder).** Adapter and fragment owners after G1: exact projected
 paths, closure/relocation constraints and structural-to-native binding receipt. A
 conformance alias is not a production descriptor.
 
@@ -605,7 +625,7 @@ retroactively certify it.
 ### 6.2 Per-tuple roster and base/role channels
 
 <a id="pg-p-062"></a>
-**PG-P-062 (P — placeholder).** G1 per exact tuple: enumerate every native loader layer,
+**PG-P-062 (P - placeholder).** G1 per exact tuple: enumerate every native loader layer,
 home/override/external skill/rule/MCP/config/plugin/agent/resource channel; determine
 precedence, types, write-back targets, unknown-key handling and base/role preservation.
 Observe native home, appended/profile root and nested scopes separately at startup, late
@@ -631,7 +651,7 @@ binary under a substituted policy. An unadmitted exact probe candidate MUST refu
 mock/source evidence MUST NOT be promoted to native acceptance of another binary.
 
 <a id="pg-p-063"></a>
-**PG-P-063 (P — placeholder).** Adapter and consumer owners after G1: actual binary
+**PG-P-063 (P - placeholder).** Adapter and consumer owners after G1: actual binary
 identity, line/floor encoding, required capability roster, acceptance
 scope/expiry/invalidation and same-line requalification receipt.
 
@@ -668,10 +688,12 @@ liveness or fresh-start authority. Fresh admission after terminal disposition MU
 require a new request.
 
 <a id="pg-p-071"></a>
-**PG-P-071 (P — placeholder).** Holder, fragment and custodian owners: rejecting
+**PG-P-071 (P - placeholder).** Holder, fragment and custodian owners: rejecting
 successor holder/session/outcome carrier and canonical request/operation allocation.
-Preserve home-leases HL05–HL07; accepted fixture operations are not additions to the old
-closed union.
+Preserve home-leases HL05-HL07; accepted fixture operations are not additions to the old
+closed union. That allocation defines the operation identity distinguishing
+a same-operation request conflict from a distinct-mutation revision
+conflict under PG-REPLAY-01.
 
 ### 7.2 Observation, incarnation and no-start
 
@@ -691,7 +713,7 @@ before bind MUST retain uncertainty and every protected root; fabricated pre-exe
 process identity MUST NOT resolve it.
 
 <a id="pg-p-072"></a>
-**PG-P-072 (P — placeholder).** Operator and actual session/observer owners: custodian
+**PG-P-072 (P - placeholder).** Operator and actual session/observer owners: custodian
 enrollment, coordinated namespace, exact transport/authentication, finite closed
 operation schemas/bounds, descendant/no-start/fence proof interface and failure mapping.
 G1 shared fixture evidence and each real consumer integration remain required.
@@ -713,7 +735,7 @@ roots. An A resume MUST restore/retain its exact admitted projection under exclu
 refuse; it MUST NOT follow B.
 
 <a id="pg-p-073"></a>
-**PG-P-073 (P — placeholder).** G1 live A/B/root-refresh/skill/MCP/resume results and
+**PG-P-073 (P - placeholder).** G1 live A/B/root-refresh/skill/MCP/resume results and
 operator choice: qualify invocation binding or serialize fixed projection; allocate
 pending/active and retained/retired carriers plus explicit stopped readmission. Include
 two-checkout shared-authority concurrency against a single-checkout control; separate
@@ -736,7 +758,7 @@ protected by another root. Publication/reconciliation interruption MUST preserve
 authoritative state or recoverable protected uncertainty.
 
 <a id="pg-p-074"></a>
-**PG-P-074 (P — placeholder).** Holder/store/custodian owners and G1 crash/race probes:
+**PG-P-074 (P - placeholder).** Holder/store/custodian owners and G1 crash/race probes:
 exact journal/publication/recovery and GC carrier correspondence; no timer-based lease
 or live-writer exception is allocated.
 
@@ -758,7 +780,7 @@ abandonment remains unchanged; this is a stricter successor default, not retroac
 refusal of old replay.
 
 <a id="pg-p-075"></a>
-**PG-P-075 (P — placeholder).** Policy/holder owners: exception enablement and bounded
+**PG-P-075 (P - placeholder).** Policy/holder owners: exception enablement and bounded
 reason carrier, fence proof/verification interface, atomic audit/tombstone schema; G1
 targeted break/audit-loss controls and actual custody confirmation.
 
@@ -782,7 +804,7 @@ lifecycle. Parsing a skill plan or command carrier MUST NOT bypass its independe
 activation/admission gates.
 
 <a id="pg-p-081"></a>
-**PG-P-081 (P — placeholder).** Consumer/adapter owners after G1: exact entry/session
+**PG-P-081 (P - placeholder).** Consumer/adapter owners after G1: exact entry/session
 kind and fragment/command projection; each consumer supplies its own source-head and
 actual caller evidence, not inherited discovery qualification.
 
@@ -810,7 +832,7 @@ isolation, real expiry, rotation or revocation. A credential's presence MUST NOT
 reported as a usable session.
 
 <a id="pg-p-082"></a>
-**PG-P-082 (P — placeholder).** Operator and source/consumer owners must decide the
+**PG-P-082 (P - placeholder).** Operator and source/consumer owners must decide the
 successor eligibility and explicit migration of each existing selected credential
 source, including the adopted node setup-token source and the selected launcher OAuth
 store. An environment-variable delivery channel alone establishes neither equivalence
@@ -838,7 +860,7 @@ inputs. Native child ownership MAY include threads within one process; it MUST r
 part of authoritative custody rather than a driver-created substitute child.
 
 <a id="pg-p-083"></a>
-**PG-P-083 (P — placeholder).** G1 native session/resume/child correlation and control
+**PG-P-083 (P - placeholder).** G1 native session/resume/child correlation and control
 observations; session/adapter owners define closed private locator and successor
 readmission/policy receipt. Unsupported entries remain explicitly unqualified.
 
@@ -887,7 +909,7 @@ strict isolation. Live-session mutation is not prevented. Instruction/hook/envir
 surfaces outside the admitted inventory MUST NOT be claimed verified.
 
 <a id="pg-p-092"></a>
-**PG-P-092 (P — placeholder).** Delivery, inventory and consumer owners after actual
+**PG-P-092 (P - placeholder).** Delivery, inventory and consumer owners after actual
 skill/MCP activation and native resume: complete generated inventory, base/extras
 carrier and native projections. No incomplete delivery or dormant caller qualifies this
 variant.
@@ -911,7 +933,7 @@ authorize a selected path set. Strict remains the trusted-code loader boundary o
 PG-SCOPE-02; no native-project success transfers certification.
 
 <a id="pg-p-093"></a>
-**PG-P-093 (P — placeholder).** Second-track protected-view probe, operator selection
+**PG-P-093 (P - placeholder).** Second-track protected-view probe, operator selection
 and runtime certification; view/subject editors allocate exact inventory framing,
 approval and provenance/retention carriers. No strict tuple or sparse implementation is
 qualified here. Shared-authority worktree-trust and cross-checkout history confinement
@@ -929,7 +951,7 @@ machine/project delivery terminology. Until that capability is separately adopte
 repository composition MUST refuse without changing global/legacy behavior.
 
 <a id="pg-p-094"></a>
-**PG-P-094 (P — placeholder).** Second-track operator/design decision: repository
+**PG-P-094 (P - placeholder).** Second-track operator/design decision: repository
 selection/adoption, composition carrier and mode terminology distinct from existing
 delivery modes; preserve room for repository layers without changing old formats.
 
@@ -979,6 +1001,12 @@ clause across successor owners MUST preserve every vector assigned to that basel
 clause in the predecessor skeleton revision c59ec5f; publication conformance MUST reject loss of that coverage
 as well as inconsistent clause references.
 
+Editorial pin: the predecessor skeleton file `protocol/profile-generations.md`
+at c59ec5f4a7e78e0f0ce90b92a3be831b2a9d0ace has Git blob
+46318fd64c927a86121128653c8460b257cd3bb8 and SHA-256
+f5d5182f1ce333996af7f22f73111ebe8b34d746a31f09894576b2c3e1be645e.
+Vector assignments preserved under PG-TRACE-01 are read from that file.
+
 <a id="pg-trace-02"></a>
 **PG-TRACE-02 (N).** Frozen baseline vector inputs and startup corpus MUST be reused
 unchanged at their recorded source identity. A successor corpus MUST enumerate/hash its
@@ -1016,7 +1044,7 @@ lists/browser sessions MUST NOT be inspected, modified or used as controls. Rece
 MUST carry policy digests/attestations and typed predicates, not credential payloads.
 
 <a id="pg-p-104"></a>
-**PG-P-104 (P — placeholder).** G1 approved
+**PG-P-104 (P - placeholder).** G1 approved
 artifact/source/binary/OS/architecture/session-kind manifests, fixed-isolation controls,
 per-channel observations and actual observer custody; owners choose qualified
 realization and supported matrix after receipts. The external design digests are
@@ -1037,164 +1065,170 @@ Unless marked D1/D2, every baseline reference is at S. New carrier means
 unallocated successor, not a reserved number. Existing carriers retain their
 old bytes and replay. Trace publication does not itself adopt any amendment.
 
-| Baseline file:line / clause | Specific disposition | Carrier / N–P status | Decision; exact paired vector IDs | Authoritative successor |
+| Baseline file:line / clause | Specific disposition | Carrier / N-P status | Decision; exact paired vector IDs | Authoritative successor |
 | --- | --- | --- | --- | --- |
 | `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-GENERATION-01](#pg-generation-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
 | `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-CONTROL-01](#pg-control-01) |
 | `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve native discovery disclosure and mandatory independent permissions/memory gates | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V4 | [PG-NATIVE-01](#pg-native-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V5 | [PG-STRICT-01](#pg-strict-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Amend successor project-home authority to stable profile × runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V5 | [PG-STRICT-01](#pg-strict-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Amend successor project-home authority to stable profile x runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
 | `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `cips/CIP-0014-managed-home-snapshots.md:147` design; :168 recommendation | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
 | `cips/CIP-0014-managed-home-snapshots.md` :177 command/destination; :223 closure/relocation | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-GENERATION-01](#pg-generation-01) |
 | `cips/CIP-0014-managed-home-snapshots.md` :177 command/destination; :223 closure/relocation | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
 | `cips/CIP-0014-managed-home-snapshots.md` :272 manifest/digest; :326 publication | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q1; Q1-V7 | [PG-GENERATION-01](#pg-generation-01) |
 | `cips/CIP-0014-managed-home-snapshots.md` :272 manifest/digest; :326 publication | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
-| `cips/CIP-0014-managed-home-snapshots.md` :389 adapter/overlays; :433 delivery/verification | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `cips/CIP-0014-managed-home-snapshots.md` :389 adapter/overlays; :433 delivery/verification | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
+| `cips/CIP-0014-managed-home-snapshots.md` :389 adapter/overlays; :433 delivery/verification | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `cips/CIP-0014-managed-home-snapshots.md` :389 adapter/overlays; :433 delivery/verification | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
 | `cips/CIP-0014-managed-home-snapshots.md` :389 adapter/overlays; :433 delivery/verification | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `cips/CIP-0014-managed-home-snapshots.md` :389 adapter/overlays; :433 delivery/verification | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/managed-home-snapshots.md:9` §1 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-PUBLISH-01](#pg-publish-01) |
-| `protocol/managed-home-snapshots.md:9` §1 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/managed-home-snapshots.md` :37 §2 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
-| `protocol/managed-home-snapshots.md` :37 §2 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/managed-home-snapshots.md` :37 §2 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/managed-home-snapshots.md` :99 §3 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q1; Q1-V5 | [PG-INVENTORY-01](#pg-inventory-01) |
-| `protocol/managed-home-snapshots.md` :99 §3 | Preserve private auth/origin boundary; extend shared-receipt exclusions to lifecycle identities/content | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V11 | [PG-PRIVACY-01](#pg-privacy-01) |
-| `protocol/managed-home-snapshots.md` :141 §4, especially :175 home bindings and :204 source-home digest | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-GENERATION-01](#pg-generation-01) |
-| `protocol/managed-home-snapshots.md` :141 §4, especially :175 home bindings and :204 source-home digest | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/managed-home-snapshots.md` :141 §4, especially :175 home bindings and :204 source-home digest | Amend successor project-home authority to stable profile × runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
-| `protocol/managed-home-snapshots.md` :226 §5 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q1; Q1-V5 | [PG-INVENTORY-01](#pg-inventory-01) |
-| `protocol/managed-home-snapshots.md` :226 §5 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
-| `protocol/managed-home-snapshots.md` :267 §6; :293 pending writable-slot interpretation | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/managed-home-snapshots.md` :267 §6; :293 pending writable-slot interpretation | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/managed-home-snapshots.md` :267 §6; :293 pending writable-slot interpretation | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `protocol/managed-home-snapshots.md` :267 §6; :293 pending writable-slot interpretation | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/managed-home-snapshots.md` :301 §7 | Preserve private operational locks; add verified export projection rather than relabelling | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V7 | [PG-LOCK-01](#pg-lock-01) |
-| `protocol/managed-home-snapshots.md` :301 §7 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-INVENTORY-01](#pg-inventory-01) |
-| `protocol/environments.md:89` §1; :229 §1.3; :310 §1.4 | Preserve frozen headers; narrow equality to complete equal render/header inputs | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V1 | [PG-RENDER-02](#pg-render-02) |
-| `protocol/environments.md:89` §1; :229 §1.3; :310 §1.4 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
-| `protocol/environments.md:89` §1; :229 §1.3; :310 §1.4 | Preserve private operational locks; add verified export projection rather than relabelling | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V7 | [PG-LOCK-01](#pg-lock-01) |
-| `protocol/environments.md` :470 §2; :552 skill directories; :606 §2.2 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
-| `protocol/environments.md` :470 §2; :552 skill directories; :606 §2.2 | Preserve manifest vocabulary and declarations; restrict the initial supported settings subset | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V6, Q1-V7 | [PG-PACKAGE-01](#pg-package-01) |
-| `protocol/environments.md` :734 §3; :968 §5; :1044 §5.1; :1182 §5.4 | Preserve stable dependency/weight/module/LF ordering and absent versus header-only output | N; baseline hash/union/render semantics retained | Q1; Q1-V1, Q1-V2 | [PG-RENDER-01](#pg-render-01) |
-| `protocol/environments.md` :837 §4; :1241 §5.6 | Preserve core hash-1 guard and exact hash-2 byte framing | N; baseline hash/union/render semantics retained | Q1; Q1-V4 | [PG-HASH-01](#pg-hash-01) |
-| `protocol/environments.md` :837 §4; :1241 §5.6 | Preserve independent structural acquisition refusal; deny extraction authority inferred from hashing | N; baseline hash/union/render semantics retained | Q1; Q1-V5 | [PG-HASH-02](#pg-hash-02) |
-| `protocol/environments.md` :1305 §6 | Add literal include/exclude, duplicate/missing-member rules and canonical selector order | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V1, Q2-V2, Q2-V3, Q2-V4 | [PG-FILTER-02](#pg-filter-02) |
-| `protocol/environments.md` :1305 §6 | Preserve independent-edge full/context/runtime/command activation union | N; baseline hash/union/render semantics retained | Q2; Q2-V5, Q2-V6 | [PG-COMPOSE-02](#pg-compose-02) |
-| `protocol/environments.md` :1305 §6 | Add surviving-edge provenance/support closure and explicit effective-identity recomposition | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V7 | [PG-FILTER-03](#pg-filter-03) |
-| `protocol/environments.md` :1305 §6 | Preserve ordering/union; add full-closure gate only for filters and retain contexts-only deferral | N; baseline ordering/union kept; edge P-024/025 and contexts-only P-025 | Q2; Q2-V8 | [PG-COMPOSE-01](#pg-compose-01) |
-| `protocol/environments.md` :1305 §6 | Preserve legacy collection rules; refuse filters on initial contexts-only delivery | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V9 | [PG-FILTER-04](#pg-filter-04) |
-| `protocol/environments.md` :1422 §7; :1557 §7.2; :1572 §7.3; :2125 §7.8 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-INVENTORY-01](#pg-inventory-01) |
-| `protocol/environments.md` :1422 §7; :1557 §7.2; :1572 §7.3; :2125 §7.8 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/environments.md` :1422 §7; :1557 §7.2; :1572 §7.3; :2125 §7.8 | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-CONTROL-01](#pg-control-01) |
-| `protocol/environments.md` :1422 §7; :1557 §7.2; :1572 §7.3; :2125 §7.8 | Preserve native discovery disclosure and mandatory independent permissions/memory gates | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V4 | [PG-NATIVE-01](#pg-native-01) |
-| `protocol/environments.md` :1422 §7; :1557 §7.2; :1572 §7.3; :2125 §7.8 | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V5 | [PG-STRICT-01](#pg-strict-01) |
-| `protocol/environments.md` :1422 §7; :1557 §7.2; :1572 §7.3; :2125 §7.8 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/environments.md` :1637 §7.4; :2008 §7.5; :2035 §7.6 | Amend successor seed admission with typed approved controls and L3 unknown-control refusal; preserve seed lifecycle | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3, Q4-V4, Q4-V5 | [PG-LOADER-01](#pg-loader-01) |
-| `protocol/environments.md` :1637 §7.4; :2008 §7.5; :2035 §7.6 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `protocol/environments.md` :2167 §7.9; :2225 §7.10 | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-CONTROL-01](#pg-control-01) |
-| `protocol/environments.md` :2167 §7.9; :2225 §7.10 | Add native compatible-line policy; preserve strict exact-tuple qualification | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V19 | [PG-RUNTIME-01](#pg-runtime-01) |
-| `protocol/environments.md` :2383 §8; :2466 §8.2; :2625 §8.3.1; :2674 §8.4 | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-CONTROL-01](#pg-control-01) |
-| `protocol/environments.md` :2383 §8; :2466 §8.2; :2625 §8.3.1; :2674 §8.4 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
-| `protocol/environments.md` :2383 §8; :2466 §8.2; :2625 §8.3.1; :2674 §8.4 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/environments.md` :2383 §8; :2466 §8.2; :2625 §8.3.1; :2674 §8.4 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/environments.md` :2777 §9.1; :2916 §9.2 | Preserve legacy delivery/defaults; add explicit migration preview and no implicit global adoption | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q1/Q4; Q1-V6, Q4-V20 | [PG-COMPAT-01](#pg-compat-01) |
-| `protocol/environments.md` :2777 §9.1; :2916 §9.2 | Amend successor ordinary refresh to explicit desired-generation update; preserve faithful resume pin | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V2 | [PG-UPDATE-01](#pg-update-01) |
-| `protocol/environments.md` :3088 §9.3; :3105 §9.4 | Add literal include/exclude, duplicate/missing-member rules and canonical selector order | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V1, Q2-V2, Q2-V3, Q2-V4 | [PG-FILTER-02](#pg-filter-02) |
-| `protocol/environments.md` :3088 §9.3; :3105 §9.4 | Preserve independent-edge full/context/runtime/command activation union | N; baseline hash/union/render semantics retained | Q2; Q2-V5, Q2-V6 | [PG-COMPOSE-02](#pg-compose-02) |
-| `protocol/environments.md` :3088 §9.3; :3105 §9.4 | Add surviving-edge provenance/support closure and explicit effective-identity recomposition | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V7 | [PG-FILTER-03](#pg-filter-03) |
-| `protocol/environments.md` :3088 §9.3; :3105 §9.4 | Preserve ordering/union; add full-closure gate only for filters and retain contexts-only deferral | N; baseline ordering/union kept; edge P-024/025 and contexts-only P-025 | Q2; Q2-V8 | [PG-COMPOSE-01](#pg-compose-01) |
-| `protocol/environments.md` :3088 §9.3; :3105 §9.4 | Preserve legacy collection rules; refuse filters on initial contexts-only delivery | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V9 | [PG-FILTER-04](#pg-filter-04) |
-| `protocol/environments.md` :3567 §10; :3891 §10.2; :4187 §10.3 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10, Q4-V20 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/environments.md` :3567 §10; :3891 §10.2; :4187 §10.3 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/environments.md` :4301 §10.5 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-PUBLISH-01](#pg-publish-01) |
-| `protocol/environments.md` :4301 §10.5 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/environments.md` :4301 §10.5 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `protocol/environments.md` :4301 §10.5 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/environments.md` :4301 §10.5 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/environments.md` :4482 §12; :4681 §12.1; :4786 §12.2 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/environments.md` :4482 §12; :4681 §12.1; :4786 §12.2 | Preserve merged L1–L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V19 | [PG-LEVEL-01](#pg-level-01) |
-| `protocol/environments.md` :5116 home-lease amendment | Preserve HL07 original-revision committed bind replay with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12 | [PG-REPLAY-01](#pg-replay-01) |
-| `protocol/environments.md` :5116 home-lease amendment | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/environments.md` :5116 home-lease amendment | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/environments.md` :5116 home-lease amendment | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
-| `protocol/environment-store-verification-v2.md:11` level table; :26 aggregation; :37 minima | Preserve merged L1–L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V19 | [PG-LEVEL-01](#pg-level-01) |
+| `cips/CIP-0014-managed-home-snapshots.md` :389 adapter/overlays; :433 delivery/verification | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/managed-home-snapshots.md:9` section 1 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-PUBLISH-01](#pg-publish-01) |
+| `protocol/managed-home-snapshots.md:9` section 1 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/managed-home-snapshots.md` :37 section 2 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
+| `protocol/managed-home-snapshots.md` :37 section 2 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/managed-home-snapshots.md` :37 section 2 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/managed-home-snapshots.md` :99 section 3 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q1; Q1-V5 | [PG-INVENTORY-01](#pg-inventory-01) |
+| `protocol/managed-home-snapshots.md` :99 section 3 | Preserve private auth/origin boundary; extend shared-receipt exclusions to lifecycle identities/content | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V11 | [PG-PRIVACY-01](#pg-privacy-01) |
+| `protocol/managed-home-snapshots.md` :141 section 4, especially :175 home bindings and :204 source-home digest | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-GENERATION-01](#pg-generation-01) |
+| `protocol/managed-home-snapshots.md` :141 section 4, especially :175 home bindings and :204 source-home digest | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/managed-home-snapshots.md` :141 section 4, especially :175 home bindings and :204 source-home digest | Amend successor project-home authority to stable profile x runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
+| `protocol/managed-home-snapshots.md` :226 section 5 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q1; Q1-V5 | [PG-INVENTORY-01](#pg-inventory-01) |
+| `protocol/managed-home-snapshots.md` :226 section 5 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
+| `protocol/managed-home-snapshots.md` :267 section 6; :293 pending writable-slot interpretation | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/managed-home-snapshots.md` :267 section 6; :293 pending writable-slot interpretation | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/managed-home-snapshots.md` :267 section 6; :293 pending writable-slot interpretation | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
+| `protocol/managed-home-snapshots.md` :267 section 6; :293 pending writable-slot interpretation | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/managed-home-snapshots.md` :301 section 7 | Preserve private operational locks; add verified export projection rather than relabelling | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V7 | [PG-LOCK-01](#pg-lock-01) |
+| `protocol/managed-home-snapshots.md` :301 section 7 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-INVENTORY-01](#pg-inventory-01) |
+| `protocol/environments.md:89` section 1; :229 section 1.3; :310 section 1.4 | Preserve frozen headers; narrow equality to complete equal render/header inputs | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V1 | [PG-RENDER-02](#pg-render-02) |
+| `protocol/environments.md:89` section 1; :229 section 1.3; :310 section 1.4 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
+| `protocol/environments.md:89` section 1; :229 section 1.3; :310 section 1.4 | Preserve private operational locks; add verified export projection rather than relabelling | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V7 | [PG-LOCK-01](#pg-lock-01) |
+| `protocol/environments.md` :470 section 2; :552 skill directories; :606 section 2.2 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
+| `protocol/environments.md` :470 section 2; :552 skill directories; :606 section 2.2 | Preserve manifest vocabulary and declarations; restrict the initial supported settings subset | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V6, Q1-V7 | [PG-PACKAGE-01](#pg-package-01) |
+| `protocol/environments.md` :734 section 3; :968 section 5; :1044 section 5.1; :1182 section 5.4 | Preserve stable dependency/weight/module/LF ordering and absent versus header-only output | N; baseline hash/union/render semantics retained | Q1; Q1-V1, Q1-V2 | [PG-RENDER-01](#pg-render-01) |
+| `protocol/environments.md` :837 section 4; :1241 section 5.6 | Preserve core hash-1 guard and exact hash-2 byte framing | N; baseline hash/union/render semantics retained | Q1; Q1-V4 | [PG-HASH-01](#pg-hash-01) |
+| `protocol/environments.md` :837 section 4; :1241 section 5.6 | Preserve independent structural acquisition refusal; deny extraction authority inferred from hashing | N; baseline hash/union/render semantics retained | Q1; Q1-V5 | [PG-HASH-02](#pg-hash-02) |
+| `protocol/environments.md` :1305 section 6 | Add literal include/exclude, duplicate/missing-member rules and canonical selector order | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V1, Q2-V2, Q2-V3, Q2-V4 | [PG-FILTER-02](#pg-filter-02) |
+| `protocol/environments.md` :1305 section 6 | Preserve independent-edge full/context/runtime/command activation union | N; baseline hash/union/render semantics retained | Q2; Q2-V5, Q2-V6 | [PG-COMPOSE-02](#pg-compose-02) |
+| `protocol/environments.md` :1305 section 6 | Add surviving-edge provenance/support closure and explicit effective-identity recomposition | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V7 | [PG-FILTER-03](#pg-filter-03) |
+| `protocol/environments.md` :1305 section 6 | Preserve ordering/union; add full-closure gate only for filters and retain contexts-only deferral | N; baseline ordering/union kept; edge P-024/025 and contexts-only P-025 | Q2; Q2-V8 | [PG-COMPOSE-01](#pg-compose-01) |
+| `protocol/environments.md` :1305 section 6 | Preserve legacy collection rules; refuse filters on initial contexts-only delivery | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V9 | [PG-FILTER-04](#pg-filter-04) |
+| `protocol/environments.md` :1422 section 7; :1557 section 7.2; :1572 section 7.3; :2125 section 7.8 | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-INVENTORY-01](#pg-inventory-01) |
+| `protocol/environments.md` :1422 section 7; :1557 section 7.2; :1572 section 7.3; :2125 section 7.8 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/environments.md` :1422 section 7; :1557 section 7.2; :1572 section 7.3; :2125 section 7.8 | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-CONTROL-01](#pg-control-01) |
+| `protocol/environments.md` :1422 section 7; :1557 section 7.2; :1572 section 7.3; :2125 section 7.8 | Preserve native discovery disclosure and mandatory independent permissions/memory gates | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V4 | [PG-NATIVE-01](#pg-native-01) |
+| `protocol/environments.md` :1422 section 7; :1557 section 7.2; :1572 section 7.3; :2125 section 7.8 | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V5 | [PG-STRICT-01](#pg-strict-01) |
+| `protocol/environments.md` :1422 section 7; :1557 section 7.2; :1572 section 7.3; :2125 section 7.8 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/environments.md` :1637 section 7.4; :2008 section 7.5; :2035 section 7.6 | Amend successor seed admission with typed approved controls and L3 unknown-control refusal; preserve seed lifecycle | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3, Q4-V4, Q4-V5 | [PG-LOADER-01](#pg-loader-01) |
+| `protocol/environments.md` :1637 section 7.4; :2008 section 7.5; :2035 section 7.6 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
+| `protocol/environments.md` :2167 section 7.9; :2225 section 7.10 | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-CONTROL-01](#pg-control-01) |
+| `protocol/environments.md` :2167 section 7.9; :2225 section 7.10 | Add native compatible-line policy; preserve strict exact-tuple qualification | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V19 | [PG-RUNTIME-01](#pg-runtime-01) |
+| `protocol/environments.md` :2383 section 8; :2466 section 8.2; :2625 section 8.3.1; :2674 section 8.4 | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-CONTROL-01](#pg-control-01) |
+| `protocol/environments.md` :2383 section 8; :2466 section 8.2; :2625 section 8.3.1; :2674 section 8.4 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
+| `protocol/environments.md` :2383 section 8; :2466 section 8.2; :2625 section 8.3.1; :2674 section 8.4 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/environments.md` :2383 section 8; :2466 section 8.2; :2625 section 8.3.1; :2674 section 8.4 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/environments.md` :2777 section 9.1; :2916 section 9.2 | Preserve legacy delivery/defaults; add explicit migration preview and no implicit global adoption | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q1/Q4; Q1-V6, Q4-V20 | [PG-COMPAT-01](#pg-compat-01) |
+| `protocol/environments.md` :2777 section 9.1; :2916 section 9.2 | Amend successor ordinary refresh to explicit desired-generation update; preserve faithful resume pin | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V2 | [PG-UPDATE-01](#pg-update-01) |
+| `protocol/environments.md` :3088 section 9.3; :3105 section 9.4 | Add literal include/exclude, duplicate/missing-member rules and canonical selector order | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V1, Q2-V2, Q2-V3, Q2-V4 | [PG-FILTER-02](#pg-filter-02) |
+| `protocol/environments.md` :3088 section 9.3; :3105 section 9.4 | Preserve independent-edge full/context/runtime/command activation union | N; baseline hash/union/render semantics retained | Q2; Q2-V5, Q2-V6 | [PG-COMPOSE-02](#pg-compose-02) |
+| `protocol/environments.md` :3088 section 9.3; :3105 section 9.4 | Add surviving-edge provenance/support closure and explicit effective-identity recomposition | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V7 | [PG-FILTER-03](#pg-filter-03) |
+| `protocol/environments.md` :3088 section 9.3; :3105 section 9.4 | Preserve ordering/union; add full-closure gate only for filters and retain contexts-only deferral | N; baseline ordering/union kept; edge P-024/025 and contexts-only P-025 | Q2; Q2-V8 | [PG-COMPOSE-01](#pg-compose-01) |
+| `protocol/environments.md` :3088 section 9.3; :3105 section 9.4 | Preserve legacy collection rules; refuse filters on initial contexts-only delivery | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V9 | [PG-FILTER-04](#pg-filter-04) |
+| `protocol/environments.md` :3567 section 10; :3891 section 10.2; :4187 section 10.3 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10, Q4-V20 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/environments.md` :3567 section 10; :3891 section 10.2; :4187 section 10.3 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/environments.md` :4301 section 10.5 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-PUBLISH-01](#pg-publish-01) |
+| `protocol/environments.md` :4301 section 10.5 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2, Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/environments.md` :4301 section 10.5 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
+| `protocol/environments.md` :4301 section 10.5 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/environments.md` :4301 section 10.5 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/environments.md` :4482 section 12; :4681 section 12.1; :4786 section 12.2 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/environments.md` :4482 section 12; :4681 section 12.1; :4786 section 12.2 | Preserve merged L1-L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V19 | [PG-LEVEL-01](#pg-level-01) |
+| `protocol/environments.md` :5116 home-lease amendment | Preserve HL07 original-revision committed bind replay for version 1 carriers; amend the different-payload classification to request conflict for the successor carrier only, with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12 | [PG-REPLAY-01](#pg-replay-01) |
+| `protocol/environments.md` :5116 home-lease amendment | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/environments.md` :5116 home-lease amendment | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/environments.md` :5116 home-lease amendment | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
+| `protocol/environment-store-verification-v2.md:11` level table; :26 aggregation; :37 minima | Preserve merged L1-L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V19 | [PG-LEVEL-01](#pg-level-01) |
 | `protocol/environment-store-verification-v2.md` :63 home decision, including :78 repair; :91 structural checks; :117 restoration | Preserve home-only repair at every level, store restoration only at L3/L4 and structural refusal | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V3, Q4-V12 | [PG-REPAIR-01](#pg-repair-01) |
-| `protocol/project-context.md:10` §1; :47 §2 | Preserve legacy none/permission resolution; add explicit managed-mode admission and registration correspondence | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
-| `protocol/project-context.md` :102 §3 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
-| `protocol/project-context.md` :102 §3 | Preserve core hash-1 guard and exact hash-2 byte framing | N; baseline hash/union/render semantics retained | Q1; Q1-V4 | [PG-HASH-01](#pg-hash-01) |
-| `protocol/project-context.md` :102 §3 | Preserve independent structural acquisition refusal; deny extraction authority inferred from hashing | N; baseline hash/union/render semantics retained | Q1; Q1-V5 | [PG-HASH-02](#pg-hash-02) |
-| `protocol/project-context.md` :102 §3 | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q2; Q2-V8 | [PG-BINDING-01](#pg-binding-01) |
-| `protocol/project-context.md` :190 §4 | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V3, Q4-V4, Q4-V20 | [PG-VERIFIED-01](#pg-verified-01) |
-| `protocol/project-context.md` :190 §4 | Add launch/resume drift comparison and disclose renderer/live-mutation limits | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V9 | [PG-VERIFIED-02](#pg-verified-02) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Add native compatible-line policy; preserve strict exact-tuple qualification | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V19 | [PG-RUNTIME-01](#pg-runtime-01) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V5, Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V20 | [PG-VERIFIED-01](#pg-verified-01) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Preserve native discovery disclosure and mandatory independent permissions/memory gates | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V4 | [PG-NATIVE-01](#pg-native-01) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/project-context.md` :220 §5; :244 exact adapter; :258 §5.1 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/project-context.md` :296 §6 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/project-context.md` :296 §6 | Preserve HL07 original-revision committed bind replay with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12 | [PG-REPLAY-01](#pg-replay-01) |
-| `protocol/project-context.md` :296 §6 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/project-context.md` :296 §6 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/project-context.md` :296 §6 | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
-| `protocol/project-context.md` :329 §7; :395 §8 | Preserve legacy none/permission resolution; add explicit managed-mode admission and registration correspondence | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
-| `protocol/project-context.md` :329 §7; :395 §8 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/project-context.md` :329 §7; :395 §8 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/home-leases.md:10` §1; :54 HL05 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `protocol/home-leases.md:10` §1; :54 HL05 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/home-leases.md` :71 HL06; :87 HL07 | Preserve HL07 original-revision committed bind replay with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12, Q4-V14, Q4-V17 | [PG-REPLAY-01](#pg-replay-01) |
-| `protocol/home-leases.md` :97 HL08; :103 HL09; :124 HL11 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/home-leases.md` :97 HL08; :103 HL09; :124 HL11 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/home-leases.md` :97 HL08; :103 HL09; :124 HL11 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/home-leases.md` :129 HL12; :137 HL13 | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
-| `protocol/home-leases.md:144` §3; :265 §5 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V3, Q4-V12, Q4-V13, Q4-V17 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/provisioning-origin.md:9` §1; :52 §2 | Amend successor project-home authority to stable profile × runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
-| `protocol/provisioning-origin.md` :85 §3; :108 §4; :127 §5 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `protocol/provisioning-origin.md` :85 §3; :108 §4; :127 §5 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12, Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/provisioning-origin.md` :85 §3; :108 §4; :127 §5 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/core.md:1505` activation union; :1521 §8 | Preserve core hash-1 guard and exact hash-2 byte framing | N; baseline hash/union/render semantics retained | Q1; Q1-V4 | [PG-HASH-01](#pg-hash-01) |
-| `protocol/core.md:1505` activation union; :1521 §8 | Preserve independent structural acquisition refusal; deny extraction authority inferred from hashing | N; baseline hash/union/render semantics retained | Q1; Q1-V5 | [PG-HASH-02](#pg-hash-02) |
-| `protocol/core.md:1505` activation union; :1521 §8 | Preserve independent-edge full/context/runtime/command activation union | N; baseline hash/union/render semantics retained | Q2; Q2-V2, Q2-V5, Q2-V6 | [PG-COMPOSE-02](#pg-compose-02) |
-| `protocol/skillfile-sources.md:16` §1, especially :61–78; :83 §2; :119 §3 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
-| `protocol/skillfile-sources.md:16` §1, especially :61–78; :83 §2; :119 §3 | Add literal include/exclude, duplicate/missing-member rules and canonical selector order | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V1, Q2-V2, Q2-V3, Q2-V4 | [PG-FILTER-02](#pg-filter-02) |
-| `protocol/skillfile-sources.md:16` §1, especially :61–78; :83 §2; :119 §3 | Preserve legacy collection rules; refuse filters on initial contexts-only delivery | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V5, Q2-V6, Q2-V7, Q2-V8, Q2-V9 | [PG-FILTER-04](#pg-filter-04) |
-| `protocol/skillfile-sources.md` :205 §4 | Preserve local authority; restrict portable first-form evidence to exact Git packages | N; baseline hash/union/render semantics retained | Q3; Q3-V2 | [PG-HASH-03](#pg-hash-03) |
-| `protocol/registry.md:94` §3; :102 schema/hash versions; :111 negative match | Strengthen positive grant to complete subject AND policy/check/review matching | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V1, Q3-V2, Q3-V12 | [PG-GRANT-02](#pg-grant-02) |
-| `protocol/registry.md:94` §3; :102 schema/hash versions; :111 negative match | Add rejecting positive-only successor; preserve old-reader refusal and separate negative issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V3 | [PG-GRANT-01](#pg-grant-01) |
-| `protocol/registry.md:94` §3; :102 schema/hash versions; :111 negative match | Preserve broad same-framing hash OR source+commit negative matching independently of positives | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V4, Q3-V5 | [PG-DENY-01](#pg-deny-01) |
-| `protocol/registry.md:94` §3; :102 schema/hash versions; :111 negative match | Preserve known negatives despite unknown positives; extend retrieval completeness across channels | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V6, Q3-V8 | [PG-DENY-02](#pg-deny-02) |
-| `protocol/registry.md:94` §3; :102 schema/hash versions; :111 negative match | Add initial positive-only rollout with schema-2/hash-2 negatives and future dual issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V7 | [PG-NEGATIVE-01](#pg-negative-01) |
-| `protocol/registry.md:94` §3; :102 schema/hash versions; :111 negative match | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
-| `protocol/registry.md` :128 §4; :134 deny-wins | Preserve broad same-framing hash OR source+commit negative matching independently of positives | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V4, Q3-V5 | [PG-DENY-01](#pg-deny-01) |
-| `protocol/registry.md` :128 §4; :134 deny-wins | Preserve known negatives despite unknown positives; extend retrieval completeness across channels | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V6, Q3-V8 | [PG-DENY-02](#pg-deny-02) |
-| `protocol/registry.md` :128 §4; :134 deny-wins | Add initial positive-only rollout with schema-2/hash-2 negatives and future dual issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V7 | [PG-NEGATIVE-01](#pg-negative-01) |
-| `protocol/registry.md` :128 §4; :134 deny-wins | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
-| `protocol/registry.md` :171 §5; :288 §5.1; :338 §7; :358 §8 | Add required L3 negative coverage/freshness refusal without changing legacy advisory policy | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V8, Q3-V11 | [PG-COVERAGE-01](#pg-coverage-01) |
-| `protocol/registry.md` :171 §5; :288 §5.1; :338 §7; :358 §8 | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
-| `protocol/registry.md` :394 §9; :505 §9.3; :569 §10 | Add rejecting positive-only successor; preserve old-reader refusal and separate negative issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V3 | [PG-GRANT-01](#pg-grant-01) |
-| `protocol/registry.md` :394 §9; :505 §9.3; :569 §10 | Preserve known negatives despite unknown positives; extend retrieval completeness across channels | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V6, Q3-V8 | [PG-DENY-02](#pg-deny-02) |
-| `protocol/registry.md` :394 §9; :505 §9.3; :569 §10 | Add initial positive-only rollout with schema-2/hash-2 negatives and future dual issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V7 | [PG-NEGATIVE-01](#pg-negative-01) |
-| `protocol/registry.md` :394 §9; :505 §9.3; :569 §10 | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
+| `protocol/project-context.md:10` section 1; :47 section 2 | Preserve legacy none/permission resolution; add explicit managed-mode admission and registration correspondence | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
+| `protocol/project-context.md` :102 section 3 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
+| `protocol/project-context.md` :102 section 3 | Preserve core hash-1 guard and exact hash-2 byte framing | N; baseline hash/union/render semantics retained | Q1; Q1-V4 | [PG-HASH-01](#pg-hash-01) |
+| `protocol/project-context.md` :102 section 3 | Preserve independent structural acquisition refusal; deny extraction authority inferred from hashing | N; baseline hash/union/render semantics retained | Q1; Q1-V5 | [PG-HASH-02](#pg-hash-02) |
+| `protocol/project-context.md` :102 section 3 | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q2; Q2-V8 | [PG-BINDING-01](#pg-binding-01) |
+| `protocol/project-context.md` :190 section 4 | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V3, Q4-V4, Q4-V20 | [PG-VERIFIED-01](#pg-verified-01) |
+| `protocol/project-context.md` :190 section 4 | Add launch/resume drift comparison and disclose renderer/live-mutation limits | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V9 | [PG-VERIFIED-02](#pg-verified-02) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Add native compatible-line policy; preserve strict exact-tuple qualification | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V19 | [PG-RUNTIME-01](#pg-runtime-01) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V5, Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V20 | [PG-VERIFIED-01](#pg-verified-01) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Preserve native discovery disclosure and mandatory independent permissions/memory gates | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V4 | [PG-NATIVE-01](#pg-native-01) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7 | [PG-AUTHFLOW-01](#pg-authflow-01) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V8 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/project-context.md` :220 section 5; :244 exact adapter; :258 section 5.1 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/project-context.md` :296 section 6 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/project-context.md` :296 section 6 | Preserve HL07 original-revision committed bind replay for version 1 carriers; amend the different-payload classification to request conflict for the successor carrier only, with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12 | [PG-REPLAY-01](#pg-replay-01) |
+| `protocol/project-context.md` :296 section 6 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/project-context.md` :296 section 6 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/project-context.md` :296 section 6 | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
+| `protocol/project-context.md` :329 section 7; :395 section 8 | Preserve legacy none/permission resolution; add explicit managed-mode admission and registration correspondence | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
+| `protocol/project-context.md` :329 section 7; :395 section 8 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/project-context.md` :329 section 7; :395 section 8 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/home-leases.md:10` section 1; :54 HL05 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7 | [PG-AUTHFLOW-01](#pg-authflow-01) |
+| `protocol/home-leases.md:10` section 1; :54 HL05 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/home-leases.md` :71 HL06; :87 HL07 | Preserve HL07 original-revision committed bind replay for version 1 carriers; amend the different-payload classification to request conflict for the successor carrier only, with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12, Q4-V14, Q4-V17 | [PG-REPLAY-01](#pg-replay-01) |
+| `protocol/home-leases.md` :97 HL08; :103 HL09; :124 HL11 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/home-leases.md` :97 HL08; :103 HL09; :124 HL11 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/home-leases.md` :97 HL08; :103 HL09; :124 HL11 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/home-leases.md` :129 HL12; :137 HL13 | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
+| `protocol/home-leases.md:144` section 3; :265 section 5 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V3, Q4-V12, Q4-V13, Q4-V17 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/local-hosted-launches.md` :31 session-host ownership; :248 resume; `cips/CIP-0016-local-hosted-launches.md` :372 H2 step 1; :501 H5 | Preserve delegated and exact-plan hosted per-session private homes outside this capability; successor stable authority does not replace the persisted session home | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V9, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
+| `protocol/local-hosted-launches.md` :15 delegated and exact-plan routes; :31 session-host ownership; `cips/CIP-0016-local-hosted-launches.md` :103 Summary; :372 H2 step 1 | Preserve both hosted routes; record unsupported-capability refusal when the successor entry is selected through a hosted route, pending a joint amendment of local-hosted-launches | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V10, Q4-V20 | [PG-SCOPE-02](#pg-scope-02) |
+| `protocol/home-leases.md` :303 HL24; `cips/CIP-0016-local-hosted-launches.md` :95 condition (b); `protocol/local-hosted-launches.md` :15 exclusive-profile condition | Preserve HL24 at hosted admission for the profile x runtime authority; single-authority binding does not authorize cross-lane or cross-Werkstatt sharing | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
+| `protocol/home-leases.md` :303 HL24; `cips/CIP-0016-local-hosted-launches.md` :95 condition (b) | Preserve HL24 at hosted admission; per-checkout binding and generation projection do not create cross-lane or cross-Werkstatt sharing permission for the shared authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V2 | [PG-BINDING-01](#pg-binding-01) |
+| `protocol/home-leases.md` :303 HL24; `cips/CIP-0016-local-hosted-launches.md` :95 condition (b) | Preserve HL24; two-checkout shared-authority qualification does not qualify cross-lane or cross-Werkstatt sharing without an explicit owner amendment of HL24 | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/home-leases.md` :300 HL23 L6 | Amend HL23 L6 for successor launches only: blocking prepared holder before native execution, hosted or unhosted; preserve no-lease unhosted launches outside this capability and version 1 replay | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12 | [PG-HOLDER-01](#pg-holder-01) |
+| `protocol/provisioning-origin.md:9` section 1; :52 section 2 | Amend successor project-home authority to stable profile x runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
+| `protocol/provisioning-origin.md` :85 section 3; :108 section 4; :127 section 5 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
+| `protocol/provisioning-origin.md` :85 section 3; :108 section 4; :127 section 5 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12, Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/provisioning-origin.md` :85 section 3; :108 section 4; :127 section 5 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/core.md:1505` activation union; :1521 section 8 | Preserve core hash-1 guard and exact hash-2 byte framing | N; baseline hash/union/render semantics retained | Q1; Q1-V4 | [PG-HASH-01](#pg-hash-01) |
+| `protocol/core.md:1505` activation union; :1521 section 8 | Preserve independent structural acquisition refusal; deny extraction authority inferred from hashing | N; baseline hash/union/render semantics retained | Q1; Q1-V5 | [PG-HASH-02](#pg-hash-02) |
+| `protocol/core.md:1505` activation union; :1521 section 8 | Preserve independent-edge full/context/runtime/command activation union | N; baseline hash/union/render semantics retained | Q2; Q2-V2, Q2-V5, Q2-V6 | [PG-COMPOSE-02](#pg-compose-02) |
+| `protocol/skillfile-sources.md:16` section 1, especially :61-78; :83 section 2; :119 section 3 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
+| `protocol/skillfile-sources.md:16` section 1, especially :61-78; :83 section 2; :119 section 3 | Add literal include/exclude, duplicate/missing-member rules and canonical selector order | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V1, Q2-V2, Q2-V3, Q2-V4 | [PG-FILTER-02](#pg-filter-02) |
+| `protocol/skillfile-sources.md:16` section 1, especially :61-78; :83 section 2; :119 section 3 | Preserve legacy collection rules; refuse filters on initial contexts-only delivery | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V5, Q2-V6, Q2-V7, Q2-V8, Q2-V9 | [PG-FILTER-04](#pg-filter-04) |
+| `protocol/skillfile-sources.md` :205 section 4 | Preserve local authority; restrict portable first-form evidence to exact Git packages | N; baseline hash/union/render semantics retained | Q3; Q3-V2 | [PG-HASH-03](#pg-hash-03) |
+| `protocol/registry.md:94` section 3; :102 schema/hash versions; :111 negative match | Strengthen positive grant to complete subject AND policy/check/review matching | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V1, Q3-V2, Q3-V12 | [PG-GRANT-02](#pg-grant-02) |
+| `protocol/registry.md:94` section 3; :102 schema/hash versions; :111 negative match | Add rejecting positive-only successor; preserve old-reader refusal and separate negative issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V3 | [PG-GRANT-01](#pg-grant-01) |
+| `protocol/registry.md:94` section 3; :102 schema/hash versions; :111 negative match | Preserve broad same-framing hash OR source+commit negative matching independently of positives | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V4, Q3-V5 | [PG-DENY-01](#pg-deny-01) |
+| `protocol/registry.md:94` section 3; :102 schema/hash versions; :111 negative match | Preserve known negatives despite unknown positives; extend retrieval completeness across channels | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V6, Q3-V8 | [PG-DENY-02](#pg-deny-02) |
+| `protocol/registry.md:94` section 3; :102 schema/hash versions; :111 negative match | Add initial positive-only rollout with schema-2/hash-2 negatives and future dual issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V7 | [PG-NEGATIVE-01](#pg-negative-01) |
+| `protocol/registry.md:94` section 3; :102 schema/hash versions; :111 negative match | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
+| `protocol/registry.md` :128 section 4; :134 deny-wins | Preserve broad same-framing hash OR source+commit negative matching independently of positives | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V4, Q3-V5 | [PG-DENY-01](#pg-deny-01) |
+| `protocol/registry.md` :128 section 4; :134 deny-wins | Preserve known negatives despite unknown positives; extend retrieval completeness across channels | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V6, Q3-V8 | [PG-DENY-02](#pg-deny-02) |
+| `protocol/registry.md` :128 section 4; :134 deny-wins | Add initial positive-only rollout with schema-2/hash-2 negatives and future dual issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V7 | [PG-NEGATIVE-01](#pg-negative-01) |
+| `protocol/registry.md` :128 section 4; :134 deny-wins | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
+| `protocol/registry.md` :171 section 5; :288 section 5.1; :338 section 7; :358 section 8 | Add required L3 negative coverage/freshness refusal without changing legacy advisory policy | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V8, Q3-V11 | [PG-COVERAGE-01](#pg-coverage-01) |
+| `protocol/registry.md` :171 section 5; :288 section 5.1; :338 section 7; :358 section 8 | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
+| `protocol/registry.md` :394 section 9; :505 section 9.3; :569 section 10 | Add rejecting positive-only successor; preserve old-reader refusal and separate negative issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V3 | [PG-GRANT-01](#pg-grant-01) |
+| `protocol/registry.md` :394 section 9; :505 section 9.3; :569 section 10 | Preserve known negatives despite unknown positives; extend retrieval completeness across channels | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V6, Q3-V8 | [PG-DENY-02](#pg-deny-02) |
+| `protocol/registry.md` :394 section 9; :505 section 9.3; :569 section 10 | Add initial positive-only rollout with schema-2/hash-2 negatives and future dual issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V7 | [PG-NEGATIVE-01](#pg-negative-01) |
+| `protocol/registry.md` :394 section 9; :505 section 9.3; :569 section 10 | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
 | `protocol/profile-skill-plan-proposal.md:19,95,120,168,221` | Preserve independent-edge full/context/runtime/command activation union | N; baseline hash/union/render semantics retained | Q2; Q2-V5, Q2-V6 | [PG-COMPOSE-02](#pg-compose-02) |
 | `protocol/profile-skill-plan-proposal.md:19,95,120,168,221` | Add surviving-edge provenance/support closure and explicit effective-identity recomposition | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V7, Q2-V8 | [PG-FILTER-03](#pg-filter-03) |
-| `protocol/profile-skill-plan-proposal.md:19,95,120,168,221` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V4 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/profile-skill-plan-proposal.md:19,95,120,168,221` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/profile-skill-plan-proposal.md:19,95,120,168,221` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V4 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/profile-skill-plan-proposal.md:19,95,120,168,221` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
 | `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Add explicit incomplete context delivery and visible required-understanding omissions | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V6 | [PG-DELIVERY-01](#pg-delivery-01) |
 | `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Preserve private operational locks; add verified export projection rather than relabelling | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V7 | [PG-LOCK-01](#pg-lock-01) |
-| `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
-| `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `protocol/profile-command-roots.md:40,104,191,237,313,499,538` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
 | `protocol/profile-command-path.md:8,54,132,233`; `protocol/profile-command-root-admission.md:103,183,265,286,742` | Amend successor seed admission with typed approved controls and L3 unknown-control refusal; preserve seed lifecycle | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-LOADER-01](#pg-loader-01) |
-| `protocol/profile-command-path.md:8,54,132,233`; `protocol/profile-command-root-admission.md:103,183,265,286,742` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
+| `protocol/profile-command-path.md:8,54,132,233`; `protocol/profile-command-root-admission.md:103,183,265,286,742` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
 | `protocol/profile-command-path.md:8,54,132,233`; `protocol/profile-command-root-admission.md:103,183,265,286,742` | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
 | `protocol/rc7-carriers.md:11,71,148,219,242` | Preserve frozen carriers and checkout-scoped homes; add explicit successor-only authority migration | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q1; Q1-V7 | [PG-COMPAT-02](#pg-compat-02) |
 | `protocol/rc7-carriers.md:11,71,148,219,242` | Add rejecting positive-only successor; preserve old-reader refusal and separate negative issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V3 | [PG-GRANT-01](#pg-grant-01) |
@@ -1202,8 +1236,8 @@ old bytes and replay. Trace publication does not itself adopt any amendment.
 | `protocol/profile-codex-settings.md:11,50,96,143,178,243` @S | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
 | `decisions/0010-agent-environment-profiles.md:22,202,488,587,682,711` | Add explicit incomplete context delivery and visible required-understanding omissions | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V6 | [PG-DELIVERY-01](#pg-delivery-01) |
 | `decisions/0010-agent-environment-profiles.md:22,202,488,587,682,711` | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-GENERATION-01](#pg-generation-01) |
-| `decisions/0010-agent-environment-profiles.md:22,202,488,587,682,711` | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `decisions/0010-agent-environment-profiles.md:22,202,488,587,682,711` | Amend successor project-home authority to stable profile × runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
+| `decisions/0010-agent-environment-profiles.md:22,202,488,587,682,711` | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `decisions/0010-agent-environment-profiles.md:22,202,488,587,682,711` | Amend successor project-home authority to stable profile x runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
 | `decisions/0010-agent-environment-profiles.md:22,202,488,587,682,711` | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
 | `decisions/0012-context-packages-and-semver-locks.md:249,446,480,531,547,645,669` | Preserve stable dependency/weight/module/LF ordering and absent versus header-only output | N; baseline hash/union/render semantics retained | Q1; Q1-V1, Q1-V2 | [PG-RENDER-01](#pg-render-01) |
 | `decisions/0012-context-packages-and-semver-locks.md:249,446,480,531,547,645,669` | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
@@ -1216,14 +1250,14 @@ old bytes and replay. Trace publication does not itself adopt any amendment.
 | `decisions/0012-context-packages-and-semver-locks.md:249,446,480,531,547,645,669` | Add surviving-edge provenance/support closure and explicit effective-identity recomposition | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V7 | [PG-FILTER-03](#pg-filter-03) |
 | `decisions/0012-context-packages-and-semver-locks.md:249,446,480,531,547,645,669` | Preserve ordering/union; add full-closure gate only for filters and retain contexts-only deferral | N; baseline ordering/union kept; edge P-024/025 and contexts-only P-025 | Q2; Q2-V8 | [PG-COMPOSE-01](#pg-compose-01) |
 | `decisions/0012-context-packages-and-semver-locks.md:249,446,480,531,547,645,669` | Preserve legacy collection rules; refuse filters on initial contexts-only delivery | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V9 | [PG-FILTER-04](#pg-filter-04) |
-| `decisions/0013-execution-ownership-and-launch-plans.md:87,218,286,445,477`; `decisions/0019-fragment-consumers-and-one-construction-site.md:68,93` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
-| `decisions/0013-execution-ownership-and-launch-plans.md:87,218,286,445,477`; `decisions/0019-fragment-consumers-and-one-construction-site.md:68,93` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| `decisions/0029-provisioning-origin.md:10`; `decisions/0032-managed-home-separate-login.md:28,92,164` | Amend successor project-home authority to stable profile × runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
+| `decisions/0013-execution-ownership-and-launch-plans.md:87,218,286,445,477`; `decisions/0019-fragment-consumers-and-one-construction-site.md:68,93` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10 | [PG-ENTRY-01](#pg-entry-01) |
+| `decisions/0013-execution-ownership-and-launch-plans.md:87,218,286,445,477`; `decisions/0019-fragment-consumers-and-one-construction-site.md:68,93` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `decisions/0029-provisioning-origin.md:10`; `decisions/0032-managed-home-separate-login.md:28,92,164` | Amend successor project-home authority to stable profile x runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
 | `decisions/0029-provisioning-origin.md:10`; `decisions/0032-managed-home-separate-login.md:28,92,164` | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
 | D1 `decisions/0033-launch-lock-refresh-compatible.md:53,91` | Amend successor ordinary refresh to explicit desired-generation update; preserve faithful resume pin | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1, Q4-V2 | [PG-UPDATE-01](#pg-update-01) |
-| D1 `decisions/0033-launch-lock-refresh-compatible.md:53,91` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
-| D2 `cips/CIP-0028-claude-read-scope.md:11` | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V5, Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
-| D2 `cips/CIP-0028-claude-read-scope.md:11` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| D1 `decisions/0033-launch-lock-refresh-compatible.md:53,91` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| D2 `cips/CIP-0028-claude-read-scope.md:11` | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V5, Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
+| D2 `cips/CIP-0028-claude-read-scope.md:11` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
 | `schemas/v1/audit-record-v1.schema.json:1` | Add rejecting positive-only successor; preserve old-reader refusal and separate negative issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V3 | [PG-GRANT-01](#pg-grant-01) |
 | `schemas/v1/audit-record-v1.schema.json:1` | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 | [PG-MIGRATION-01](#pg-migration-01) |
 | `schemas/v1/audit-record-v2.schema.json:1` | Strengthen positive grant to complete subject AND policy/check/review matching | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V1, Q3-V2, Q3-V12 | [PG-GRANT-02](#pg-grant-02) |
@@ -1237,103 +1271,105 @@ old bytes and replay. Trace publication does not itself adopt any amendment.
 | `schemas/managed-home-snapshot-v1/managed-home-snapshot-v1.schema.json:6` | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q1; Q1-V7 | [PG-GENERATION-01](#pg-generation-01) |
 | `schemas/managed-home-snapshot-v1/managed-home-snapshot-v1.schema.json:6` | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
 | `schemas/managed-home-snapshot-v1/snapshot-launch-v1.schema.json:1` | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1 | [PG-GENERATION-01](#pg-generation-01) |
-| `schemas/managed-home-snapshot-v1/snapshot-launch-v1.schema.json:1` | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `schemas/managed-home-snapshot-v1/snapshot-launch-v1.schema.json:1` | Amend successor project-home authority to stable profile × runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
+| `schemas/managed-home-snapshot-v1/snapshot-launch-v1.schema.json:1` | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `schemas/managed-home-snapshot-v1/snapshot-launch-v1.schema.json:1` | Amend successor project-home authority to stable profile x runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
 | `schemas/managed-home-snapshot-v1/snapshot-launch-v1.schema.json:1` | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
 | `schemas/project-context-leaf1-v1/registration.schema.json:7,43` | Preserve legacy none/permission resolution; add explicit managed-mode admission and registration correspondence | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
 | `schemas/project-context-leaf1-v1/composition.schema.json:7,115` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
-| `schemas/project-context-leaf1-v1/composition.schema.json:7,115` | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V20 | [PG-VERIFIED-01](#pg-verified-01) |
-| `schemas/project-context-leaf1-v1/adapter.schema.json:7` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/project-context-leaf1-v1/composition.schema.json:7,115` | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V20 | [PG-VERIFIED-01](#pg-verified-01) |
+| `schemas/project-context-leaf1-v1/adapter.schema.json:7` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
 | `schemas/project-context-leaf1-v1/adapter.schema.json:7` | Add native compatible-line policy; preserve strict exact-tuple qualification | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V19 | [PG-RUNTIME-01](#pg-runtime-01) |
 | `schemas/project-context-leaf1-v1/control-receipt.schema.json:7` | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3, Q4-V9 | [PG-CONTROL-01](#pg-control-01) |
 | `schemas/project-context-leaf1-v1/generation.schema.json:7` | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1, Q4-V2 | [PG-GENERATION-01](#pg-generation-01) |
 | `schemas/project-context-leaf1-v1/generation.schema.json:7` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
 | `schemas/project-context-leaf1-v1/root-binding.schema.json:1` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
-| `schemas/project-context-leaf1-v1/root-binding.schema.json:1` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `schemas/project-context-leaf1-v1/lease.schema.json:1` | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `schemas/project-context-leaf1-v1/lease.schema.json:1` | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
-| `schemas/project-context-leaf1-v1/item.schema.json:1` | Refuse package evidence as path-set approval and keep strict separate from native success | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V4, Q4-V10 | [PG-STRICT-02](#pg-strict-02) |
+| `schemas/project-context-leaf1-v1/root-binding.schema.json:1` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `schemas/project-context-leaf1-v1/lease.schema.json:1` | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `schemas/project-context-leaf1-v1/lease.schema.json:1` | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
+| `schemas/project-context-leaf1-v1/item.schema.json:1` | Refuse package evidence as path-set approval and keep strict separate from native success | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V4, Q4-V10 | [PG-STRICT-02](#pg-strict-02) |
 | `schemas/project-context-leaf1-v1/snapshot-manifest.schema.json:1` | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V4, Q4-V9 | [PG-INVENTORY-01](#pg-inventory-01) |
-| `schemas/project-context-leaf1-v1/project-context.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
-| `schemas/project-context-leaf1-v1/project-context.schema.json:1` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `schemas/project-context-leaf1-v1/project-context.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/project-context-leaf1-v1/project-context.schema.json:1` | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
 | `schemas/project-context-leaf1-v1/project-context.schema.json:1` | Preserve legacy none/permission resolution; add explicit managed-mode admission and registration correspondence | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
-| `schemas/project-context-leaf1-v1/fragment-members.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/project-context-leaf1-v1/fragment-members.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
 | `schemas/project-context-leaf1-v1/fragment-members.schema.json:1` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
-| `schemas/project-context-leaf1-v1/command-environment.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
-| `schemas/project-context-leaf1-v1/command-environment.schema.json:1` | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
-| `schemas/home-leases-v1/holder.schema.json:1` | Preserve prepared-null holder; add durable one-start intent and separated content identities | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V17 | [PG-HOLDER-01](#pg-holder-01) |
-| `schemas/home-leases-v1/holder.schema.json:1` | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V15, Q4-V16 | [PG-OBSERVER-01](#pg-observer-01) |
-| `schemas/home-leases-v1/record.schema.json:7` | Preserve HL07 original-revision committed bind replay with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12 | [PG-REPLAY-01](#pg-replay-01) |
-| `schemas/home-leases-v1/record.schema.json:7` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `schemas/home-leases-v1/record.schema.json:7` | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `schemas/home-leases-v1/event.schema.json:1` | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
-| `schemas/home-leases-v1/result.schema.json:1` | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `schemas/home-leases-v1/result.schema.json:1` | Preserve HL06/HL07 terminal precedence and no replay revival or fresh-start authority | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12 | [PG-REPLAY-02](#pg-replay-02) |
-| `schemas/home-leases-v1/result.schema.json:1` | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
-| `schemas/provisioning-origin-v1/provisioning-origin-v1.schema.json:1` | Amend successor project-home authority to stable profile × runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
+| `schemas/project-context-leaf1-v1/command-environment.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/project-context-leaf1-v1/command-environment.schema.json:1` | Preserve protected external exact sparse view; require complete exact-tuple loader exclusions | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
+| `schemas/home-leases-v1/holder.schema.json:1` | Preserve prepared-null holder; add durable one-start intent and separated content identities | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V17 | [PG-HOLDER-01](#pg-holder-01) |
+| `schemas/home-leases-v1/holder.schema.json:1` | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V15, Q4-V16 | [PG-OBSERVER-01](#pg-observer-01) |
+| `schemas/home-leases-v1/record.schema.json:7` | Preserve HL07 original-revision committed bind replay for version 1 carriers; amend the different-payload classification to request conflict for the successor carrier only, with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12 | [PG-REPLAY-01](#pg-replay-01) |
+| `schemas/home-leases-v1/record.schema.json:7` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `schemas/home-leases-v1/record.schema.json:7` | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `schemas/home-leases-v1/event.schema.json:1` | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
+| `schemas/home-leases-v1/result.schema.json:1` | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `schemas/home-leases-v1/result.schema.json:1` | Preserve HL06/HL07 terminal precedence and no replay revival or fresh-start authority | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12 | [PG-REPLAY-02](#pg-replay-02) |
+| `schemas/home-leases-v1/result.schema.json:1` | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 | [PG-BREAK-01](#pg-break-01) |
+| `schemas/provisioning-origin-v1/provisioning-origin-v1.schema.json:1` | Amend successor project-home authority to stable profile x runtime; preserve origin and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7 | [PG-AUTH-01](#pg-auth-01) |
 | `schemas/provisioning-origin-v1/provisioning-origin-v1.schema.json:1` | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
 | `schemas/profile-skill-plan-v1/context-lock-v5.schema.json:6,80` | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 | [PG-PACKAGE-02](#pg-package-02) |
 | `schemas/profile-skill-plan-v1/context-lock-v5.schema.json:6,80` | Preserve private operational locks; add verified export projection rather than relabelling | N; manifests/locks/headers retained; exchange/projection allocation P | Q2; Q2-V8 | [PG-LOCK-01](#pg-lock-01) |
 | `schemas/profile-skill-plan-v1/profile-skill-plan-v1.schema.json:1` | Add surviving-edge provenance/support closure and explicit effective-identity recomposition | N; new edge capability P-024/025; legacy collections retained | Q2; Q2-V8 | [PG-FILTER-03](#pg-filter-03) |
 | `schemas/profile-skill-plan-v1/profile-skill-plan-v1.schema.json:1` | Add delivered-context audit boundary without claiming deferred skill/MCP closure | N; manifests/locks/headers retained; exchange/projection allocation P | Q2; Q2-V9 | [PG-DELIVERY-02](#pg-delivery-02) |
-| `schemas/profile-command-roots-v1/root-receipt.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/profile-command-roots-v1/root-receipt.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
 | `schemas/profile-command-roots-v1/root-receipt.schema.json:1` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
 | `schemas/profile-command-roots-v1/inventory.schema.json:1` | Preserve structural pre-start refusal; add generation/control/binding inventory correspondence | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V6 | [PG-INVENTORY-01](#pg-inventory-01) |
 | `schemas/profile-command-roots-v1/session-pin.schema.json:1` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
-| `schemas/profile-command-roots-v1/session-pin.schema.json:1` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `schemas/profile-command-roots-v1/session-pin.schema.json:1` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
 | `schemas/profile-command-roots-v1/generation-marker.schema.json:1` | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 | [PG-PUBLISH-01](#pg-publish-01) |
-| `schemas/profile-command-roots-v1/snapshot-retention.schema.json:1` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `schemas/profile-command-roots-v1/launcher-state.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
-| `schemas/profile-command-roots-v1/launcher-state.schema.json:1` | Preserve prepared-null holder; add durable one-start intent and separated content identities | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12 | [PG-HOLDER-01](#pg-holder-01) |
+| `schemas/profile-command-roots-v1/snapshot-retention.schema.json:1` | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `schemas/profile-command-roots-v1/launcher-state.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/profile-command-roots-v1/launcher-state.schema.json:1` | Preserve prepared-null holder; add durable one-start intent and separated content identities | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12 | [PG-HOLDER-01](#pg-holder-01) |
 | `schemas/v1/launch-env-fragment-v4.schema.json:1` | Preserve private operational locks; add verified export projection rather than relabelling | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V7 | [PG-LOCK-01](#pg-lock-01) |
-| `schemas/v1/launch-env-fragment-v4.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/v1/launch-env-fragment-v4.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
 | `schemas/v1/launch-env-fragment-v4.schema.json:1` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
 | `schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json:1` | Preserve frozen carriers and checkout-scoped homes; add explicit successor-only authority migration | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q1; Q1-V7 | [PG-COMPAT-02](#pg-compat-02) |
-| `schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
+| `schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json:1` | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6 | [PG-ENTRY-01](#pg-entry-01) |
 | `schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json:1` | Add immutable generation/control/authority/policy/native-locator relation distinct from counters | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V9 | [PG-BINDING-01](#pg-binding-01) |
 | `conformance/environment-store-verification-v2/README.md:40`; existing manifest | Preserve home-only repair at every level, store restoration only at L3/L4 and structural refusal | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V3, Q4-V12 | [PG-REPAIR-01](#pg-repair-01) |
-| `conformance/environment-store-verification-v2/README.md:40`; existing manifest | Preserve merged L1–L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V19 | [PG-LEVEL-01](#pg-level-01) |
-| `protocol/home-leases.md:314` §6 | Preserve the exact consumer qualification/adoption boundary; no native result inferred from a publication | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause | [PG-ADOPTION-01](#pg-adoption-01) |
-| `conformance/environment-store-verification-v2/README.md:40`; existing manifest | Preserve the frozen startup corpus; add separately instantiated successor witnesses rather than editing old verdicts | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause | [PG-CONFORMANCE-01](#pg-conformance-01) |
-| `protocol/project-context.md:222` §5 first paragraph | Amend successor authority scope; preserve old checkout homes until explicit migration | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V2, Q4-V7, Q4-V9, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
-| `protocol/project-context.md:260` §5.1 | Preserve checkout-scoped explicit mode/registration and fresh identities on an operator mode change | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-02](#pg-mode-02) |
-| `protocol/project-context.md:232` §5 paragraph 2 | Attach approved project control-item projection to the per-checkout binding/generation; sharing authority does not merge approvals | N; projection correspondence P-044/051; concurrency P-073 | Q4; Q4-V2, Q4-V3 | [PG-BINDING-01](#pg-binding-01) |
-| `protocol/project-context.md:232` §5 paragraph 2 | Preserve strict trust only for the prepared checkout; do not admit sibling trust/history through shared authority | N invariant; shared-authority control/history confinement P-062/093 | Q4; Q4-V2, Q4-V4, Q4-V5, Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
-| `protocol/project-context.md:298` §6 composition and lease | Attach one leased materialized composition to each checkout binding/generation; reserve qualified native-state access | N; binding carrier P-044; cross-checkout fixed-path concurrency P-051/073 | Q4; Q4-V2, Q4-V9, Q4-V14 | [PG-BINDING-01](#pg-binding-01) |
-| `protocol/project-context.md:298` §6 composition and lease | Preserve prepared/active/unknown reconciliation per checkout binding without weakening shared authority protection | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
-| `protocol/project-context.md:311` §6 busy mutation | Preserve wait/refusal and transactional root recheck for binding-targeted mutations and any protected shared paths | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V3, Q4-V12, Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
-| `protocol/project-context.md:311` §6 busy mutation | Keep cross-checkout B pending/refused when A protects shared fixed paths; separate binding is not concurrency proof | N protection invariant; shared-path realization P-051/073 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
-| `protocol/project-context.md:311` §6 resume | Preserve original checkout composition and current authority on resume; no fresh launch fallback | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
+| `conformance/environment-store-verification-v2/README.md:40`; existing manifest | Preserve merged L1-L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V19 | [PG-LEVEL-01](#pg-level-01) |
+| `protocol/home-leases.md:314` section 6 | Preserve the exact consumer qualification/adoption boundary; no native result inferred from a publication | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause | [PG-ADOPTION-01](#pg-adoption-01) |
+| `conformance/environment-store-verification-v2/README.md:40`; existing manifest | Preserve the frozen startup corpus; add separately instantiated successor witnesses rather than editing old verdicts | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause | [PG-CONFORMANCE-01](#pg-conformance-01) |
+| `protocol/project-context.md:222` section 5 first paragraph | Amend successor authority scope; preserve old checkout homes until explicit migration | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V2, Q4-V7, Q4-V9, Q4-V11 | [PG-AUTH-01](#pg-auth-01) |
+| `protocol/project-context.md:260` section 5.1 | Preserve checkout-scoped explicit mode/registration and fresh identities on an operator mode change | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-02](#pg-mode-02) |
+| `protocol/project-context.md:232` section 5 paragraph 2 | Attach approved project control-item projection to the per-checkout binding/generation; sharing authority does not merge approvals | N; projection correspondence P-044/051; concurrency P-073 | Q4; Q4-V2, Q4-V3 | [PG-BINDING-01](#pg-binding-01) |
+| `protocol/project-context.md:232` section 5 paragraph 2 | Preserve strict trust only for the prepared checkout; do not admit sibling trust/history through shared authority | N invariant; shared-authority control/history confinement P-062/093 | Q4; Q4-V2, Q4-V4, Q4-V5, Q4-V10 | [PG-STRICT-01](#pg-strict-01) |
+| `protocol/project-context.md:298` section 6 composition and lease | Attach one leased materialized composition to each checkout binding/generation; reserve qualified native-state access | N; binding carrier P-044; cross-checkout fixed-path concurrency P-051/073 | Q4; Q4-V2, Q4-V9, Q4-V14 | [PG-BINDING-01](#pg-binding-01) |
+| `protocol/project-context.md:298` section 6 composition and lease | Preserve prepared/active/unknown reconciliation per checkout binding without weakening shared authority protection | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 | [PG-OBSERVER-01](#pg-observer-01) |
+| `protocol/project-context.md:311` section 6 busy mutation | Preserve wait/refusal and transactional root recheck for binding-targeted mutations and any protected shared paths | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V3, Q4-V12, Q4-V13 | [PG-ROOTS-01](#pg-roots-01) |
+| `protocol/project-context.md:311` section 6 busy mutation | Keep cross-checkout B pending/refused when A protects shared fixed paths; separate binding is not concurrency proof | N protection invariant; shared-path realization P-051/073 | Q4; Q4-V2 | [PG-ACTIVATE-01](#pg-activate-01) |
+| `protocol/project-context.md:311` section 6 resume | Preserve original checkout composition and current authority on resume; no fresh launch fallback | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9 | [PG-RESUME-01](#pg-resume-01) |
 | `protocol/effective-posture.md:36,52` EPA02 | Preserve legacy none and independent permission/no-tools intent; require explicit mode at the new entry | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
 | `protocol/effective-posture.md:39,99` binding/EPA05 | Preserve protected plan generation identity; keep it distinct from content/authority/counter domains | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V9 | [PG-TERMS-01](#pg-terms-01) |
 | `schemas/effective-posture-v1/record.schema.json:1` | Preserve closed legacy posture and none semantics; do not insert successor authority fields | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 | [PG-MODE-01](#pg-mode-01) |
 | `protocol/local-setup-token-source.md:10,16,20,104` L1/L3 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
 | `schemas/local-setup-token-v1/source-projection-v1.schema.json:1` | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
 | `schemas/local-setup-token-v1/local-final-exec-v1.schema.json:1` | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-01](#pg-authflow-01) |
-| `protocol/login-readiness.md:12,29,52` §1/§1.1 | Preserve metadata presence distinct from successful login, inference, refresh and rotation | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-02](#pg-authflow-02) |
+| `protocol/login-readiness.md:12,29,52` section 1/section 1.1 | Preserve metadata presence distinct from successful login, inference, refresh and rotation | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-02](#pg-authflow-02) |
 | `schemas/login-readiness-v1/login-row-v1.schema.json:1` | Preserve metadata presence distinct from successful login, inference, refresh and rotation | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 | [PG-AUTHFLOW-02](#pg-authflow-02) |
-| `protocol/codex-seed-c.md:10,18,45,65` §1–§3 | Preserve existing seed/marker bytes and unrelated settings; refuse unsupported successor controls without silent stripping | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3, Q4-V4, Q4-V5, Q4-V8, Q4-V10 | [PG-LOADER-01](#pg-loader-01) |
+| `protocol/codex-seed-c.md:10,18,45,65` section 1-section 3 | Preserve existing seed/marker bytes and unrelated settings; refuse unsupported successor controls without silent stripping | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3, Q4-V4, Q4-V5, Q4-V8, Q4-V10 | [PG-LOADER-01](#pg-loader-01) |
 | `schemas/codex-seed-c-v1/agent-environment-marker-v7.schema.json:1` | Preserve marker 7 and recorded seed revision; marker is not approval for arbitrary control mutation | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3 | [PG-LOADER-01](#pg-loader-01) |
 
 S is the baseline pin above. D1 = **0d3bd4e8d7c33e6ba95de30673205936bf6c4e34**, draft file blob **75fd9ccd4be8957a9d6ab813cf39833221f4fa57**. D2 = **ee33b1d601e8a16116b7e91d0aa9b821dd016e25**, whose `cips/CIP-0028-claude-read-scope.md` blob is **0f39cccfc6efea2bf50668be080886602731cfb3**; [resolvable draft clause:11](https://github.com/relux-works/curator-spec/blob/ee33b1d601e8a16116b7e91d0aa9b821dd016e25/cips/CIP-0028-claude-read-scope.md#L11). S's `protocol/profile-codex-settings.md` blob is **874d64bfc9fddbf3042b6ba73bb30d8b4cf83975**; [resolvable baseline clause:11](https://github.com/relux-works/curator-spec/blob/ab6b1b0960473b359c84d96e7c7749b9be6011e0/protocol/profile-codex-settings.md#L11). These exact paths/OIDs resolve without any owner-only packet. Neither draft is promoted to main. Successor decision/CIP numbers remain unallocated.
 
-The older include/exclude directive has no verified immutable normative pointer in this evidence set. Therefore §2.4 adopts **new** agreed edge semantics, with the collection rules preserved; no invented historical compatibility claim. Signed configuration remains deferred: the merged startup proposal explicitly does not provide configuration signing (`protocol/environment-store-verification-v2.md:11–14 @S`). Reserve future required capabilities; do not claim signed local config or path-set evidence exists.
+The older include/exclude directive has no verified immutable normative pointer in this evidence set. Therefore section 2.4 adopts **new** agreed edge semantics, with the collection rules preserved; no invented historical compatibility claim. Signed configuration remains deferred: the merged startup proposal explicitly does not provide configuration signing (`protocol/environment-store-verification-v2.md:11-14 @S`). Reserve future required capabilities; do not claim signed local config or path-set evidence exists.
 
 ### A.1 Stable-clause amendment index
 
-Every N rule has a specific disposition. Exact pair IDs mirror the corpus;
+Every N rule has a specific disposition. The baseline column lists
+principal baselines only; the trace rows above give the complete baseline
+set for each clause. Exact pair IDs mirror the corpus;
 the six publication/meta clauses are listed there with an explicit reason.
 
 | Authoritative clause | Baseline clause(s) @S unless marked draft | Specific disposition | Carrier / status | Decision; exact vector IDs |
 | --- | --- | --- | --- | --- |
 | [PG-SCOPE-01](#pg-scope-01) | protocol/environments.md:2777; protocol/project-context.md:10 | Preserve legacy scope; add opt-in named global delivery with separate project capabilities | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q1/Q4; Q1-V6, Q4-V20 |
-| [PG-SCOPE-02](#pg-scope-02) | protocol/project-context.md:232,241,244; protocol/home-leases.md:97; unmanaged-entry boundary added | Preserve trusted-code limit; add unmanaged-entry exclusion and unsupported-capability refusal | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V5, Q4-V10, Q4-V20 |
+| [PG-SCOPE-02](#pg-scope-02) | protocol/project-context.md:232,241,244; protocol/home-leases.md:97; cips/CIP-0016-local-hosted-launches.md:103,372; protocol/local-hosted-launches.md:15,31; unmanaged-entry boundary added | Preserve trusted-code limit; add unmanaged-entry exclusion and unsupported-capability refusal | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V5, Q4-V10, Q4-V20 |
 | [PG-COMPAT-01](#pg-compat-01) | protocol/environments.md:2777,2916; protocol/skillfile-sources.md:119; explicit migration discovery preview added | Preserve legacy delivery/defaults; add explicit migration preview and no implicit global adoption | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q1/Q4; Q1-V6, Q1-V7, Q4-V20 |
 | [PG-COMPAT-02](#pg-compat-02) | protocol/rc7-carriers.md:11,43; protocol/managed-home-snapshots.md:175,204; protocol/project-context.md:222,260; protocol/effective-posture.md:36,39,52 | Preserve frozen carriers and checkout-scoped homes; add explicit successor-only authority migration | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q1/Q3/Q4; Q1-V3, Q1-V7, Q3-V3, Q4-V20 |
 | [PG-MODE-01](#pg-mode-01) | protocol/project-context.md:47,258,329; schemas/project-context-leaf1-v1/registration.schema.json:43; protocol/effective-posture.md:36,52; schemas/effective-posture-v1/record.schema.json:1 | Preserve legacy none/permission resolution; add explicit managed-mode admission and registration correspondence | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V6, Q4-V20 |
 | [PG-MODE-02](#pg-mode-02) | protocol/project-context.md:47,258,329; schemas/project-context-leaf1-v1/registration.schema.json:43 | Preserve registration mode carrier; require fresh identity for changed semantics and reject unrecognized additions | N; legacy entry/carriers retained; managed successor interface P-013/044 | Q4; Q4-V20 |
 | [PG-TERMS-01](#pg-terms-01) | protocol/managed-home-snapshots.md:175,204; protocol/provisioning-origin.md:52; protocol/home-leases.md:54; protocol/project-context.md:222,260; protocol/effective-posture.md:39 | Define four distinct identity domains; preserve old protected-generation/counter meanings and refer authority scope to PG-AUTH-01 | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V9 |
-| [PG-TERMS-02](#pg-terms-02) | protocol/environment-store-verification-v2.md:3; cips/README.md:11 | Add publication-status and capability-claim hierarchy without changing historical replay | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause |
+| [PG-TERMS-02](#pg-terms-02) | protocol/environment-store-verification-v2.md:3; cips/README.md:11 | Add publication-status and capability-claim hierarchy without changing historical replay | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause |
 | [PG-PACKAGE-01](#pg-package-01) | protocol/environments.md:470,521; protocol/rc7-carriers.md:71 | Preserve manifest vocabulary and declarations; restrict the initial supported settings subset | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V2, Q1-V3, Q1-V6, Q1-V7 |
 | [PG-PACKAGE-02](#pg-package-02) | protocol/environments.md:552; protocol/skillfile-sources.md:61 | Preserve manifest selected-directory grammar; add normalized exact subject root identity | N; manifests/locks/headers retained; exchange/projection allocation P | Q1; Q1-V3 |
 | [PG-HASH-01](#pg-hash-01) | protocol/core.md:1521,1533,1563 | Preserve core hash-1 guard and exact hash-2 byte framing | N; baseline hash/union/render semantics retained | Q1; Q1-V4 |
@@ -1359,15 +1395,15 @@ the six publication/meta clauses are listed there with an explicit reason.
 | [PG-NEGATIVE-01](#pg-negative-01) | protocol/registry.md:102,111; schemas/v1/audit-record-v2.schema.json:1 | Add initial positive-only rollout with schema-2/hash-2 negatives and future dual issuance | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V4, Q3-V5, Q3-V7, Q3-V9 |
 | [PG-MIGRATION-01](#pg-migration-01) | protocol/registry.md:111; schemas/v1/audit-record-v1.schema.json:1 | Preserve framing separation; add real signed hash-2 negative reissue before rollout | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V9 |
 | [PG-COVERAGE-01](#pg-coverage-01) | protocol/registry.md:171,288,338,358; protocol/environment-store-verification-v2.md:11 | Add required L3 negative coverage/freshness refusal without changing legacy advisory policy | N; old signed records retained; positive/policy/coverage allocation P-031/032/036 | Q3; Q3-V8, Q3-V9, Q3-V11 |
-| [PG-AUTH-01](#pg-auth-01) | protocol/provisioning-origin.md:9,52,108; decisions/0032-managed-home-separate-login.md:28,92; protocol/project-context.md:222,260 | Amend used successor authority to at most one stable profile × runtime identity; preserve explicit adoption and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V2, Q4-V7, Q4-V9, Q4-V11 |
+| [PG-AUTH-01](#pg-auth-01) | protocol/provisioning-origin.md:9,52,108; decisions/0032-managed-home-separate-login.md:28,92; protocol/project-context.md:222,260; cips/CIP-0016-local-hosted-launches.md:95,372,501; protocol/local-hosted-launches.md:15,31,248; protocol/home-leases.md:303 | Amend used successor authority to at most one stable profile x runtime identity; preserve explicit adoption and owned logout | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V2, Q4-V7, Q4-V9, Q4-V11 |
 | [PG-AUTH-02](#pg-auth-02) | protocol/provisioning-origin.md:9,52,108; decisions/0032-managed-home-separate-login.md:28,92; protocol/project-context.md:222; explicit custody-namespace scope added | Add explicit separately approved custody namespaces while common sharing remains unqualified | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 |
 | [PG-GENERATION-01](#pg-generation-01) | protocol/managed-home-snapshots.md:99,204; schemas/managed-home-snapshot-v1/managed-home-snapshot-v1.schema.json:6 | Add portable content-addressed selected generation; preserve snapshot-v1 source-home digest | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q1/Q4; Q1-V7, Q4-V1, Q4-V2, Q4-V8, Q4-V12 |
 | [PG-CONTROL-01](#pg-control-01) | protocol/environments.md:1637; protocol/project-context.md:190; schemas/project-context-leaf1-v1/control-receipt.schema.json:7; protocol/codex-seed-c.md:10,18,45,65 | Add separate approved loader-control identity without credential/history hashes | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3, Q4-V9, Q4-V19 |
-| [PG-BINDING-01](#pg-binding-01) | protocol/project-context.md:220,296,232,298,311; protocol/home-leases.md:54; schemas/project-context-leaf1-v1/root-binding.schema.json:1 | Amend successor project projection/composition/lease/busy scope to checkout binding; preserve original generation and shared-path protection | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q2/Q4; Q2-V8, Q4-V1, Q4-V2, Q4-V3, Q4-V9, Q4-V13, Q4-V14, Q4-V19 |
+| [PG-BINDING-01](#pg-binding-01) | protocol/project-context.md:220,296,232,298,311; protocol/home-leases.md:54; schemas/project-context-leaf1-v1/root-binding.schema.json:1; cips/CIP-0016-local-hosted-launches.md:95; protocol/home-leases.md:303 | Amend successor project projection/composition/lease/busy scope to checkout binding; preserve original generation and shared-path protection | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q2/Q4; Q2-V8, Q4-V1, Q4-V2, Q4-V3, Q4-V9, Q4-V13, Q4-V14, Q4-V19 |
 | [PG-PUBLISH-01](#pg-publish-01) | protocol/managed-home-snapshots.md:9,37,226; protocol/home-leases.md:71; protocol/environments.md:2625 | Preserve verified atomic export; add generation publication separate from stable authority | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1, Q4-V12 |
 | [PG-PUBLISH-02](#pg-publish-02) | protocol/managed-home-snapshots.md:9,37,226; protocol/home-leases.md:71; protocol/environments.md:2625 | Add retained root before verification/start and non-admitting partial publication | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V12 |
 | [PG-UPDATE-01](#pg-update-01) | protocol/environments.md:2916; D1 decisions/0033-launch-lock-refresh-compatible.md:53,91 (draft only) | Amend successor ordinary refresh to explicit desired-generation update; preserve faithful resume pin | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V1, Q4-V2 |
-| [PG-LEVEL-01](#pg-level-01) | protocol/environment-store-verification-v2.md:11,26,37 | Preserve merged L1–L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V3, Q4-V12, Q4-V19 |
+| [PG-LEVEL-01](#pg-level-01) | protocol/environment-store-verification-v2.md:11,26,37 | Preserve merged L1-L4 floor, aggregation and centre-versus-confirmation fallback distinction | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V3, Q4-V12, Q4-V19 |
 | [PG-LEVEL-02](#pg-level-02) | protocol/environment-store-verification-v2.md:11,26,37 | Preserve independent hard gates under permissive store levels and closed old configuration | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q3/Q4; Q3-V11, Q4-V3, Q4-V6, Q4-V12, Q4-V19 |
 | [PG-REPAIR-01](#pg-repair-01) | protocol/environment-store-verification-v2.md:63,78,91,117; protocol/home-leases.md:97 | Preserve home-only repair at every level, store restoration only at L3/L4 and structural refusal | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V3, Q4-V12, Q4-V19 |
 | [PG-REPAIR-02](#pg-repair-02) | protocol/environment-store-verification-v2.md:63,78,91,117; protocol/home-leases.md:97 | Preserve pins and expected bytes; add no live-memory healing or overlapping-writer exception | N; merged startup meanings retained; successor check/carrier mapping P-053/054 | Q4; Q4-V3, Q4-V12, Q4-V19 |
@@ -1376,36 +1412,36 @@ the six publication/meta clauses are listed there with an explicit reason.
 | [PG-LOADER-02](#pg-loader-02) | protocol/environments.md:1637; protocol/project-context.md:190,244 | Add mixed-write preservation and limits of entry-time checks versus live reload | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V3, Q4-V5, Q4-V8 |
 | [PG-RUNTIME-01](#pg-runtime-01) | protocol/project-context.md:244; protocol/environments.md:2167; schemas/project-context-leaf1-v1/adapter.schema.json:7 | Add native compatible-line policy; preserve strict exact-tuple qualification | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V19 |
 | [PG-RUNTIME-02](#pg-runtime-02) | protocol/project-context.md:244; protocol/environments.md:2167; schemas/project-context-leaf1-v1/adapter.schema.json:7 | Add actual-binary versus original runtime-policy comparison on resume | N; old seed/adapter carriers retained; key/runtime receipts P-043/062/063 | Q4; Q4-V9, Q4-V19 |
-| [PG-HOLDER-01](#pg-holder-01) | protocol/home-leases.md:54,71; schemas/home-leases-v1/holder.schema.json:1 | Preserve prepared-null holder; add durable one-start intent and separated content identities | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12, Q4-V13, Q4-V14, Q4-V17 |
-| [PG-REPLAY-01](#pg-replay-01) | protocol/home-leases.md:71,87; schemas/home-leases-v1/result.schema.json:1 | Preserve HL07 original-revision committed bind replay with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12, Q4-V14, Q4-V17 |
-| [PG-REPLAY-02](#pg-replay-02) | protocol/home-leases.md:71,87; schemas/home-leases-v1/result.schema.json:1 | Preserve HL06/HL07 terminal precedence and no replay revival or fresh-start authority | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12, Q4-V14, Q4-V18 |
-| [PG-OBSERVER-01](#pg-observer-01) | protocol/home-leases.md:97,103; protocol/project-context.md:296 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 |
-| [PG-NOSTART-01](#pg-nostart-01) | protocol/home-leases.md:97,103; protocol/project-context.md:296 | Add durably closed no-start slot and protection across exec-before-bind crashes | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12, Q4-V14, Q4-V15 |
-| [PG-ACTIVATE-01](#pg-activate-01) | protocol/home-leases.md:97,124; protocol/managed-home-snapshots.md:267,293; schemas/profile-command-roots-v1/snapshot-retention.schema.json:1 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V1, Q4-V2, Q4-V8 |
-| [PG-RETENTION-01](#pg-retention-01) | protocol/home-leases.md:97,124; protocol/managed-home-snapshots.md:267,293; schemas/profile-command-roots-v1/snapshot-retention.schema.json:1 | Add resume roots independent of process termination and explicit retirement | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2, Q4-V9, Q4-V13, Q4-V14, Q4-V18 |
-| [PG-ROOTS-01](#pg-roots-01) | protocol/home-leases.md:97,124,144,265; protocol/environments.md:5116 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V2, Q4-V3, Q4-V12, Q4-V13, Q4-V14, Q4-V17, Q4-V18 |
-| [PG-ROOTS-02](#pg-roots-02) | protocol/home-leases.md:97,124,144,265; protocol/environments.md:5116 | Preserve uncertain/sibling roots; add restart reconstruction and no premature collection | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V12, Q4-V13, Q4-V14, Q4-V16, Q4-V18 |
-| [PG-BREAK-01](#pg-break-01) | protocol/home-leases.md:129,137; schemas/home-leases-v1/event.schema.json:1 | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 |
-| [PG-BREAK-02](#pg-break-02) | protocol/home-leases.md:129,137; schemas/home-leases-v1/event.schema.json:1 | Preserve historical HL12 abandonment; add separately enabled and disclosed successor exception | N; old holder replay retained; successor custody/retention/recovery P-071–075 | Q4; Q4-V18 |
-| [PG-ENTRY-01](#pg-entry-01) | decisions/0019-fragment-consumers-and-one-construction-site.md:68,93; protocol/environments.md:3567,4187; protocol/project-context.md:329 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V4, Q4-V6, Q4-V8, Q4-V10, Q4-V20 |
-| [PG-ENTRY-02](#pg-entry-02) | decisions/0019-fragment-consumers-and-one-construction-site.md:68,93; protocol/environments.md:3567,4187; protocol/project-context.md:329 | Add production start/resume completion evidence distinct from dormant helper completion | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V6, Q4-V10, Q4-V20 |
+| [PG-HOLDER-01](#pg-holder-01) | protocol/home-leases.md:54,71,300; schemas/home-leases-v1/holder.schema.json:1 | Preserve prepared-null holder; add durable one-start intent and separated content identities | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12, Q4-V13, Q4-V14, Q4-V17 |
+| [PG-REPLAY-01](#pg-replay-01) | protocol/home-leases.md:71,87; schemas/home-leases-v1/result.schema.json:1 | Preserve HL07 original-revision committed bind replay for version 1 carriers; amend the different-payload classification to request conflict for the successor carrier only, with applicable production access gates | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12, Q4-V14, Q4-V17 |
+| [PG-REPLAY-02](#pg-replay-02) | protocol/home-leases.md:71,87; schemas/home-leases-v1/result.schema.json:1 | Preserve HL06/HL07 terminal precedence and no replay revival or fresh-start authority | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12, Q4-V14, Q4-V18 |
+| [PG-OBSERVER-01](#pg-observer-01) | protocol/home-leases.md:97,103; protocol/project-context.md:296 | Preserve blocking uncertainty and exact authoritative incarnation/descendant observation | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V14, Q4-V15, Q4-V16, Q4-V17 |
+| [PG-NOSTART-01](#pg-nostart-01) | protocol/home-leases.md:97,103; protocol/project-context.md:296 | Add durably closed no-start slot and protection across exec-before-bind crashes | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12, Q4-V14, Q4-V15 |
+| [PG-ACTIVATE-01](#pg-activate-01) | protocol/home-leases.md:97,124; protocol/managed-home-snapshots.md:267,293; schemas/profile-command-roots-v1/snapshot-retention.schema.json:1; cips/CIP-0016-local-hosted-launches.md:95; protocol/home-leases.md:303 | Add qualified live A/B realization or protected fixed-path pending/refusal | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V1, Q4-V2, Q4-V8 |
+| [PG-RETENTION-01](#pg-retention-01) | protocol/home-leases.md:97,124; protocol/managed-home-snapshots.md:267,293; schemas/profile-command-roots-v1/snapshot-retention.schema.json:1 | Add resume roots independent of process termination and explicit retirement | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2, Q4-V9, Q4-V13, Q4-V14, Q4-V18 |
+| [PG-ROOTS-01](#pg-roots-01) | protocol/home-leases.md:97,124,144,265; protocol/environments.md:5116 | Preserve guarded mutation locking; add atomic holder/resume/root revalidation for every writer | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V2, Q4-V3, Q4-V12, Q4-V13, Q4-V14, Q4-V17, Q4-V18 |
+| [PG-ROOTS-02](#pg-roots-02) | protocol/home-leases.md:97,124,144,265; protocol/environments.md:5116 | Preserve uncertain/sibling roots; add restart reconstruction and no premature collection | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V12, Q4-V13, Q4-V14, Q4-V16, Q4-V18 |
+| [PG-BREAK-01](#pg-break-01) | protocol/home-leases.md:129,137; schemas/home-leases-v1/event.schema.json:1 | Amend successor default to targeted fenced break with atomic durable audit and CAS | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 |
+| [PG-BREAK-02](#pg-break-02) | protocol/home-leases.md:129,137; schemas/home-leases-v1/event.schema.json:1 | Preserve historical HL12 abandonment; add separately enabled and disclosed successor exception | N; old holder replay retained; successor custody/retention/recovery P-071-075 | Q4; Q4-V18 |
+| [PG-ENTRY-01](#pg-entry-01) | decisions/0019-fragment-consumers-and-one-construction-site.md:68,93; protocol/environments.md:3567,4187; protocol/project-context.md:329 | Preserve one actual construction path and all independent pre-start gates | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V4, Q4-V6, Q4-V8, Q4-V10, Q4-V20 |
+| [PG-ENTRY-02](#pg-entry-02) | decisions/0019-fragment-consumers-and-one-construction-site.md:68,93; protocol/environments.md:3567,4187; protocol/project-context.md:329 | Add production start/resume completion evidence distinct from dormant helper completion | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V6, Q4-V10, Q4-V20 |
 | [PG-AUTHFLOW-01](#pg-authflow-01) | protocol/provisioning-origin.md:52,85,108; protocol/managed-home-snapshots.md:293; protocol/local-setup-token-source.md:10,16,20,104; schemas/local-setup-token-v1/source-projection-v1.schema.json:1 | Preserve distinct existing source contracts outside this capability; refuse successor selection until source-specific adoption/qualification, without fallback, backend substitution or credential copy | N protection invariant; successor source eligibility and explicit migration remain P-082; authority/reference realization P-041/051/082 | Q4; Q4-V7, Q4-V11 |
 | [PG-AUTHFLOW-02](#pg-authflow-02) | protocol/provisioning-origin.md:52,85,108; protocol/managed-home-snapshots.md:293; protocol/login-readiness.md:12,29,52; schemas/login-readiness-v1/login-row-v1.schema.json:1 | Preserve presence-versus-validity boundary; separate login, turn, refresh, rotation and revocation observations | N; old origin/source bindings retained; authority/reference mapping P-041/051/082 | Q4; Q4-V7, Q4-V11 |
-| [PG-RESUME-01](#pg-resume-01) | protocol/project-context.md:296,395; schemas/profile-command-roots-v1/session-pin.schema.json:1; protocol/home-leases.md:103 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9, Q4-V10 |
-| [PG-RESUME-02](#pg-resume-02) | protocol/project-context.md:296,395; schemas/profile-command-roots-v1/session-pin.schema.json:1; protocol/home-leases.md:103 | Limit resume claim to recorded bindings; preserve native child ownership without history/live-memory proof | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V9, Q4-V10 |
-| [PG-PRIVACY-01](#pg-privacy-01) | protocol/provisioning-origin.md:9; protocol/home-leases.md:66; protocol/managed-home-snapshots.md:301 | Preserve private auth/origin boundary; extend shared-receipt exclusions to lifecycle identities/content | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V7, Q4-V11 |
-| [PG-PRIVACY-02](#pg-privacy-02) | protocol/provisioning-origin.md:9; protocol/home-leases.md:66; protocol/managed-home-snapshots.md:301 | Add typed bounded exporter extraction and approved private-history retention without raw fallback | N; consumer/session/receipt correspondence P-081–083 | Q4; Q4-V7, Q4-V11 |
+| [PG-RESUME-01](#pg-resume-01) | protocol/project-context.md:296,395; schemas/profile-command-roots-v1/session-pin.schema.json:1; protocol/home-leases.md:103 | Add original generation/control/authority/mode/runtime verification before faithful resume or stopped readmission | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9, Q4-V10 |
+| [PG-RESUME-02](#pg-resume-02) | protocol/project-context.md:296,395; schemas/profile-command-roots-v1/session-pin.schema.json:1; protocol/home-leases.md:103 | Limit resume claim to recorded bindings; preserve native child ownership without history/live-memory proof | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V9, Q4-V10 |
+| [PG-PRIVACY-01](#pg-privacy-01) | protocol/provisioning-origin.md:9; protocol/home-leases.md:66; protocol/managed-home-snapshots.md:301 | Preserve private auth/origin boundary; extend shared-receipt exclusions to lifecycle identities/content | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V7, Q4-V11 |
+| [PG-PRIVACY-02](#pg-privacy-02) | protocol/provisioning-origin.md:9; protocol/home-leases.md:66; protocol/managed-home-snapshots.md:301 | Add typed bounded exporter extraction and approved private-history retention without raw fallback | N; consumer/session/receipt correspondence P-081-083 | Q4; Q4-V7, Q4-V11 |
 | [PG-NATIVE-01](#pg-native-01) | protocol/project-context.md:244,258 | Preserve native discovery disclosure and mandatory independent permissions/memory gates | N; generation/projection/binding carrier allocation P-042/044/051/052/055 | Q4; Q4-V4, Q4-V6, Q4-V20 |
-| [PG-VERIFIED-01](#pg-verified-01) | protocol/project-context.md:190,244,329; schemas/project-context-leaf1-v1/composition.schema.json:115 | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V3, Q4-V4, Q4-V9, Q4-V20 |
-| [PG-VERIFIED-02](#pg-verified-02) | protocol/project-context.md:190,244,329; schemas/project-context-leaf1-v1/composition.schema.json:115 | Add launch/resume drift comparison and disclose renderer/live-mutation limits | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V3, Q4-V4, Q4-V9, Q4-V20 |
-| [PG-STRICT-01](#pg-strict-01) | protocol/project-context.md:220,232,244; schemas/project-context-leaf1-v1/item.schema.json:1 | Preserve exact protected sparse-view exclusion; qualify strict checkout trust/history within shared authority | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V2, Q4-V4, Q4-V5, Q4-V6, Q4-V10, Q4-V20 |
-| [PG-STRICT-02](#pg-strict-02) | protocol/project-context.md:220,232,244; schemas/project-context-leaf1-v1/item.schema.json:1 | Refuse package evidence as path-set approval and keep strict separate from native success | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V4, Q4-V10, Q4-V20 |
-| [PG-REPOSITORY-01](#pg-repository-01) | protocol/project-context.md:10,47; protocol/environments.md:1305 | Reserve architecture only; refuse discovered repository composition pending joint operator/editor agreement | N architecture; project carriers/qualification P-092–094 | Q4; Q4-V20 |
-| [PG-CONFORMANCE-01](#pg-conformance-01) | protocol/rc7-carriers.md:43; protocol/home-leases.md:314; conformance/environment-store-verification-v2/README.md:40 | Add closed bounded successor-publication and independently grounded paired-witness obligations | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause |
-| [PG-CONFORMANCE-02](#pg-conformance-02) | protocol/rc7-carriers.md:43; protocol/home-leases.md:314; conformance/environment-store-verification-v2/README.md:40 | Add paired detector/exporter witness methodology without production lifecycle test requirements | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause |
-| [PG-ADOPTION-01](#pg-adoption-01) | protocol/environment-store-verification-v2.md:3; protocol/home-leases.md:314 | Preserve publication-versus-qualification distinction; add exact-head per-consumer adoption receipts | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause |
-| [PG-TRACE-01](#pg-trace-01) | New successor trace/corpus rule; conformance/environment-store-verification-v2/README.md:40 preserved | Add checked per-clause/schema amendment and vector correspondence publication | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause |
-| [PG-TRACE-02](#pg-trace-02) | New successor trace/corpus rule; conformance/environment-store-verification-v2/README.md:40 preserved | Preserve immutable baseline inputs; require finite identity closure and explicit stub/result classification | N; publication/corpus obligation; no production carrier | Publication/meta; none — meta clause |
+| [PG-VERIFIED-01](#pg-verified-01) | protocol/project-context.md:190,244,329; schemas/project-context-leaf1-v1/composition.schema.json:115 | Add declaration/lock/generated-inventory variant with approved base and explicit extras | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V3, Q4-V4, Q4-V9, Q4-V20 |
+| [PG-VERIFIED-02](#pg-verified-02) | protocol/project-context.md:190,244,329; schemas/project-context-leaf1-v1/composition.schema.json:115 | Add launch/resume drift comparison and disclose renderer/live-mutation limits | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V3, Q4-V4, Q4-V9, Q4-V20 |
+| [PG-STRICT-01](#pg-strict-01) | protocol/project-context.md:220,232,244; schemas/project-context-leaf1-v1/item.schema.json:1 | Preserve exact protected sparse-view exclusion; qualify strict checkout trust/history within shared authority | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V2, Q4-V4, Q4-V5, Q4-V6, Q4-V10, Q4-V20 |
+| [PG-STRICT-02](#pg-strict-02) | protocol/project-context.md:220,232,244; schemas/project-context-leaf1-v1/item.schema.json:1 | Refuse package evidence as path-set approval and keep strict separate from native success | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V4, Q4-V10, Q4-V20 |
+| [PG-REPOSITORY-01](#pg-repository-01) | protocol/project-context.md:10,47; protocol/environments.md:1305 | Reserve architecture only; refuse discovered repository composition pending joint operator/editor agreement | N architecture; project carriers/qualification P-092-094 | Q4; Q4-V20 |
+| [PG-CONFORMANCE-01](#pg-conformance-01) | protocol/rc7-carriers.md:43; protocol/home-leases.md:314; conformance/environment-store-verification-v2/README.md:40 | Add closed bounded successor-publication and independently grounded paired-witness obligations | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause |
+| [PG-CONFORMANCE-02](#pg-conformance-02) | protocol/rc7-carriers.md:43; protocol/home-leases.md:314; conformance/environment-store-verification-v2/README.md:40 | Add paired detector/exporter witness methodology without production lifecycle test requirements | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause |
+| [PG-ADOPTION-01](#pg-adoption-01) | protocol/environment-store-verification-v2.md:3; protocol/home-leases.md:314 | Preserve publication-versus-qualification distinction; add exact-head per-consumer adoption receipts | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause |
+| [PG-TRACE-01](#pg-trace-01) | New successor trace/corpus rule; conformance/environment-store-verification-v2/README.md:40 preserved | Add checked per-clause/schema amendment and vector correspondence publication | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause |
+| [PG-TRACE-02](#pg-trace-02) | New successor trace/corpus rule; conformance/environment-store-verification-v2/README.md:40 preserved | Preserve immutable baseline inputs; require finite identity closure and explicit stub/result classification | N; publication/corpus obligation; no production carrier | Publication/meta; none - meta clause |
 | [PG-EVIDENCE-01](#pg-evidence-01) | New successor qualification obligations; protocol/home-leases.md:103,314 and protocol/managed-home-snapshots.md:293 preserved | Add bounded evidence classes and separate root/base/nested/live-session observations | N qualification contract; actual tuple/receipt evidence P-104 | Q4; Q4-V1, Q4-V2, Q4-V5, Q4-V6, Q4-V8, Q4-V10, Q4-V11 |
 | [PG-ISOLATION-01](#pg-isolation-01) | New successor qualification obligations; protocol/home-leases.md:103,314 and protocol/managed-home-snapshots.md:293 preserved | Add fixed disposable-context isolation for qualification native entries only | N qualification contract; actual tuple/receipt evidence P-104 | Q4; Q4-V6, Q4-V7 |
 | [PG-ISOLATION-02](#pg-isolation-02) | New successor qualification obligations; protocol/home-leases.md:103,314 and protocol/managed-home-snapshots.md:293 preserved | Add planted-socket rejection/valid canary and isolated OS-store qualification controls | N qualification contract; actual tuple/receipt evidence P-104 | Q4; Q4-V6, Q4-V7 |
@@ -1417,38 +1453,38 @@ editors, probe or operator decision; no row selects a realization.
 
 | Placeholder | Section | Pending mechanism or decision |
 | --- | --- | --- |
-| [PG-P-013](#pg-p-013) | §1.3 | Registration/fragment successor and explicit mode/variant interface |
-| [PG-P-021](#pg-p-021) | §2.1 | Finite exchange carrier and version reservation |
-| [PG-P-024](#pg-p-024) | §2.4 | Selector tuple, canonical byte order and edge identity |
-| [PG-P-025](#pg-p-025) | §2.5 | Omission/projection/delivery receipt correspondence |
-| [PG-P-026](#pg-p-026) | §2.6 | Complete common rendering and header identity |
-| [PG-P-027](#pg-p-027) | §2.7 | Private lock/export correspondence |
-| [PG-P-031](#pg-p-031) | §3.1 | Rejecting positive schema, complete signed body and canonical fixtures |
-| [PG-P-032](#pg-p-032) | §3.2 | Static/model policy, checks and provenance identifiers |
-| [PG-P-036](#pg-p-036) | §3.6 | Negative coverage, freshness, rollback and lower-level mapping |
-| [PG-P-041](#pg-p-041) | §4.1 | Shared versus separate authority and common custodian/exclusion |
-| [PG-P-042](#pg-p-042) | §4.2 | Generation manifest, inventory closure and digest domain |
-| [PG-P-043](#pg-p-043) | §4.3 | Canonical control key/channel projection and receipt |
-| [PG-P-044](#pg-p-044) | §4.4 | Session/project/fragment/locator binding and retention correspondence |
-| [PG-P-051](#pg-p-051) | §5.1 | G1 live binding results, home-variable mapping and Runtime B decision |
-| [PG-P-052](#pg-p-052) | §5.2 | Activation transaction, pending/active status and readmission |
-| [PG-P-053](#pg-p-053) | §5.3 | Successor level/minimum fields and check-class mapping |
-| [PG-P-054](#pg-p-054) | §5.4 | State-home drift, same-pin repair and overlapping-writer boundary |
-| [PG-P-055](#pg-p-055) | §5.5 | Exact adapter paths, relocation and consumer correspondence |
-| [PG-P-062](#pg-p-062) | §6.2 | Complete G1 per-tuple loader/control/write-back/base-role roster |
-| [PG-P-063](#pg-p-063) | §6.3 | Binary identity, compatible line, capabilities and acceptance invalidation |
-| [PG-P-071](#pg-p-071) | §7.1 | Successor holder, canonical operations and durable outcome carrier |
-| [PG-P-072](#pg-p-072) | §7.2 | Observer custody, namespace, transport and descendant/no-start proof |
-| [PG-P-073](#pg-p-073) | §7.3 | Qualified invocation binding or serialized projection and retirement |
-| [PG-P-074](#pg-p-074) | §7.4 | Publication/recovery journal, GC and guarded-writer correspondence |
-| [PG-P-075](#pg-p-075) | §7.5 | Fencing proof, explicit abandonment policy and atomic audit |
-| [PG-P-081](#pg-p-081) | §8.1 | Actual selected consumer/session kind and command/fragment projection |
-| [PG-P-082](#pg-p-082) | §8.2 | Operator and source/consumer-owner decision on successor source eligibility/migration; authorized authority/reference/refresh/rotation qualification |
-| [PG-P-083](#pg-p-083) | §8.3 | Native resume/child ownership and stopped readmission carrier |
-| [PG-P-092](#pg-p-092) | §9.2 | Complete declaration-verified inventory and approved base/extras |
-| [PG-P-093](#pg-p-093) | §9.3 | Protected project view, exact path-set subject and strict certification |
-| [PG-P-094](#pg-p-094) | §9.4 | Repository profile selection/adoption and future composition carrier |
-| [PG-P-104](#pg-p-104) | §10.4 | Authorized exact tuple, fixed isolation, evidence and supported matrix |
+| [PG-P-013](#pg-p-013) | section 1.3 | Registration/fragment successor and explicit mode/variant interface |
+| [PG-P-021](#pg-p-021) | section 2.1 | Finite exchange carrier and version reservation |
+| [PG-P-024](#pg-p-024) | section 2.4 | Selector tuple, canonical byte order and edge identity |
+| [PG-P-025](#pg-p-025) | section 2.5 | Omission/projection/delivery receipt correspondence |
+| [PG-P-026](#pg-p-026) | section 2.6 | Complete common rendering and header identity |
+| [PG-P-027](#pg-p-027) | section 2.7 | Private lock/export correspondence |
+| [PG-P-031](#pg-p-031) | section 3.1 | Rejecting positive schema, complete signed body and canonical fixtures |
+| [PG-P-032](#pg-p-032) | section 3.2 | Static/model policy, checks and provenance identifiers |
+| [PG-P-036](#pg-p-036) | section 3.6 | Negative coverage, freshness, rollback and lower-level mapping |
+| [PG-P-041](#pg-p-041) | section 4.1 | Shared versus separate authority and common custodian/exclusion |
+| [PG-P-042](#pg-p-042) | section 4.2 | Generation manifest, inventory closure and digest domain |
+| [PG-P-043](#pg-p-043) | section 4.3 | Canonical control key/channel projection and receipt |
+| [PG-P-044](#pg-p-044) | section 4.4 | Session/project/fragment/locator binding and retention correspondence |
+| [PG-P-051](#pg-p-051) | section 5.1 | G1 live binding results, home-variable mapping and Runtime B decision |
+| [PG-P-052](#pg-p-052) | section 5.2 | Activation transaction, pending/active status and readmission |
+| [PG-P-053](#pg-p-053) | section 5.3 | Successor level/minimum fields and check-class mapping |
+| [PG-P-054](#pg-p-054) | section 5.4 | State-home drift, same-pin repair and overlapping-writer boundary |
+| [PG-P-055](#pg-p-055) | section 5.5 | Exact adapter paths, relocation and consumer correspondence |
+| [PG-P-062](#pg-p-062) | section 6.2 | Complete G1 per-tuple loader/control/write-back/base-role roster |
+| [PG-P-063](#pg-p-063) | section 6.3 | Binary identity, compatible line, capabilities and acceptance invalidation |
+| [PG-P-071](#pg-p-071) | section 7.1 | Successor holder, canonical operations and durable outcome carrier |
+| [PG-P-072](#pg-p-072) | section 7.2 | Observer custody, namespace, transport and descendant/no-start proof |
+| [PG-P-073](#pg-p-073) | section 7.3 | Qualified invocation binding or serialized projection and retirement |
+| [PG-P-074](#pg-p-074) | section 7.4 | Publication/recovery journal, GC and guarded-writer correspondence |
+| [PG-P-075](#pg-p-075) | section 7.5 | Fencing proof, explicit abandonment policy and atomic audit |
+| [PG-P-081](#pg-p-081) | section 8.1 | Actual selected consumer/session kind and command/fragment projection |
+| [PG-P-082](#pg-p-082) | section 8.2 | Operator and source/consumer-owner decision on successor source eligibility/migration; authorized authority/reference/refresh/rotation qualification |
+| [PG-P-083](#pg-p-083) | section 8.3 | Native resume/child ownership and stopped readmission carrier |
+| [PG-P-092](#pg-p-092) | section 9.2 | Complete declaration-verified inventory and approved base/extras |
+| [PG-P-093](#pg-p-093) | section 9.3 | Protected project view, exact path-set subject and strict certification |
+| [PG-P-094](#pg-p-094) | section 9.4 | Repository profile selection/adoption and future composition carrier |
+| [PG-P-104](#pg-p-104) | section 10.4 | Authorized exact tuple, fixed isolation, evidence and supported matrix |
 
 ### A.3 Reused baseline input families
 
@@ -1474,79 +1510,79 @@ identity is allocated by this draft corpus.
 
 ## Appendix B. Paired conformance inventory
 
-IDs below preserve the round-2 discussion labels for coverage only. They are **not allocated shared corpus IDs**. Every row requires both the forbidden outcome and its nearby valid control, unchanged preimages on rejection, and a specific diagnostic/transition assertion. Expand multi-case rows into fixture instances; do not reduce them to a single happy-path test. Static vector passes do not qualify a native runtime or a production caller.
+IDs below preserve the round-2 discussion labels for coverage only. They are **stable draft-corpus IDs, not production allocations**. Every row requires both the forbidden outcome and its nearby valid control, unchanged preimages on rejection, and a specific diagnostic/transition assertion. Expand multi-case rows into fixture instances; do not reduce them to a single happy-path test. Static vector passes do not qualify a native runtime or a production caller.
 
-### Q1 — package, hash and rendering: 7 pairs
-
-| ID | Paired witness and required result | Owner section |
-| --- | --- | --- |
-| Q1-V1 | Equal complete canonical render inputs / changed weight, tie direction or header digest: identical bytes only for equal header/lock/environment/form inputs; proper stable ordering otherwise | §2.3/§2.6 |
-| Q1-V2 | Absent context / present context with zero applicable modules: no file versus specified header-only result | §2.6 |
-| Q1-V3 | Schema-1 directory / schema-2 selected directory; root omission / literal dot: reject unsupported field, bind exact directory; omitted profile root normalizes empty, profile dot refuses, collection dot remains valid | §2.1 |
-| Q1-V4 | NUL/collision plant / regular bytes: v2 hashes exact bytes with collision-distinguishing framing; v1 refuses opaque NUL before hashing | §2.2 |
-| Q1-V5 | Linked/special/colliding acquisition / regular contained tree: refuse extraction before publication; standalone hash vectors keep separate link semantics | §2.2 |
-| Q1-V6 | Required skill/MCP without delivery / explicit contexts-only: refuse without writes versus admit declared context projection with visible omissions, never full audited closure | §2.5 |
-| Q1-V7 | Unsupported/invalid closed input / supported closed input: precise refusal without publication versus deterministic admitted projection | §1.2/§2.7 |
-
-### Q2 — new edge projection and old collection rules: 9 pairs
+### Q1 - package, hash and rendering: 7 pairs
 
 | ID | Paired witness and required result | Owner section |
 | --- | --- | --- |
-| Q2-V1 | Omitted / empty / overlapping filters on same pinned edge: all / none / exclusion wins | §2.4 |
-| Q2-V2 | Conflicting same-name raw closure hidden by filter / valid exact selectors: conflict refuses before projection; valid member passes | §2.3/§2.4 |
-| Q2-V3 | Duplicate collection or same edge-list entry / unique entries: both duplicates refuse; include/exclude overlap is permitted and distinct from duplicates | §2.4 |
-| Q2-V4 | Missing include even when excluded / missing exclude: first refuses in both grammars, second harmless | §2.4 |
-| Q2-V5 | Edge A excludes, edge B requires full / no B: B retains activation/provenance; without B the excluded contribution is absent, subject to support closure | §2.3/§2.4 |
-| Q2-V6 | Context plus narrowed runtime edge / full edge: context+selected-command union versus all commands; parser acceptance alone is insufficient | §2.3 |
-| Q2-V7 | Retained caller with excluded support / caller excluded or support restored: reject broken projection versus valid closure | §2.4 |
-| Q2-V8 | Changed / unchanged selection, including changed selector with same output: bind declared edge semantics/projection pin; raw audit identity unchanged; canonical unchanged input deterministic | §2.4/§2.7 |
-| Q2-V9 | Legacy empty collection include / new empty edge include: legacy refuses, new edge can contribute nothing; first contexts-only carrier refuses unsupported filters | §2.4/§2.5 |
+| Q1-V1 | Equal complete canonical render inputs / changed weight, tie direction or header digest: identical bytes only for equal header/lock/environment/form inputs; proper stable ordering otherwise | section 2.3/section 2.6 |
+| Q1-V2 | Absent context / present context with zero applicable modules: no file versus specified header-only result | section 2.6 |
+| Q1-V3 | Schema-1 directory / schema-2 selected directory; root omission / literal dot: reject unsupported field, bind exact directory; omitted profile root normalizes empty, profile dot refuses, collection dot remains valid | section 2.1 |
+| Q1-V4 | NUL/collision plant / regular bytes: v2 hashes exact bytes with collision-distinguishing framing; v1 refuses opaque NUL before hashing | section 2.2 |
+| Q1-V5 | Linked/special/colliding acquisition / regular contained tree: refuse extraction before publication; standalone hash vectors keep separate link semantics | section 2.2 |
+| Q1-V6 | Required skill/MCP without delivery / explicit contexts-only: refuse without writes versus admit declared context projection with visible omissions, never full audited closure | section 2.5 |
+| Q1-V7 | Unsupported/invalid closed input / supported closed input: precise refusal without publication versus deterministic admitted projection | section 1.2/section 2.7 |
+
+### Q2 - new edge projection and old collection rules: 9 pairs
+
+| ID | Paired witness and required result | Owner section |
+| --- | --- | --- |
+| Q2-V1 | Omitted / empty / overlapping filters on same pinned edge: all / none / exclusion wins | section 2.4 |
+| Q2-V2 | Conflicting same-name raw closure hidden by filter / valid exact selectors: conflict refuses before projection; valid member passes | section 2.3/section 2.4 |
+| Q2-V3 | Duplicate collection or same edge-list entry / unique entries: both duplicates refuse; include/exclude overlap is permitted and distinct from duplicates | section 2.4 |
+| Q2-V4 | Missing include even when excluded / missing exclude: first refuses in both grammars, second harmless | section 2.4 |
+| Q2-V5 | Edge A excludes, edge B requires full / no B: B retains activation/provenance; without B the excluded contribution is absent, subject to support closure | section 2.3/section 2.4 |
+| Q2-V6 | Context plus narrowed runtime edge / full edge: context+selected-command union versus all commands; parser acceptance alone is insufficient | section 2.3 |
+| Q2-V7 | Retained caller with excluded support / caller excluded or support restored: reject broken projection versus valid closure | section 2.4 |
+| Q2-V8 | Changed / unchanged selection, including changed selector with same output: bind declared edge semantics/projection pin; raw audit identity unchanged; canonical unchanged input deterministic | section 2.4/section 2.7 |
+| Q2-V9 | Legacy empty collection include / new empty edge include: legacy refuses, new edge can contribute nothing; first contexts-only carrier refuses unsupported filters | section 2.4/section 2.5 |
 
 Full raw closure admission/audit precedes filters in this new capability. The contexts-only omission concession does not silently weaken that requirement for an edge-filter carrier.
 
-### Q3 — grants, negatives and migration: 12 pairs
+### Q3 - grants, negatives and migration: 12 pairs
 
 | ID | Paired witness and required result | Owner section |
 | --- | --- | --- |
-| Q3-V1 | Wrong commit/name/source/kind/directory/type/framing/policy / exact satisfying record: every wrong field denies grant, exact AND permits | §3.1 |
-| Q3-V2 | Invented Git authority for local input / independently acquired exact Git package: refuse false subject, valid subject can pass | §3.1 |
-| Q3-V3 | Successor positive at old schema-1-only and schema-2 ordinary readers / new profile reader: old readers reject and cannot grant a skill; new reader requires complete exact policy | §3.1 |
-| Q3-V4 | Revoke C1/H plus grant C2/H moved or renamed / no revoke: same-framing hash denial remains broad; no negative leaves exact grant usable | §3.3 |
-| Q3-V5 | Revoke source/commit/H1 plus grant same source/commit/H2 in another kind/directory / unrelated revoke: source+commit denies; unrelated negative permits neighbor | §3.3 |
-| Q3-V6 | Known valid negative alongside unknown positive semantics / unknown positive alone: first still denies, second never authorizes; unknown handling cannot suppress negative retrieval | §3.3 |
-| Q3-V7 | Successor-only negative detector / schema-2/hash-2 negative / unrelated control: expose and reject split-lane denial; valid negative denies ordinary and profile hash-2 lanes in both managers; future successor negatives require dual issuance | §3.4 |
-| Q3-V8 | Schema-2 negative plus successor positive / name-only retrieval drops negative: deny first; second fails completeness; independently test source+commit and hash-only negative lookup including cache/bundle paths | §3.3/§3.6 |
-| Q3-V9 | Retrieved hash-1 negative / actual reissued hash-2 negative: hash-1 never matches hash-2 even with equal digest; incomplete migration blocks required rollout; real v2 negative denies both v2 lanes, unrelated negative permits | §3.5 |
-| Q3-V10 | Static fail+model pass, absent/failed required model / required predicates pass: bad cases refuse, both pass permits; static-only remains default when model not required | §3.2 |
-| Q3-V11 | Missing/rolled-back/expired required negatives / timely complete required set: new required policy refuses first; complete set permits otherwise exact grant; no silent legacy-advisory change | §3.6 |
-| Q3-V12 | Conditional shared-key alternative / independently segregated trust keys: detector exposes unsafe ordinary grant; hypothetical segregation must cover every affected legacy trust set and broad negatives; separate endpoint alone fails | §3.1/§3.3 |
+| Q3-V1 | Wrong commit/name/source/kind/directory/type/framing/policy / exact satisfying record: every wrong field denies grant, exact AND permits | section 3.1 |
+| Q3-V2 | Invented Git authority for local input / independently acquired exact Git package: refuse false subject, valid subject can pass | section 3.1 |
+| Q3-V3 | Successor positive at old schema-1-only and schema-2 ordinary readers / new profile reader: old readers reject and cannot grant a skill; new reader requires complete exact policy | section 3.1 |
+| Q3-V4 | Revoke C1/H plus grant C2/H moved or renamed / no revoke: same-framing hash denial remains broad; no negative leaves exact grant usable | section 3.3 |
+| Q3-V5 | Revoke source/commit/H1 plus grant same source/commit/H2 in another kind/directory / unrelated revoke: source+commit denies; unrelated negative permits neighbor | section 3.3 |
+| Q3-V6 | Known valid negative alongside unknown positive semantics / unknown positive alone: first still denies, second never authorizes; unknown handling cannot suppress negative retrieval | section 3.3 |
+| Q3-V7 | Successor-only negative detector / schema-2/hash-2 negative / unrelated control: expose and reject split-lane denial; valid negative denies ordinary and profile hash-2 lanes in both managers; future successor negatives require dual issuance | section 3.4 |
+| Q3-V8 | Schema-2 negative plus successor positive / name-only retrieval drops negative: deny first; second fails completeness; independently test source+commit and hash-only negative lookup including cache/bundle paths | section 3.3/section 3.6 |
+| Q3-V9 | Retrieved hash-1 negative / actual reissued hash-2 negative: hash-1 never matches hash-2 even with equal digest; incomplete migration blocks required rollout; real v2 negative denies both v2 lanes, unrelated negative permits | section 3.5 |
+| Q3-V10 | Static fail+model pass, absent/failed required model / required predicates pass: bad cases refuse, both pass permits; static-only remains default when model not required | section 3.2 |
+| Q3-V11 | Missing/rolled-back/expired required negatives / timely complete required set: new required policy refuses first; complete set permits otherwise exact grant; no silent legacy-advisory change | section 3.6 |
+| Q3-V12 | Conditional shared-key alternative / independently segregated trust keys: detector exposes unsafe ordinary grant; hypothetical segregation must cover every affected legacy trust set and broad negatives; separate endpoint alone fails | section 3.1/section 3.3 |
 
 The selected initial successor is **positive-only**. Failed audit is not a broad revocation without separately authorized negative issuance. New revocations are schema-2/hash-2 records; if successor negatives are later allocated, dual issuance remains mandatory until a jointly adopted migration replaces it.
 
-### Q4 — native authority, binding and recovery: 20 pairs
+### Q4 - native authority, binding and recovery: 20 pairs
 
 | ID | Paired witness and required result | Owner section |
 | --- | --- | --- |
-| Q4-V1 | Live A after B preparation / fresh B: actual late instruction/skill/MCP reads stay A; prepared B is not activated B | §5.2/§7.3 |
-| Q4-V2 | A after allowed invocation activation / forbidden fixed-path activation: simultaneous A→A/B→B only if qualified; otherwise pending/refusal while active or retained-resumable A protected | §7.3 |
-| Q4-V3 | Unapproved loader mutation / typed trust/UI write: refuse or retain non-admission for first, permit measured second; known-bad unsealed-control plant detects effect | §6.1/§6.2 |
-| Q4-V4 | Native global skill / selected profile skill: enforce declared mode/root policy, preserve selected skill; native discovery is not strict exclusion | §6.2/§9.1 |
-| Q4-V5 | Foreign parent memory/rules / selected profile/project instructions: enforce selected memory-off contract at start/late/resume/child without suppressing valid selected instructions | §6.2 |
-| Q4-V6 | Real authorized fresh entry / failed mandatory gate: actual selected consumer starts; missing gate refuses before child, no substitute mode/runtime | §8.1 |
-| Q4-V7 | Native disposable login / wrong authority: correct stable authority binds, wrong path/backend refuses; no copied credentials | §4.1/§8.2 |
-| Q4-V8 | Real model turn / broken content protection: actual admitted generation used; attempted shadow/rewrite refuses combination; inert launch insufficient | §5.5/§8.1 |
-| Q4-V9 | Native resume / missing or wrong generation-control receipt: correct resume stays A; bad receipt refuses or explicit stopped readmission, never silent B | §8.3 |
-| Q4-V10 | Child entry / unadmitted discovery: selected child binding/context works, external roots never become strict-trusted silently | §6.2/§8.3 |
-| Q4-V11 | Refresh from every reader domain / wrong backend or stale copied credential: each reader follows native rotation at approved authority; no secret payload in receipt | §8.2 |
-| Q4-V12 | Partial / complete publication: preserve prior generation/holder roots versus admit exact complete new generation; no partial success receipt | §5.1/§7.4 |
-| Q4-V13 | Restart/GC with protected A / terminal-unreferenced generation: reconstruct active/unknown/resumable roots; collect only proven unreferenced terminal content | §7.4 |
-| Q4-V14 | Launcher crash / authoritative no-start: crash leaves unknown protection; exact no-start allows admitted release | §7.2 |
-| Q4-V15 | Reused PID / exact terminal incarnation: first cannot prove release; exact registered observer/session/generation/process and descendants can | §7.2 |
-| Q4-V16 | Detached live/uncertain descendant / all descendants terminal: first retains protection, exact terminal tree permits release | §7.2 |
-| Q4-V17 | Missing/stale/re-registered observer / exact current observer: refuse release/bind admission with uncertainty; current authoritative evidence necessary | §7.2 |
-| Q4-V18 | Audited fenced break / absent fence, exception enablement, reason, CAS or audit: default unfenced break refuses; valid targeted transaction unblocks; explicit abandonment is separate loss-of-protection exception; audit failure retains protection | §7.5 |
-| Q4-V19 | Compatible native drift / unknown major or capability loss: L1/L2 warn within policy, L3/L4 recorded acceptance; mandatory capability loss/unknown major refuses all levels; strict exact tuple only | §6.3 |
-| Q4-V20 | No mode / explicit mode / unsupported strict: legacy omission unchanged; actual native start passes its own gates; unsupported strict refuses without discovery selection/downgrade | §1.3/§9.1–§9.3 |
+| Q4-V1 | Live A after B preparation / fresh B: actual late instruction/skill/MCP reads stay A; prepared B is not activated B | section 5.2/section 7.3 |
+| Q4-V2 | A after allowed invocation activation / forbidden fixed-path activation: simultaneous A->A/B->B only if qualified; otherwise pending/refusal while active or retained-resumable A protected | section 7.3 |
+| Q4-V3 | Unapproved loader mutation / typed trust/UI write: refuse or retain non-admission for first, permit measured second; known-bad unsealed-control plant detects effect | section 6.1/section 6.2 |
+| Q4-V4 | Native global skill / selected profile skill: enforce declared mode/root policy, preserve selected skill; native discovery is not strict exclusion | section 6.2/section 9.1 |
+| Q4-V5 | Foreign parent memory/rules / selected profile/project instructions: enforce selected memory-off contract at start/late/resume/child without suppressing valid selected instructions | section 6.2 |
+| Q4-V6 | Real authorized fresh entry / failed mandatory gate: actual selected consumer starts; missing gate refuses before child, no substitute mode/runtime | section 8.1 |
+| Q4-V7 | Native disposable login / wrong authority: correct stable authority binds, wrong path/backend refuses; no copied credentials | section 4.1/section 8.2 |
+| Q4-V8 | Real model turn / broken content protection: actual admitted generation used; attempted shadow/rewrite refuses combination; inert launch insufficient | section 5.5/section 8.1 |
+| Q4-V9 | Native resume / missing or wrong generation-control receipt: correct resume stays A; bad receipt refuses or explicit stopped readmission, never silent B | section 8.3 |
+| Q4-V10 | Child entry / unadmitted discovery: selected child binding/context works, external roots never become strict-trusted silently | section 6.2/section 8.3 |
+| Q4-V11 | Refresh from every reader domain / wrong backend or stale copied credential: each reader follows native rotation at approved authority; no secret payload in receipt | section 8.2 |
+| Q4-V12 | Partial / complete publication: preserve prior generation/holder roots versus admit exact complete new generation; no partial success receipt | section 5.1/section 7.4 |
+| Q4-V13 | Restart/GC with protected A / terminal-unreferenced generation: reconstruct active/unknown/resumable roots; collect only proven unreferenced terminal content | section 7.4 |
+| Q4-V14 | Launcher crash / authoritative no-start: crash leaves unknown protection; exact no-start allows admitted release | section 7.2 |
+| Q4-V15 | Reused PID / exact terminal incarnation: first cannot prove release; exact registered observer/session/generation/process and descendants can | section 7.2 |
+| Q4-V16 | Detached live/uncertain descendant / all descendants terminal: first retains protection, exact terminal tree permits release | section 7.2 |
+| Q4-V17 | Missing/stale/re-registered observer / exact current observer: refuse release/bind admission with uncertainty; current authoritative evidence necessary | section 7.2 |
+| Q4-V18 | Audited fenced break / absent fence, exception enablement, reason, CAS or audit: default unfenced break refuses; valid targeted transaction unblocks; explicit abandonment is separate loss-of-protection exception; audit failure retains protection | section 7.5 |
+| Q4-V19 | Compatible native drift / unknown major or capability loss: L1/L2 warn within policy, L3/L4 recorded acceptance; mandatory capability loss/unknown major refuses all levels; strict exact tuple only | section 6.3 |
+| Q4-V20 | No mode / explicit mode / unsupported strict: legacy omission unchanged; actual native start passes its own gates; unsupported strict refuses without discovery selection/downgrade | section 1.3/section 9.1-section 9.3 |
 
 Inventory count: **7 + 9 + 12 + 20 = 48 paired rows**. Runtime rows require native observer receipts in addition to static vectors; known-bad plants qualify the observer, not the product. Existing startup corpus and signed-record bytes stay immutable. New corpus manifests bind exact expected outcomes and source pin; each consumer's adoption receipt separately binds its production head and actual exercised caller.
 
@@ -1571,6 +1607,9 @@ precedes fresh CAS; terminal bind is non-admitting; applicable authority/access
 gates remain. Fixed qualification isolation applies to the fixture, not every
 production replay. `reuse.json` pins the finite unchanged baseline closure.
 Production grant/control/holder/fragment shapes and native evidence remain P.
+Tokens in `a1.json` such as `failure_class`, `registration_mismatch` and
+`terminal_nonadmitting` are successor fixture labels, not codes from the
+HL20 closed mapping in `protocol/home-leases.md`.
 
 ## Appendix C. Editorial tensions and proposed resolutions
 
@@ -1580,15 +1619,16 @@ These are explicit provenance/decision notes, not additional production choices.
 | --- | --- | --- |
 | E01 | Earlier nested old-schema evidence versus later rejecting successor | Use the later agreed rejecting positive-only successor (PG-GRANT-01); retain the nested shared-key case only as an unsafe-design detector. Registry owners still reserve the number/body at PG-P-031. |
 | E02 | Earlier equal-selection rendering shorthand versus later header-input amendment | Require equal complete inputs, including header identity (PG-RENDER-02). Different operational-lock headers are not byte-identical; successor header allocation remains PG-P-026. |
-| E03 | Earlier repository-wide removal of named identities versus prospective neutral-role exception | The public joint skeleton adopted prospective neutral authoring: [protocol/profile-generations.md:13–15 at c59ec5f](https://github.com/relux-works/curator-spec/blob/c59ec5f4a7e78e0f0ce90b92a3be831b2a9d0ace/protocol/profile-generations.md#L13). Preserve historical paths, adapter IDs and bytes; no repository-wide rewrite. |
+| E03 | Earlier repository-wide removal of named identities versus prospective neutral-role exception | The public joint skeleton adopted prospective neutral authoring: [protocol/profile-generations.md:13-15 at c59ec5f](https://github.com/relux-works/curator-spec/blob/c59ec5f4a7e78e0f0ce90b92a3be831b2a9d0ace/protocol/profile-generations.md#L13). Preserve historical paths, adapter IDs and bytes; no repository-wide rewrite. |
 | E04 | Stable authority/generation goal versus snapshot-v1 exported-home binding | Keep snapshot-v1 unchanged; draft four successor identities but leave Runtime B/home-variable realization at PG-P-051 until probes and operator confirmation. |
 | E05 | Earlier same-pin live restoration allowance versus overlapping-writer protection | Preserve the no-overlap/protected-root floor; do not enable a live repair exception. Holder/startup owners resolve permitted same-pin restoration with binding/write-back probes at PG-P-054/074; no live-memory-healing claim. |
 | E06 | Earlier schema-number examples and G2-after-probes schedule versus this N-only drafting request | No numeric production reservations or probe-dependent defaults. Draft agreed semantics now; retain every P gate, closed conformance meta-schemas only, then complete production schemas after owners and evidence. |
 | E07 | Explicit managed mode and portable generation versus effective-posture/1 none and protected generation identity | Preserve `protocol/effective-posture.md:36,39,52 @S`, including independent permission/no-tools/default intent. PG-MODE-01 refuses omission only at the new managed entry; PG-TERMS-01 does not relabel the old protected plan generation identity. Any correspondence stays PG-P-013/044. |
 | E08 | Existing selected credential sources versus qualified successor references | Preserve the adopted node-source contract and the distinct selected launcher OAuth-store path outside this capability. PG-AUTHFLOW-01 requires refusal of any selected source lacking successor adoption and qualification, with no implicit native-login fallback or credential copy. Whether either existing delivery mechanism can satisfy the qualified-reference contract, or instead needs an explicitly approved migration to native in-place auth, is an owner decision at PG-P-082. No blanket successor source eligibility decision is made here. |
-| E09 | Checkout-scoped project rules versus shared profile × runtime native authority | Amend `protocol/project-context.md:222,232,298,311 @S` only through the successor. PG-AUTH-01 owns the authority used by launches; PG-BINDING-01 attaches approved project projection, composition, lease and busy rules to the per-checkout binding/generation. PG-COMPAT-02 preserves old homes and §5.1 mode/registration at :260. Separate bindings do not prove shared-path concurrency: PG-P-051/073 and PG-ACTIVATE-01 govern pending/refusal. Strict worktree trust and cross-checkout history confinement remain PG-P-062/093; shared authority is not strict qualification. |
+| E09 | Checkout-scoped project rules versus shared profile x runtime native authority | Amend `protocol/project-context.md:222,232,298,311 @S` only through the successor. PG-AUTH-01 owns the authority used by launches; PG-BINDING-01 attaches approved project projection, composition, lease and busy rules to the per-checkout binding/generation. PG-COMPAT-02 preserves old homes and section 5.1 mode/registration at :260. Separate bindings do not prove shared-path concurrency: PG-P-051/073 and PG-ACTIVATE-01 govern pending/refusal. Strict worktree trust and cross-checkout history confinement remain PG-P-062/093; shared authority is not strict qualification. |
 | E10 | Login presence versus usable session/refresh assertion | Preserve `protocol/login-readiness.md:12,29,52 @S` and the closed login row. PG-AUTHFLOW-02 keeps presence metadata separate from actual login/turn/refresh/rotation evidence; no readiness upgrade or secret-reading status operation is introduced. |
 | E11 | Existing seed-C preservation versus new sealed/approved loader controls | Preserve `protocol/codex-seed-c.md:10,18,45,65 @S` and marker 7. PG-LOADER-01 refuses unadmitted controls rather than silently stripping, refreshing or relabelling an existing seed. Explicit migration follows the seed lifecycle; successor control projection remains PG-P-043/062. |
+| E12 | Successor stable authority and holder rules versus hosted per-session homes, HL24 exclusivity and HL23 L6 no-lease unhosted launches (`cips/CIP-0016-local-hosted-launches.md`, `protocol/local-hosted-launches.md`, `protocol/home-leases.md` section 5) | Recorded dispositions (no N change): (1) delegated and exact-plan hosted routes keep their meaning; selecting the successor entry through a hosted route refuses under PG-SCOPE-02 until a joint amendment of local-hosted-launches; (2) HL24 applies to the profile x runtime authority at hosted admission, and any cross-lane or cross-Werkstatt sharing qualified under PG-P-073 needs an explicit owner amendment of HL24; (3) for successor launches, HL23 L6 is amended by PG-HOLDER-01. See the Appendix A trace rows for PG-AUTH-01, PG-BINDING-01, PG-HOLDER-01, PG-ACTIVATE-01 and PG-SCOPE-02. |
 
 ## G2 completion boundary
 
