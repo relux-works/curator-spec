@@ -759,9 +759,11 @@ executables below `GOROOT/pkg/tool/<GOHOSTOS>_<GOHOSTARCH>/`. This is a
 manager-selection and identity rule: the manager selects every program it starts
 and verifies each identity before use. Neither the manager nor the worker MAY
 write to the frozen source snapshot or to `GOROOT`, and both identities MUST be
-re-verified after the last child exits; a change rejects the operation before
-publication. Section 4.2.1 states exactly which portable mechanism carries each
-of these rules and which stronger kernel-enforced guarantee is deferred. The one
+re-verified after the last child exits; a change found by that re-verification,
+or reported by a change notification during the operation, rejects the
+operation before publication. Section 4.2.1 states exactly which portable
+mechanism carries each of these rules and which stronger kernel-enforced
+guarantee is deferred. The one
 output MUST be a bounded regular file inside manager staging. The manager MUST
 hash it, set manager-defined executable permissions, and MUST NOT execute it for
 validation, version discovery, smoke testing, post-processing, receipt
@@ -838,11 +840,34 @@ implementation can mistake one for the other:
 | Portable mechanism | What it means | What it does not mean | Deferred guarantee |
 |---|---|---|---|
 | `network: "none"` in the canonical policy | fixed offline Go module, proxy, checksum-database, and version-control configuration, and no manager-initiated or Go-initiated network access for dependency resolution or the build | kernel-enforced network denial for the worker domain or its descendants | `total-network-denial` |
-| frozen snapshot plus identity re-verification | the manager freezes the validated snapshot, neither the manager nor the worker writes to it or to `GOROOT`, and a change to either before publication rejects the operation | kernel-enforced read-only presentation of the snapshot or toolchain to descendants | `read-only-source-and-toolchain` |
+| frozen snapshot plus identity re-verification | the manager freezes the validated snapshot, neither the manager nor the worker writes to it or to `GOROOT`, and a change to either that is present at a verification checkpoint (the identity verification before launch and the re-verification after the last child exits), or reported by a change notification that the manager observes during the operation, rejects the operation before publication. A process that already holds write access to a snapshot or toolchain file, or a writable shared mapping of one, can change that file and restore it between the checkpoints without a reported notification; the portable mechanism does not detect such a change, and preventing it belongs to the deferred guarantee `read-only-source-and-toolchain`. | kernel-enforced read-only presentation of the snapshot or toolchain to descendants | `read-only-source-and-toolchain` |
 | fixed manager-selected graph plus identity verification | within this execution boundary the manager and worker start only the fixed four-node graph, package data cannot select or add a program, and every started program's identity is verified before and after execution | kernel-enforced allowlisting of the exact executable paths a descendant may run | `exact-executable-allowlisting` |
 | manager-private roots plus artifact verification | every manager-directed write target is an operation-private root and the single artifact is verified in private staging before publication | kernel-enforced confinement of every descendant write to the private build roots | `private-build-root-only-writes` |
 | parent-enforced deadline, output, and artifact bounds | the parent bounds wall-clock time, combined output, and artifact size over the worker domain and applies every available inventory control | hard aggregate process, memory, disk, time, and output bounds over every descendant | `hard-aggregate-descendant-resource-bounds` |
 | mandatory-control preflight | the operation rejects before the worker when a mandatory portable control cannot be applied | terminal rejection before the worker when a hardened capability is absent | `fail-closed-capability-preflight` |
+
+> Informative note (non-normative). On 2026-11-05, a write-and-restore
+> through a pre-existing writable shared mapping (MAP_SHARED, read/write,
+> created and warmed by writing the original bytes through the mapping
+> before guard or watch setup; intermediate bytes verified changed and
+> final bytes verified restored; final stat compared device, inode, size,
+> mtime_ns and ctime_ns) was measured as follows. macOS 27.2 arm64 on
+> APFS, Python 3.12.13: an implementation's kqueue-based identity check
+> (three verify and three close runs per case) accepted without an
+> explicit flush, with no event and no final stat difference; with an
+> explicit flush (mmap flush / msync after each write), NOTE_WRITE was
+> reported, the identity check rejected, and final timestamps changed.
+> Linux on ext4 (no kernel or interpreter version recorded for these
+> runs): inotify watches only, no identity check run, three repetitions
+> per case; a retained O_PATH descriptor confirmed the inode. Without an
+> explicit flush, no event and no final stat difference; with an explicit
+> flush, still no inotify event, and final timestamps changed. The
+> section 8.2 toolchain identity does not include timestamps, so a final
+> timestamp difference alone does not change that identity. Ordinary
+> write-and-restore and rename-and-restore were reported on both measured
+> platforms. Windows: UNMEASURED. "Without an explicit flush" means no
+> flush call was made in that case; it does not claim the operating
+> system can never flush later.
 
 The rc.5 native-control inventory is exhaustive and normative per platform. Its
 authority is the `native_control_inventory` section of
@@ -1639,8 +1664,10 @@ Prefix the lowercase digest with `sha256:`.
 Permissions, ownership, timestamps, ACLs, and extended attributes are not hash
 inputs, but `bin/go` and each invoked `pkg/tool/<host>/` child MUST be regular
 and executable at use time. The tree MUST remain unchanged through the last
-child exit. The logical identity also records normalized `go_version` and
-`go_relpath: "bin/go"`; toolchain location is not portable identity.
+child exit, as checked by the identity re-verification of section 4.2.1, which
+states the changes that mechanism does not detect. The logical identity also
+records normalized `go_version` and `go_relpath: "bin/go"`; toolchain location
+is not portable identity.
 
 ## 9. Compiled-artifact cache and receipts
 
