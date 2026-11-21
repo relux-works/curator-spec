@@ -1,0 +1,29 @@
+{
+  "env": {
+    "XDG_CACHE_HOME": "/fixture/muse/cache",
+    "XDG_CONFIG_HOME": "/fixture/muse/config",
+    "XDG_DATA_HOME": "/fixture/muse/data",
+    "XDG_STATE_HOME": "/fixture/muse/state"
+  },
+  "environment": "muse",
+  "fragment": "launch-env-fragment-v4",
+  "permissions": {
+    "locked": false,
+    "mode": "native",
+    "source": "profile"
+  },
+  "precedence": {
+    "placement": "winner-last",
+    "winner": "higher-weight"
+  },
+  "profile": {
+    "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "name": "example"
+  },
+  "root_context": {
+    "exclusive": true
+  },
+  "credential_store": {
+    "selection": "unknown"
+  }
+}

@@ -123,5 +123,6 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0030](CIP-0030-package-prefixed-overlay-ranges.md) | Package-prefixed version tags for directory overlays | Review |
 | [CIP-0031](CIP-0031-machine-host-notification.md) | Machine Host notification carrier | Review |
 | [CIP-0032](CIP-0032-native-a2a-station-link.md) | Native a2a station-link handover | Review |
+| [CIP-0033](CIP-0033-muse-native-credential-form.md) | Muse native credential form | Draft |
 
 CIP-0028 remains allocated separately in [PR #205](https://github.com/relux-works/curator-spec/pull/205); these proposals do not reuse it.

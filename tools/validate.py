@@ -325,10 +325,13 @@ def ccj1_sha256(value: Any) -> str:
     return "sha256:" + hashlib.sha256(ccj1_bytes(value)).hexdigest()
 
 
-def schema_registry() -> tuple[Registry, dict[str, Path]]:
+def schema_registry(*, include_muse_native: bool = False) -> tuple[Registry, dict[str, Path]]:
     documents: dict[str, Any] = {}
     paths: dict[str, Path] = {}
-    for path in sorted(SCHEMAS.glob("*.json")):
+    schema_paths = list(SCHEMAS.glob("*.json"))
+    if include_muse_native:
+        schema_paths.extend((ROOT / "schemas/muse-native-v1").glob("*.json"))
+    for path in sorted(schema_paths):
         document = load_json(path)
         schema_content = ccj1_bytes(document)
         if schema_content not in _VALID_SCHEMA_DOCUMENTS:
@@ -352,8 +355,8 @@ def schema_registry() -> tuple[Registry, dict[str, Path]]:
 
 
 def validate_schemas() -> None:
-    registry, paths = schema_registry()
-    case_roots = [SUITE / "schema-cases", ROOT / "conformance/environments-muse-v4/schema-cases"]
+    registry, paths = schema_registry(include_muse_native=True)
+    case_roots = [SUITE / "schema-cases", ROOT / "conformance/environments-muse-v4/schema-cases", ROOT / "conformance/muse-native-v1/schema-cases"]
     index = [(root, case) for root in case_roots for case in load_json(root / "index.json")]
     covered: set[str] = set()
     for case_root, case in index:
@@ -952,7 +955,7 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
         seeded = instance.get("seeded_projects")
         if isinstance(seeded, list) and seeded != sorted(seeded):
             return "seeded_projects must be sorted"
-    elif schema_name in ("launch-env-fragment-v1.schema.json", "launch-env-fragment-v2.schema.json", "launch-env-fragment-v3.schema.json", "launch-env-fragment-v4.schema.json"):
+    elif schema_name in ("launch-env-fragment-v1.schema.json", "launch-env-fragment-v2.schema.json", "launch-env-fragment-v3.schema.json", "launch-env-fragment-v4.schema.json", "launch-env-fragment-v4-muse-native.schema.json"):
         environment = instance.get("environment")
         if environment == "muse":
             parents = instance.get("env", {})
@@ -964,7 +967,9 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
                 "XDG_STATE_HOME": home + "/state",
                 "XDG_CACHE_HOME": home + "/cache",
             }
-            if schema_name == "launch-env-fragment-v4.schema.json":
+            if (schema_name == "launch-env-fragment-v4.schema.json" or
+                    (schema_name == "launch-env-fragment-v4-muse-native.schema.json" and
+                     instance.get("credential_store", {}).get("selection") == "file")):
                 expected["TBH_CREDENTIAL_BACKEND"] = "file"
             if not home or parents != expected:
                 return "Muse XDG variables must name one home's config/data/state/cache parents; HOME is forbidden"
@@ -12311,7 +12316,7 @@ def main(*, release_history_only: bool = False) -> int:
     if release_history_only:
         print("validated published release record bytes")
         return 0
-    print(f"validated {len(list(SCHEMAS.glob('*.json')))} schemas and {len(load_json(SUITE / 'manifest.json')['files'])} vector files")
+    print(f"validated {len(schema_registry(include_muse_native=True)[1])} schemas and {len(load_json(SUITE / 'manifest.json')['files'])} vector files")
     return 0
 
 
