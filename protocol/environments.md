@@ -1446,6 +1446,7 @@ The closed revision-1 adapter set is exactly:
 | `opencode` | `XDG_CONFIG_HOME=<parent>` | tool reads `<parent>/opencode/` as the home | `<home>/AGENTS.md` | the manager §5 native surface (`~/.agents/skills`), unchanged in revision 1 |
 | `pi` | `PI_CODING_AGENT_DIR=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
 | `muse` | `XDG_CONFIG_HOME=<home>/config`, `XDG_DATA_HOME=<home>/data`, `XDG_STATE_HOME=<home>/state`, `XDG_CACHE_HOME=<home>/cache` (in this declared order) | `<home>` is the parent layout; config/data use `muse/` below each parent; internal state/cache layout unverified | `<home>/config/muse/AGENTS.md` — **verified** on 1.4.7 | `<home>/data/muse/skills/` — location measured, native discovery **unverified** |
+| `antigravity` | flag transport (`home: {"path": "<home>", "transport": "flag"}` rendered by SAM as `--gemini_dir <home>`; `AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true` in `env`) | `<home>` is the Antigravity root (basename MUST NOT be `.gemini`); `config/` holds rules/skills/MCP, `antigravity-cli/` holds app data and file token | `<home>/config/AGENTS.md` — **verified** on 1.5.16 (macOS ARM64 & Linux x86_64; symlink and copy) | `<home>/config/skills/` — **verified** on 1.5.16 (symlink and copy; `~/.agents/skills` skipped when basename != `.gemini`) |
 
 `gemini`, `cursor`, and `windsurf` remain skills-only adapters under the
 unchanged manager §5 table in revision 1. Tools with no home-isolation
@@ -1554,6 +1555,28 @@ bytes, and retain unknown refresh and 1.4.8 exclusion qualification as separate
 bounds. A required exclusion on `serve` is refused under section 10.2; without
 a root-context fact, the standing foreign-context residual still applies.
 
+**Antigravity evidence and isolation bound (CIP-0033).** The `antigravity`
+adapter (CLI alias `agy`) is `managed-home`-only: Curator MUST NOT write
+in-place into shared `~/.gemini`, and MUST NOT replace `HOME`. Home
+relocation uses flag transport (`home: {"path": "<home>", "transport": "flag"}`
+in `launch-env-fragment-v7`, rendered by SAM as `--gemini_dir <home>` for CLI
+launches and `--gemini-dir <home>` for `agy acp --login`; subcommands require
+`--gemini_dir` before the subcommand name). The managed-home leaf directory
+MUST NOT have basename `.gemini` (Curator uses `antigravity`), which skips
+`~/.agents/skills` (**verified** on `agy 1.5.16`, macOS ARM64 and Linux
+x86_64, probes P0–P9). Managed launches MUST set
+`AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true` in `env` to bypass the user-global
+macOS Keychain item (`service="gemini"`, `account="antigravity"`). SAM's
+filtered `ChildEnv` sets `AGY_CLI_DISABLE_AUTO_UPDATE=true`. On Linux,
+unmanaged plugin secret storage (`$XDG_CONFIG_HOME/antigravity/plugin-secrets.json`)
+and on macOS `~/Library/Application Support/antigravity/` remain outside
+`--gemini_dir` and are recorded as a Phase 1 unmanaged-plugin residual (leaving
+`XDG_CONFIG_HOME` untouched preserves operator `git`/`gh`/`gcloud` config in
+child commands). Project-context / Werkstatt integration (`memory-off`,
+manager-programmed permissions, and `strict` exclusion of workspace
+`AGENTS.md`, `GEMINI.md`, `.agents/skills/`, and `.agents/plugins/*`) is
+deferred to Phase 2 under [CIP-0033](../cips/CIP-0033-antigravity-managed-home.md).
+
 ### 7.2 Root-context forms
 
 | Environment | Forms supported | Default form |
@@ -1563,6 +1586,7 @@ a root-context fact, the standing foreign-context residual still applies.
 | `opencode` | `monolithic`, `referenced` | `monolithic` |
 | `pi` | `monolithic` | `monolithic` |
 | `muse` | `monolithic` | `monolithic` |
+| `antigravity` | `monolithic` | `monolithic` |
 
 The effective form is machine configuration with these defaults; profile
 data cannot select a form. Requesting `referenced` for an adapter that does
@@ -1663,6 +1687,7 @@ pinned release that the strategy answers to:
 | `opencode` | none — auth lives in `XDG_DATA_HOME`, which the config swap never touches (section 7.1) | ambient | — |
 | `pi` | `auth.json` | `file-link` — the managed `auth.json` is a symlink to the native `~/.pi/agent/auth.json` (native root `~/.pi/agent`, not `~/.pi`), re-checked by the liveness row | **verified** in-place: pi 0.84.2 rewrites its agent-root `auth.json` with a single in-place write, mode 0600, under its own lockfile, never temp-and-rename (installed `core/auth-storage.js`) |
 | `muse` | `shared`: `config/muse/auth.json`; `isolated`: none | Managed launches set `TBH_CREDENTIAL_BACKEND=file`. `shared` uses `file-link` to native effective `$XDG_CONFIG_HOME/muse/auth.json` (default `~/.config/muse/auth.json`), captured before managed overrides and requiring a native file-backed login. `isolated` logs in inside the managed XDG home. Both modes are admitted optimistically. | Muse 1.4.8 on macOS 27: file-backed login at mode 0600, subsequent backend `file` with zero Keychain access, and a link to another home's file worked (owner decision 2026-10-15 measured facts). Default backend is global Keychain-first and fails to save without Keychain access. Token-refresh and concurrent refresh behavior remain unmeasured; every-resolve liveness and conflict-preserving repair remain mandatory. |
+| `antigravity` | `shared`: `antigravity-cli/antigravity-oauth-token`; `isolated`: none | Managed launches set `AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true`. Unset or `native` `credential_store` resolves to effective `file` without rewriting config; explicit `keychain` refuses `environment_credential_store_unsupported`. `shared` uses `file-link` to native `~/.gemini/antigravity-cli/antigravity-oauth-token` (requiring a prior native file-backed login; Keychain is never exported). `isolated` runs `AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true agy acp --login --gemini-dir <home>`. Both modes are admitted optimistically (CIP-0033). | `agy 1.5.16` (macOS ARM64 & Linux x86_64): `AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true` bypasses global macOS Keychain (`gemini`/`antigravity`) and reads through a symlinked `antigravity-oauth-token` without unlinking it (probes P4a–P4c). Static binary inspection shows in-place `os.WriteFile(..., 0600)` without a lockfile; live OAuth token refresh and concurrent refresh remain unmeasured, so every-resolve liveness and conflict-preserving repair remain mandatory. |
 
 **Managed Muse backend selection.** The user-owned per-profile × environment
 `credential_store` selector is coordinated with CIP-0015. Its compatibility
@@ -2014,6 +2039,7 @@ revision-1 declarations are:
 | Environment | Shadowing path | Shadowed surface |
 |---|---|---|
 | `pi` | `AGENTS.override.md` beside the root-context target | root context |
+| `antigravity` | `config/GEMINI.md`, `config/rules`, `GEMINI.md`, `AGENTS.md` (all four merge additively with `config/AGENTS.md`, verified on `agy 1.5.16` probes P1i–P1j) | root context |
 
 `claude_code`, `codex_cli`, and `opencode` declare none in revision 1. The
 adapter ledger and environment marker protect only managed paths, so
@@ -2103,7 +2129,8 @@ identifier not declared by the registry is `environment_target_unknown`.
 | recorded passthrough entry whose link state cannot be established — `lstat` or `readlink` fails with permission, I/O, or path errors (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
 | recorded passthrough link path holds a regular file or a symlink to an unexpected target at repair, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (refusal, no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
 | native storage selector outside the verified set (refusal, no fragment) | `environment_credential_unsupported` |
-| explicit machine store map has no admitted mapping, including managed Muse `keychain` (refusal, no fragment) | `environment_credential_store_unsupported` |
+| explicit machine store map has no admitted mapping, including managed Muse or Antigravity `keychain` (refusal, no fragment) | `environment_credential_store_unsupported` |
+| `--format env` or `--format shell` requested for a flag-transported home adapter (`antigravity`, CIP-0033; refusal, zero bytes on stdout) | `environment_flag_home_unsupported` |
 | provisioning seed exists but cannot be read — a native-home file or a named XDG entry | `environment_seed_unreadable` |
 | unrecorded entry in a managed `opencode` parent shadows an allowlisted operator entry (warning) | `environment_seed_shadowed` |
 | first `auto` write into a secondary target's home without recorded consent | `environment_target_consent_required` |
@@ -2137,6 +2164,7 @@ configuration.
 | `codex_cli` | `flag` `-p` with `argument: name`, `name: "curator-mcp"`: `-p <name>` layers `$CODEX_HOME/<name>.config.toml` on the base configuration, so the manager's `<home>/curator-mcp.config.toml` (section 5.8) carries the set. The layer name is fixed and reserved. `-p` accepts **exactly one** value — a second occurrence is the tool's argument error, not last-wins — so an operator `-p` after `--` fails the launch and operator profile layering is unavailable in a managed launch (recorded consequence; this closes Decision 0012 Open question 3). `-p` is accepted before and after `exec`. A **missing layer file is silently ignored** (exit 0) — under `--strict-config` too (0.153.2, sprint evidence) — so the launcher MUST stat the layer file immediately before exec and fail rather than launch without the set; `env resolve` covers the same file as a marker-recorded surface | all four facts **verified** on codex 0.153.2 by direct invocation; a layer file whose only table is `mcp_servers` composes over the base and its servers are listed (**verified**) |
 | `opencode` | `variable` `OPENCODE_CONFIG` naming the section 5.8 file. opencode merges configuration in a documented order — remote, global, `OPENCODE_CONFIG`, project `opencode.json`, `.opencode/`, `OPENCODE_CONFIG_CONTENT`, managed — so a project-level entry with the same server name overrides the managed one; recorded, not prevented | merge order **docs-confidence** (opencode is not installed on the recording machine) |
 | `pi` | none — pi 0.84.2 has no MCP channel; no file and no `mcp` section | **verified** absent from the 0.84.2 help |
+| `antigravity` | `file` `config/mcp_config.json` (JSON `{"mcpServers": {...}}` supporting `stdio` and Streamable HTTP `url`) | **verified** on `agy 1.5.16` (macOS ARM64 & Linux x86_64, probe P5): managed `config/mcp_config.json` started and executed `tools/call`; native `~/.gemini/config/mcp_config.json` never started. Note: `agy 1.5.16` inherits its full process environment (including `GEMINI_API_KEY`) into `stdio` MCP children |
 
 What each channel does to the home's own MCP configuration — the
 per-adapter residual — is closed in this table:
@@ -2147,6 +2175,7 @@ per-adapter residual — is closed in this table:
 | `codex_cli` | `-p curator-mcp` layers the profile set over the seeded base: under seed-rule revision A the base still carries the native servers, reported as ungoverned (section 7.4); a home provisioned under revision B or C carries none in its base: the launch set is exactly the profile's (a revision-A home keeps its inherited base under a revision-B or revision-C manager and reports `mcp_seed_unstripped`; section 7.4) |
 | `opencode` | the documented merge order applies — remote, global, `OPENCODE_CONFIG`, project `opencode.json`, `.opencode/`, `OPENCODE_CONFIG_CONTENT`, managed — so project-level servers remain and a same-named project entry overrides the managed one: recorded residual, not prevented |
 | `pi` | none: no channel, no MCP configuration in a managed launch |
+| `antigravity` | managed `<home>/config/mcp_config.json` replaces native `~/.gemini/config/mcp_config.json` cleanly; workspace `.agents/plugins/*/mcp_config.json` servers still start automatically (recorded Phase 1 residual, verified on `agy 1.5.16` probe P9a; deferred to Phase 2) |
 
 The Claude/Codex asymmetry is a runtime guarantee with a manager-owned
 boundary:
@@ -2176,6 +2205,7 @@ size advisory for its root-context target:
 | `opencode` | not installed on the recording machine — every opencode fact is docs-confidence | `32768` | none published; default adopted |
 | `pi` | 0.84.2 | `32768` | none published; default adopted |
 | `muse` | 1.4.7 (1.4.7-R6101.1): root context, workspace residual, include behavior and P1–P4 exclusions; 1.4.8 on macOS 27: credential backend only (owner decision 2026-10-15 measured facts); 1.4.8 exclusion build remains unqualified | `32768` | common prompt-budget default, not a measured cap; the loader rendered the full tested files, while model-visible retrieval varied at identical sizes between 31 KB and 40 KB, so no reproducible size threshold is established |
+| `antigravity` | `1.5.16` (`macOS-15.8.2-arm64` SHA-256 `b746bd68eb150f594e53af1e5577c8b101eaf33bd44ca10ac683af90e0630cf3`; `Linux x86_64` SHA-256 `05245f4346d16b679fd059a73081af0161607a76b4a164642bd007430934e785`; probes P0–P9, Q2–Q4 on 2026-11-24) | `24000` | **verified** per-file cap: a 24,847-byte `config/AGENTS.md` loaded its head marker and truncated its tail marker on both macOS and Linux (probe P2a; matches published 24,000-byte per-file rule cap) |
 
 Each adapter additionally records the following members, whose values were
 fixed by the verification sprint of 2026-09-05 (claude 2.1.261, codex
@@ -4230,6 +4260,25 @@ and the five-value Muse projection retain their limited environment-only
 meaning. Runtime qualification and strict covered consumers still gate Codex
 producer enablement; direct login consumes typed policy without shell eval.
 
+**Coordinated successor v7 (CIP-0033).**
+[`launch-env-fragment-v7`](../schemas/antigravity-managed-home-v1/launch-env-fragment-v7.schema.json)
+extends `v6` without modifying `v1`–`v6` bytes. It adds `antigravity` with a
+REQUIRED top-level `home: {"path": <absolutePath>, "transport": "flag"}` member
+(forbidden on the five env-based adapters), exact `env:
+{"AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"}`, REQUIRED `credential_store`
+(`{"selection": "file"}` in `per-home`, `{"selection": "native"}` in `node`
+mode), optional `mcp` (`{"kind": "file", "filename": "config/mcp_config.json"}`),
+no `system_prompt`, no `root_context`, and `node-source-v2` channels
+`GEMINI_API_KEY` and `GOOGLE_APPLICATION_CREDENTIALS`. Because env/shell
+projections cannot express flag-transported homes, `curator env resolve
+--format env` and `--format shell` MUST refuse `antigravity` fail-closed with
+`environment_flag_home_unsupported` and zero bytes on stdout. SAM renders
+`home.path` as `--gemini_dir <path>` on CLI launches (and `--gemini-dir <path>`
+on `agy acp --login`), renders `--settings '{"modelProvider":"gemini"}'` when
+the `GEMINI_API_KEY` node channel is active, and rejects conflicting
+`--gemini_dir`, `--gemini-dir`, `--app_data_dir`, `--app-data-dir`, and
+`--settings` flags in `NativeArgs`.
+
 ### 10.3 The profile-influence boundary
 
 The [local node source](local-setup-token-source.md#6-local-binding-and-final-boundary-l6)
@@ -4239,9 +4288,11 @@ source/settings/provider/endpoint/startup inputs refuse before secret lookup;
 only the approved final Claude child may receive the token.
 
 The coordinated successor in [login readiness §2.1](login-readiness.md) permits
-only the machine-selected Muse backend literal; this never gives profile
-bytes authority to select names, backend values, sources or accounts. The
-path-only fragment revisions below keep their existing boundary.
+only the machine-selected Muse backend literal; [CIP-0033](../cips/CIP-0033-antigravity-managed-home.md)
+adds the analogous registry-owned Antigravity credential-backend literal
+`AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true` in `launch-env-fragment-v7`. Neither
+constant gives profile bytes authority to select names, backend values, sources
+or accounts. The path-only fragment revisions below keep their existing boundary.
 
 Fragment variable names come only from the closed adapter registry.
 Fragment `env` values are absolute paths below the manager-owned environments

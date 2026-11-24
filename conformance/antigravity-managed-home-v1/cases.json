@@ -1,0 +1,610 @@
+{
+  "suite": "antigravity-managed-home-v1",
+  "cases": [
+    {
+      "id": "v7-antigravity-per-home-minimal",
+      "schema": "launch-env-fragment-v7",
+      "expect": "valid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/Users/operator/.curator/environments/team-default/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "file"
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-per-home-with-mcp",
+      "schema": "launch-env-fragment-v7",
+      "expect": "valid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/Users/operator/.curator/environments/team-default/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "yolo",
+          "locked": false,
+          "source": "profile"
+        },
+        "credential_store": {
+          "selection": "file"
+        },
+        "mcp": {
+          "path": "/Users/operator/.curator/environments/team-default/antigravity/config/mcp_config.json",
+          "env_names": [
+            "GITHUB_TOKEN"
+          ],
+          "channels": [
+            {
+              "kind": "file",
+              "filename": "config/mcp_config.json"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-node-gemini-api-key",
+      "schema": "launch-env-fragment-v7",
+      "expect": "valid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "ci-headless",
+          "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/home/operator/.curator/environments/ci-headless/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": true,
+          "source": "global"
+        },
+        "credential_store": {
+          "selection": "native"
+        },
+        "credential_source": {
+          "source": {
+            "mode": "node",
+            "source_ref": "local:0123456789abcdef0123456789abcdef",
+            "harness_channel": "GEMINI_API_KEY"
+          },
+          "source_generation": 1,
+          "policy_generation": 2
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-node-google-adc",
+      "schema": "launch-env-fragment-v7",
+      "expect": "valid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "ci-adc",
+          "lock_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/home/operator/.curator/environments/ci-adc/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "native"
+        },
+        "credential_source": {
+          "source": {
+            "mode": "node",
+            "source_ref": "local:fedcba9876543210fedcba9876543210",
+            "harness_channel": "GOOGLE_APPLICATION_CREDENTIALS"
+          },
+          "source_generation": 3,
+          "policy_generation": 1
+        }
+      }
+    },
+    {
+      "id": "v7-claude-code-env-based-remains-valid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "valid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "claude_code",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "env": {
+          "CLAUDE_CONFIG_DIR": "/Users/operator/.curator/environments/team-default/claude"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-missing-home-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "file"
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-dot-gemini-basename-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/Users/operator/.curator/environments/team-default/.gemini",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "file"
+        }
+      }
+    },
+    {
+      "id": "v7-claude-code-with-home-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "claude_code",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/Users/operator/.curator/environments/team-default/claude",
+          "transport": "flag"
+        },
+        "env": {
+          "CLAUDE_CONFIG_DIR": "/Users/operator/.curator/environments/team-default/claude"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-extra-auto-update-env-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/Users/operator/.curator/environments/team-default/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true",
+          "AGY_CLI_DISABLE_AUTO_UPDATE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "file"
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-keychain-store-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/Users/operator/.curator/environments/team-default/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "keychain"
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-node-mcp-reserved-env-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "ci-headless",
+          "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/home/operator/.curator/environments/ci-headless/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "native"
+        },
+        "credential_source": {
+          "source": {
+            "mode": "node",
+            "source_ref": "local:0123456789abcdef0123456789abcdef",
+            "harness_channel": "GEMINI_API_KEY"
+          },
+          "source_generation": 1,
+          "policy_generation": 1
+        },
+        "mcp": {
+          "path": "/home/operator/.curator/environments/ci-headless/antigravity/config/mcp_config.json",
+          "env_names": [
+            "GEMINI_API_KEY"
+          ],
+          "channels": [
+            {
+              "kind": "file",
+              "filename": "config/mcp_config.json"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-wrong-node-channel-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "ci-headless",
+          "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/home/operator/.curator/environments/ci-headless/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "native"
+        },
+        "credential_source": {
+          "source": {
+            "mode": "node",
+            "source_ref": "local:0123456789abcdef0123456789abcdef",
+            "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN"
+          },
+          "source_generation": 1,
+          "policy_generation": 1
+        }
+      }
+    },
+    {
+      "id": "v6-predecessor-rejects-antigravity",
+      "schema": "launch-env-fragment-v6",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v6",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/Users/operator/.curator/environments/team-default/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        }
+      }
+    },
+    {
+      "id": "snapshot-v2-antigravity-minimal",
+      "schema": "snapshot-launch-v2",
+      "expect": "valid",
+      "document": {
+        "descriptor": "snapshot-launch-v2",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "home",
+          "transport": "flag"
+        },
+        "env": {},
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        }
+      }
+    },
+    {
+      "id": "snapshot-v2-antigravity-with-mcp",
+      "schema": "snapshot-launch-v2",
+      "expect": "valid",
+      "document": {
+        "descriptor": "snapshot-launch-v2",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "home",
+          "transport": "flag"
+        },
+        "env": {},
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "mcp": {
+          "path": "home/config/mcp_config.json",
+          "env_names": [
+            "GITHUB_TOKEN"
+          ],
+          "channels": [
+            {
+              "kind": "file",
+              "filename": "config/mcp_config.json"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "snapshot-v2-antigravity-nonempty-env-invalid",
+      "schema": "snapshot-launch-v2",
+      "expect": "invalid",
+      "document": {
+        "descriptor": "snapshot-launch-v2",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "home",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        }
+      }
+    },
+    {
+      "id": "snapshot-v2-antigravity-missing-home-invalid",
+      "schema": "snapshot-launch-v2",
+      "expect": "invalid",
+      "document": {
+        "descriptor": "snapshot-launch-v2",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "env": {},
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        }
+      }
+    },
+    {
+      "id": "snapshot-v1-predecessor-rejects-antigravity",
+      "schema": "snapshot-launch-v1",
+      "expect": "invalid",
+      "document": {
+        "descriptor": "snapshot-launch-v1",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "home",
+          "transport": "flag"
+        },
+        "env": {},
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        }
+      }
+    }
+  ]
+}

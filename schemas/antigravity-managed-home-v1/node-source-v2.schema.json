@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/antigravity-managed-home-v1/node-source-v2.schema.json",
+  "title": "node-source-v2",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "const": "node"
+    },
+    "source_ref": {
+      "type": "string",
+      "pattern": "^local:[0-9a-f]{32}(?![\\s\\S])"
+    },
+    "harness_channel": {
+      "enum": [
+        "CLAUDE_CODE_OAUTH_TOKEN",
+        "GEMINI_API_KEY",
+        "GOOGLE_APPLICATION_CREDENTIALS"
+      ]
+    }
+  },
+  "required": [
+    "mode",
+    "source_ref",
+    "harness_channel"
+  ],
+  "additionalProperties": false
+}

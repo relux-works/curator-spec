@@ -12244,6 +12244,15 @@ def validate_host_notification() -> None:
         raise ValidationFailure("draft notification conformance failed")
 
 
+def validate_antigravity_managed_home() -> None:
+    """CIP-0033 Antigravity managed-home schemas and conformance vectors."""
+    import io
+    import antigravity_managed_home
+    output = io.StringIO()
+    if antigravity_managed_home.run(ROOT, output) != 0:
+        raise ValidationFailure(f"antigravity managed-home conformance failed: {output.getvalue()}")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12251,6 +12260,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_build_ssh_project_bin,
         validate_schemas,
         validate_host_notification,
+        validate_antigravity_managed_home,
         validate_managed_home_snapshots,
         validate_login_readiness,
         validate_rc7_carriers,

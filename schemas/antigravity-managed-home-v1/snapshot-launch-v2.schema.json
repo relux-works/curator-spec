@@ -1,0 +1,609 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/antigravity-managed-home-v1/snapshot-launch-v2.schema.json",
+  "title": "snapshot-launch-v2",
+  "type": "object",
+  "required": [
+    "descriptor",
+    "environment",
+    "profile",
+    "precedence",
+    "env",
+    "permissions"
+  ],
+  "properties": {
+    "descriptor": {
+      "const": "snapshot-launch-v2"
+    },
+    "environment": {
+      "enum": [
+        "claude_code",
+        "codex_cli",
+        "opencode",
+        "pi",
+        "muse",
+        "antigravity"
+      ]
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "lock_sha256"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "../v1/common.schema.json#/$defs/identifier"
+        },
+        "lock_sha256": {
+          "$ref": "../v1/common.schema.json#/$defs/hex256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "precedence": {
+      "$ref": "../v1/agent-environment-marker-v1.schema.json#/$defs/precedence"
+    },
+    "home": {
+      "type": "object",
+      "required": [
+        "path",
+        "transport"
+      ],
+      "properties": {
+        "path": {
+          "const": "home"
+        },
+        "transport": {
+          "const": "flag"
+        }
+      },
+      "additionalProperties": false
+    },
+    "env": {
+      "type": "object"
+    },
+    "system_prompt": {
+      "type": "object",
+      "required": [
+        "path",
+        "channels"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/snapshotFilePath"
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/systemPromptDescriptor"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "mcp": {
+      "type": "object",
+      "required": [
+        "path",
+        "env_names",
+        "channels"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/snapshotFilePath"
+        },
+        "env_names": {
+          "$ref": "../v1/agent-mcp-v1.schema.json#/$defs/envNames"
+        },
+        "channels": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "$ref": "#/$defs/mcpDescriptor"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "permissions": {
+      "type": "object",
+      "required": [
+        "mode",
+        "locked",
+        "source"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "native",
+            "yolo"
+          ]
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "source": {
+          "enum": [
+            "profile",
+            "global",
+            "default"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "locked": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "const": "global"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "global"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "locked": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "enum": [
+                  "global",
+                  "default"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "const": "native"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "root_context": {
+      "type": "object",
+      "required": [
+        "exclusive"
+      ],
+      "properties": {
+        "exclusive": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "claude_code"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "home": false,
+          "env": {
+            "const": {
+              "CLAUDE_CONFIG_DIR": "home"
+            }
+          },
+          "root_context": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "codex_cli"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "home": false,
+          "env": {
+            "const": {
+              "CODEX_HOME": "home"
+            }
+          },
+          "root_context": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "opencode"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "home": false,
+          "env": {
+            "const": {
+              "XDG_CONFIG_HOME": "home"
+            }
+          },
+          "root_context": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "pi"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "home": false,
+          "env": {
+            "const": {
+              "PI_CODING_AGENT_DIR": "home"
+            }
+          },
+          "mcp": false,
+          "root_context": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "muse"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "home": false,
+          "env": {
+            "const": {
+              "XDG_CONFIG_HOME": "home/config",
+              "XDG_DATA_HOME": "home/data",
+              "XDG_STATE_HOME": "home/state",
+              "XDG_CACHE_HOME": "home/cache"
+            }
+          },
+          "system_prompt": false,
+          "mcp": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "antigravity"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "home"
+        ],
+        "properties": {
+          "env": {
+            "type": "object",
+            "maxProperties": 0,
+            "additionalProperties": false
+          },
+          "system_prompt": false,
+          "root_context": false,
+          "mcp": {
+            "properties": {
+              "path": {
+                "const": "home/config/mcp_config.json"
+              },
+              "channels": {
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "kind",
+                    "filename"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "file"
+                    },
+                    "filename": {
+                      "const": "config/mcp_config.json"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "snapshotFilePath": {
+      "allOf": [
+        {
+          "$ref": "../v1/common.schema.json#/$defs/portablePath"
+        },
+        {
+          "pattern": "^home/"
+        }
+      ]
+    },
+    "flagArgument": {
+      "enum": [
+        "path",
+        "contents",
+        "name"
+      ]
+    },
+    "flagDescriptorCore": {
+      "properties": {
+        "kind": {
+          "const": "flag"
+        },
+        "flag": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 128,
+          "pattern": "^-[^\\s]+(?![\\s\\S])"
+        },
+        "argument": {
+          "$ref": "#/$defs/flagArgument"
+        },
+        "name": {
+          "$ref": "../v1/common.schema.json#/$defs/identifier"
+        },
+        "with": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128,
+            "pattern": "^-[^\\s]+(?![\\s\\S])"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "argument": {
+                "const": "name"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "name"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "name"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "systemPromptDescriptor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "semantics",
+            "flag",
+            "argument"
+          ],
+          "properties": {
+            "kind": {
+              "const": "flag"
+            },
+            "semantics": {
+              "enum": [
+                "append",
+                "replace"
+              ]
+            },
+            "flag": true,
+            "argument": true,
+            "name": true,
+            "with": true
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/flagDescriptorCore"
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "semantics",
+            "key"
+          ],
+          "properties": {
+            "kind": {
+              "const": "config-key"
+            },
+            "semantics": {
+              "enum": [
+                "append",
+                "replace"
+              ]
+            },
+            "key": {
+              "$ref": "../v1/common.schema.json#/$defs/identifier"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "semantics",
+            "variable"
+          ],
+          "properties": {
+            "kind": {
+              "const": "variable"
+            },
+            "semantics": {
+              "enum": [
+                "append",
+                "replace"
+              ]
+            },
+            "variable": {
+              "$ref": "../v1/common.schema.json#/$defs/identifier"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "semantics",
+            "filename"
+          ],
+          "properties": {
+            "kind": {
+              "const": "file"
+            },
+            "semantics": {
+              "enum": [
+                "append",
+                "replace"
+              ]
+            },
+            "filename": {
+              "$ref": "../v1/common.schema.json#/$defs/portablePath"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "mcpDescriptor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "flag",
+            "argument"
+          ],
+          "properties": {
+            "kind": {
+              "const": "flag"
+            },
+            "flag": true,
+            "argument": true,
+            "name": true,
+            "with": true
+          },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/flagDescriptorCore"
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "key"
+          ],
+          "properties": {
+            "kind": {
+              "const": "config-key"
+            },
+            "key": {
+              "$ref": "../v1/common.schema.json#/$defs/identifier"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "variable"
+          ],
+          "properties": {
+            "kind": {
+              "const": "variable"
+            },
+            "variable": {
+              "$ref": "../v1/common.schema.json#/$defs/identifier"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "filename"
+          ],
+          "properties": {
+            "kind": {
+              "const": "file"
+            },
+            "filename": {
+              "$ref": "../v1/common.schema.json#/$defs/portablePath"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}
