@@ -572,6 +572,21 @@
           "codex_settings": false,
           "mcp": {
             "properties": {
+              "env_names": {
+                "items": {
+                  "not": {
+                    "enum": [
+                      "GEMINI_API_KEY",
+                      "GOOGLE_API_KEY",
+                      "AGY_ADC_AUTH",
+                      "GOOGLE_APPLICATION_CREDENTIALS",
+                      "GOOGLE_CLOUD_QUOTA_PROJECT",
+                      "AGY_CLI_FORCE_FILE_TOKEN_STORAGE",
+                      "AGY_CLI_DISABLE_AUTO_UPDATE"
+                    ]
+                  }
+                }
+              },
               "channels": {
                 "items": {
                   "type": "object",

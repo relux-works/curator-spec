@@ -1,12 +1,11 @@
 # CIP-0033: Antigravity CLI (`agy`) managed home, flag home transport, and credential contracts
 
-- **Status:** Accepted
-- **Accepted:** 2026-11-24 (owner decision 2026-11-24)
-- **Normative text:** [Antigravity managed-home contract](../protocol/antigravity-managed-home.md), [Environments §§7.1–7.2, 7.4–7.5, 7.7–7.9, 10.2–10.3](../protocol/environments.md), [v7 / snapshot-v2 schemas](../schemas/antigravity-managed-home-v1/README.md), [conformance corpus](../conformance/antigravity-managed-home-v1/README.md).
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Status:** Review
+- **Normative text:** [Antigravity managed-home contract](../protocol/antigravity-managed-home.md), [Environments sections 7.1-7.2, 7.4-7.5, 7.7-7.9, 10.2-10.3, 10.5](../protocol/environments.md), [v7 / snapshot-v2 schemas](../schemas/antigravity-managed-home-v1/README.md), [conformance corpus](../conformance/antigravity-managed-home-v1/README.md).
+- **Owner:** Ivan Oparin (Curator Core spec custody)
 - **Created:** 2026-11-24
-- **Related:** CIP-0010 (authentication nodes and inherited auth), CIP-0014 (managed-home snapshots), CIP-0015 (login readiness), CIP-0017 (Muse credential store and fragment discipline), CIP-0002 (project context — deferred to Phase 2)
-- **Affects:** environments §§7.1, 7.2, 7.4, 7.5, 7.7, 7.8, 7.9, 10.2, 10.3; managed-home-snapshots; login-readiness; local-setup-token-source; implementations: curator, skill-agents-management, curator-agent-launcher
+- **Related:** CIP-0010 (authentication nodes and inherited auth), CIP-0014 (managed-home snapshots), CIP-0015 (login readiness), CIP-0017 (Muse credential store and fragment discipline), CIP-0002 (project context -- deferred to Phase 2)
+- **Affects:** environments sections 7.1, 7.2, 7.4, 7.5, 7.7, 7.8, 7.9, 10.2, 10.3, 10.5; managed-home-snapshots; login-readiness; local-setup-token-source; implementations: curator, skill-agents-management, curator-agent-launcher
 
 ## Summary
 
@@ -39,7 +38,7 @@ Operators use Antigravity CLI (`agy`) alongside Claude Code, Codex CLI, Muse,
 Pi, and OpenCode. Today `agy` shares `~/.gemini` with Gemini CLI and the
 Antigravity IDE, reads `~/.agents/skills`, and defaults to a user-global macOS
 Keychain entry (`service="gemini"`, `account="antigravity"`). Replacing `HOME`
-is prohibited by [environments §7.1 / §10.2](../protocol/environments.md)
+is prohibited by [environments section 7.1 / section 10.2](../protocol/environments.md)
 because it breaks `git`, `ssh`, and every other child tool.
 
 Operators need:
@@ -74,12 +73,14 @@ Operators need:
 ### Verified empirical evidence (`agy 1.5.16`, 2026-11-24)
 
 Read-only binary inspection (`agy 1.5.16` Mach-O arm64) followed by live
-disposable-runner probes (`P0–P9`, `Q2–Q4`) on GitHub Actions `macos-15`
+disposable-runner probes (`P0-P9`, `Q2-Q4`) on GitHub Actions `macos-15`
 (`macOS-15.8.2-arm64`, SHA-256
 `b746bd68eb150f594e53af1e5577c8b101eaf33bd44ca10ac683af90e0630cf3`) and
 `ubuntu-latest` (`Linux x86_64`, glibc 2.43, SHA-256
-`05245f4346d16b679fd059a73081af0161607a76b4a164642bd007430934e785`) established
-identical behavior across both platforms:
+`05245f4346d16b679fd059a73081af0161607a76b4a164642bd007430934e785`) in
+`relux-works/curator-spec` on temporary branch `probe/agy-managed-home-ci`
+(deleted immediately after capture; runs `45378215323`, `45379392288`,
+`45380774715`) established identical behavior across both platforms:
 
 - **Home relocation (`P0`, `P6`):** Root CLI accepts `--gemini_dir=<abs>`
   (underscore only; `--gemini-dir` exits 2). `agy acp --login` accepts
@@ -88,22 +89,22 @@ identical behavior across both platforms:
   `ANTIGRAVITY_GEMINI_DIR` is ignored by the CLI (read only by plugin shims).
   Across all runs, zero files were written to `~/.gemini` or
   `~/.config/antigravity`.
-- **Global rules and shadowing (`P1a–P1j`, `P2a–P2b`):** All five global paths
+- **Global rules and shadowing (`P1a-P1j`, `P2a-P2b`):** All five global paths
   (`config/AGENTS.md`, `config/GEMINI.md`, `config/rules/*.md`,
   `<home>/GEMINI.md`, `<home>/AGENTS.md`) load and **merge additively**;
   none shadows another. Symlinks targeting files outside `--gemini_dir` load
-  identically to regular files (`P1f–P1h`). A 24,847-byte rule file loaded its
+  identically to regular files (`P1f-P1h`). A 24,847-byte rule file loaded its
   head marker and truncated its tail marker (`P2a`), confirming the documented
   24,000-byte per-file cap. Relative at-include directives (syntax
   `@[label]` with `./part.md`) in `config/AGENTS.md` resolve relative to
   `<gemini_dir>` rather than `config/`, whereas absolute at-include targets
   expand arbitrary external files (`P2b`).
-- **Skills isolation (`P3a–P3b`):** `config/skills/` loads both symlinked and
+- **Skills isolation (`P3a-P3b`):** `config/skills/` loads both symlinked and
   copied skill directories. When `filepath.Base(geminiDir) != ".gemini"` (for
   example basename `antigravity`), `~/.agents/skills` is completely skipped
   (`P3a`: zero native leak). When basename equals `.gemini`, `agy` reads sibling
   `<parent>/.agents/skills`, not `$HOME/.agents/skills` (`P3b`).
-- **File token storage and Keychain bypass (`P4a–P4c`):** On macOS with a
+- **File token storage and Keychain bypass (`P4a-P4c`):** On macOS with a
   synthetic Keychain entry (`service="gemini"`, `account="antigravity"`),
   `AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true` bypassed Keychain completely (`P4a`:
   `composite_token_storage.go:207`), while `false` read Keychain (`P4b`).
@@ -120,7 +121,7 @@ identical behavior across both platforms:
   keep reading operator config, recording plugin secrets as an explicit
   unmanaged-plugin residual.
 - **`GEMINI_API_KEY` activation and `AGY_ADC_AUTH` conflict (`P0`, `P4e`,
-  `Q2a–Q2b`, `Q4`):** Exporting `GEMINI_API_KEY` alone does **not** activate
+  `Q2a-Q2b`, `Q4`):** Exporting `GEMINI_API_KEY` alone does **not** activate
   API-key auth (`rc=1`). `main.geminiAPIRoutingDecision` requires
   `modelProvider: "gemini"` via `--settings '{"modelProvider":"gemini"}'` or
   `antigravity-cli/settings.json`, and fails closed (`rc=1`) when
@@ -144,7 +145,7 @@ identical behavior across both platforms:
   `onboardingComplete`); headless `-p` succeeds with all three `false`.
   Builtin skills load by default (`P8a`), and `--settings` rejects both
   `includeDefaultCustomizations` and `pluginControls` as unknown settings.
-- **Phase 2 workspace reconnaissance (`P9a–P9b`):** On a workspace containing
+- **Phase 2 workspace reconnaissance (`P9a-P9b`):** On a workspace containing
   `AGENTS.md`, `GEMINI.md`, `.agents/skills/`, and `.agents/plugins/*/{rules,
   mcp_config.json}`, `agy 1.5.16` loaded all five workspace surfaces
   automatically, including **starting the workspace plugin `stdio` MCP server**,
@@ -159,7 +160,7 @@ identical behavior across both platforms:
 | Option | Mechanism | Pros | Cons | Security |
 |---|---|---|---|---|
 | A: wait for upstream env var | Wait for `agy` to honor `ANTIGRAVITY_GEMINI_DIR` in CLI | Uses existing env-only fragment shape | Indefinite upstream block; `ANTIGRAVITY_GEMINI_DIR` is confirmed ignored by `agy 1.5.16` | Delays isolation while operators run on shared `~/.gemini` |
-| B: override `HOME` | Set `HOME=<managed-home>` | Needs no flag | Violates environments §§7.1 and 10.2; breaks `git`, `ssh`, and every child tool | High collateral blast radius |
+| B: override `HOME` | Set `HOME=<managed-home>` | Needs no flag | Violates environments sections 7.1 and 10.2; breaks `git`, `ssh`, and every child tool | High collateral blast radius |
 | C: typed flag home transport (`home: {path, transport: "flag"}`) | Emit typed `home` binding in `launch-env-fragment-v7` and `snapshot-launch-v2`; SAM renders `--gemini_dir` | 100% consistent with Decision 0013 D5; zero `HOME` mutation; zero writes to `~/.gemini`; fails closed on `--format env|shell` | Requires coordinated v7/snapshot-v2 consumers | Closed schema rejects unknown revisions and conflicting `--gemini_dir` / `--app_data_dir` in `NativeArgs` |
 
 Recommend **Option C**.
@@ -168,8 +169,8 @@ Recommend **Option C**.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| A: put in `fragment.env` | Emit two constants in `fragment.env` | Visible in JSON fragment | Widens environments §10.3 beyond credential-backend exception; absent from `snapshot-launch-v2` (`env: {}`) |
-| B: put in SAM `systems/agy/env.go` (`ChildEnv`) | Own plugin literal in SAM | Applies uniformly across direct, snapshot, and `local-final-exec` runs; preserves §10.3 single-constant discipline | Lives in SAM plugin rather than fragment |
+| A: put in `fragment.env` | Emit two constants in `fragment.env` | Visible in JSON fragment | Widens environments section 10.3 beyond credential-backend exception; absent from `snapshot-launch-v2` (`env: {}`) |
+| B: put in SAM `systems/agy/env.go` (`ChildEnv`) | Own plugin literal in SAM | Applies uniformly across direct, snapshot, and `local-final-exec` runs; preserves section 10.3 single-constant discipline | Lives in SAM plugin rather than fragment |
 
 Recommend **Option B**.
 
@@ -182,20 +183,29 @@ Recommend **Option B**.
   matching Muse).
 - `HomeTransport`: closed enum `"env"` (existing five adapters) | `"flag"`
   (`antigravity`). `nativeHome("antigravity")` is `<userHome>/.gemini`.
-- Basename invariant: the managed-home leaf directory MUST NOT be named
-  `.gemini` (Curator uses `antigravity`), guaranteeing `~/.agents/skills` is
-  not scanned.
+- Path-isolation and basename invariants: the managed home MUST NOT resolve
+  (including through symlinks or case-insensitive filesystem aliases) to,
+  contain, or lie inside the native `~/.gemini` directory. In addition, the
+  managed-home leaf directory basename MUST NOT be `.gemini` (Curator uses
+  `antigravity`), guaranteeing `~/.agents/skills` is not scanned.
 - Managed surfaces:
   - `root-context`: `config/AGENTS.md`, `monolithic` only, symlink (or copy
     fallback), `root_context_size_advisory_bytes = 24000`.
-  - Shadowing (§7.5): `config/GEMINI.md`, `config/rules`, `GEMINI.md`,
+  - Shadowing (environments section 7.5): `config/GEMINI.md`, `config/rules`, `GEMINI.md`,
     `AGENTS.md` (all four merge additively and must report
     `environment_shadowing_path_present` when present).
   - `skills`: `config/skills/` (`<name>/SKILL.md`, symlink or copy). Project
     scope `.agents/skills/` is added to `NativeDiscoveryAgents`.
   - `system-prompt`: none.
   - `mcp`: `config/mcp_config.json` (`{"mcpServers": {...}}`, `0600`), channel
-    `{"kind": "file", "filename": "config/mcp_config.json"}`.
+    `{"kind": "file", "filename": "config/mcp_config.json"}`. For `antigravity`,
+    `mcp.env_names` MUST unconditionally forbid (case-insensitively)
+    `GEMINI_API_KEY`, `GOOGLE_API_KEY`, `AGY_ADC_AUTH`,
+    `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_QUOTA_PROJECT`,
+    `AGY_CLI_FORCE_FILE_TOKEN_STORAGE`, and `AGY_CLI_DISABLE_AUTO_UPDATE` across
+    Curator admission, `launch-env-fragment-v7` validation, launcher composition,
+    and SAM `ChildEnv`, even when `credential_source` is absent (preventing an
+    MCP declaration from bypassing file-backed OAuth via ambient ADC or API keys).
 - Unmanaged / tool-owned state excluded from snapshots: `antigravity-cli/**`,
   `config/{.migrated,config.json,hooks.json,plugins/,projects/}`.
 
@@ -221,10 +231,11 @@ Following CIP-0017's single decision table for Muse:
   `antigravity-cli/antigravity-oauth-token` (regular, owner, `0600`, size > 0;
   verified link target in `shared`), never executing `agy` or reading bytes.
 
-#### 3. Headless `node:<label>` credentials (`gemini-api-key` and `google-adc-file`)
+#### 3. Headless `node:<label>` credentials (`gemini-api-key` and `google-adc-file`, schema reservations in revision 1)
 
-Both deterministic channels are allocated in `node-source-v2` and
-`launch-env-fragment-v7`:
+Both deterministic channels are allocated as schema reservations in
+`node-source-v2` and `launch-env-fragment-v7` (neither is enabled for live
+injection on `agy 1.5.16` in revision 1):
 - `gemini-api-key`: `harness_channel = "GEMINI_API_KEY"`; requires final
   executor private env `GEMINI_API_KEY=<value>` + `AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true`,
   plus SAM argv `--settings '{"modelProvider":"gemini"}'`.
@@ -233,26 +244,41 @@ Both deterministic channels are allocated in `node-source-v2` and
   `GOOGLE_APPLICATION_CREDENTIALS=<0600-node-secret-path>` (+ optional
   `GOOGLE_CLOUD_QUOTA_PROJECT=<id>` from non-secret node metadata) +
   `AGY_CLI_FORCE_FILE_TOKEN_STORAGE=true`, without `modelProvider: "gemini"`.
-- **L7 qualification gate:** Under [local-setup-token-source §7](../protocol/local-setup-token-source.md#7-entry-point-and-qualification-l7)
+- **L7 qualification gate:** Under [local-setup-token-source section 7](../protocol/local-setup-token-source.md#7-entry-point-and-qualification-l7)
   and [CIP-0010 C3.4](CIP-0010-credentials-setup-token-and-inherited-auth.md),
   `credential-injection/1` MUST NOT be advertised on `agy 1.5.16` while
   `stdio` MCP servers, hooks, or shell children inherit the harness environment
-  (`P5`). Launches requesting `node:*` on `agy 1.5.16` refuse with
-  `credential_injection_unavailable` until upstream `agy` scrubs injected
-  credentials from child processes (or a separately qualified zero-child route
-  is established).
+  (`P5`). A syntactically valid `launch-env-fragment-v7` carrying
+  `credential_source` for `antigravity` MUST be refused operationally by SAM
+  and final executors with `credential_injection_unavailable` (not reported as
+  a malformed fragment) until upstream `agy` scrubs injected credentials from
+  child processes (or a separately qualified zero-child route is established).
 
-#### 4. Coordinated closed carriers: `launch-env-fragment-v7` and `snapshot-launch-v2`
+#### 4. Coordinated closed carriers (`launch-env-fragment-v7`, `snapshot-launch-v2`) and `environments.md` section 10.5 rollout posture
 
 - `launch-env-fragment-v7` extends `v6` with top-level `home: {"path":
   absolutePath, "transport": "flag"}` (required for `antigravity`, forbidden
-  for env-based adapters), `antigravity` environment rules, and
-  `node-source-v2`. `--format env` and `--format shell` refuse fail-closed with
-  `environment_flag_home_unsupported` and zero bytes on stdout.
+  for env-based adapters), `antigravity` environment rules (including
+  unconditional exclusion of the seven Antigravity auth/policy variables from
+  `mcp.env_names`), and `node-source-v2`. `--format env` and `--format shell`
+  refuse fail-closed with `environment_flag_home_unsupported` and zero bytes on
+  stdout.
 - `snapshot-launch-v2` extends `snapshot-launch-v1` with `home: {"path":
   "home", "transport": "flag"}` and `env: {}` (no credential policy) for
   `antigravity`. Only verified managed files (`home/config/AGENTS.md`,
   `home/config/skills/**`, `home/config/mcp_config.json`) enter the snapshot.
+- **`environments.md` section 10.5 temporary rollout posture (`O11 (a)`):**
+  `protocol/environments.md` section 10.5 states that a launcher MUST refuse a
+  managed-profile session when it cannot consume the snapshot contract rather
+  than falling back to a live managed home. Because `curator env materialize`
+  and per-adapter snapshot qualification are not yet shipped, Phase 1 live
+  Antigravity launches (`--gemini_dir <managed home>`) operate directly against
+  the managed home under the same recorded temporary non-conformance as the
+  other pre-snapshot adapters (`codex_cli`, `muse`, `pi`, tracked under owner
+  decision `O11 (a)` and spec note `C6`). `snapshot-launch-v2` is defined now
+  as an additive schema, while the Antigravity snapshot route remains
+  unqualified until `env materialize` and the Runtime B credential channel are
+  explicitly qualified for `antigravity`.
 
 #### 5. Phase 2 / Deferred: Project-Context & Werkstatt (`CIP-0002`)
 
@@ -312,9 +338,9 @@ Phase 1 stabilization, grounded in `P9` evidence:
 
 ## Specification changes
 
-- `protocol/environments.md`: §§7.1, 7.2, 7.4, 7.5, 7.7, 7.8, 7.9, 10.2, 10.3.
+- `protocol/environments.md`: sections 7.1, 7.2, 7.4, 7.5, 7.7, 7.8, 7.9, 10.2, 10.3.
 - `protocol/managed-home-snapshots.md`: `snapshot-launch-v2` table and rules.
-- `protocol/login-readiness.md`: §1.1 `antigravity` row.
+- `protocol/login-readiness.md`: section 1.1 `antigravity` row.
 - `protocol/local-setup-token-source.md`: `antigravity` node-channel scope and
   L7 child-leak qualification gate.
 - `schemas/antigravity-managed-home-v1/`: `node-source-v2.schema.json`,
@@ -370,7 +396,7 @@ Phase 1 stabilization, grounded in `P9` evidence:
 2. **Phase 2 (`project-context` / Werkstatt) priority:** Schedule immediately
    after Phase 1 merges, starting with `native-project` mode and explicit
    `strict` refusal on `agy 1.5.16`. *(Recommended: yes.)*
-3. **Upstream `agy` requests:** Track two upstream asks — (a) env-scrubbing of
+3. **Upstream `agy` requests:** Track two upstream asks -- (a) env-scrubbing of
    `GEMINI_API_KEY` / `GOOGLE_APPLICATION_CREDENTIALS` before spawning MCP /
    hook / shell children (unblocks L7 `credential-injection/1`), and (b)
    workspace-customization exclusion flags (unblocks Phase 2 `strict` mode).

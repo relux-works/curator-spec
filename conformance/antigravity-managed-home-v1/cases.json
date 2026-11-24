@@ -392,6 +392,94 @@
       }
     },
     {
+      "id": "v7-antigravity-mcp-ambient-auth-env-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/home/operator/.curator/environments/team-default/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "file"
+        },
+        "mcp": {
+          "path": "/home/operator/.curator/environments/team-default/antigravity/config/mcp_config.json",
+          "env_names": [
+            "AGY_ADC_AUTH"
+          ],
+          "channels": [
+            {
+              "kind": "file",
+              "filename": "config/mcp_config.json"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "v7-antigravity-mcp-force-file-env-invalid",
+      "schema": "launch-env-fragment-v7",
+      "expect": "invalid",
+      "document": {
+        "fragment": "launch-env-fragment-v7",
+        "environment": "antigravity",
+        "profile": {
+          "name": "team-default",
+          "lock_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        },
+        "home": {
+          "path": "/home/operator/.curator/environments/team-default/antigravity",
+          "transport": "flag"
+        },
+        "env": {
+          "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": "true"
+        },
+        "permissions": {
+          "mode": "native",
+          "locked": false,
+          "source": "default"
+        },
+        "credential_store": {
+          "selection": "file"
+        },
+        "mcp": {
+          "path": "/home/operator/.curator/environments/team-default/antigravity/config/mcp_config.json",
+          "env_names": [
+            "AGY_CLI_FORCE_FILE_TOKEN_STORAGE"
+          ],
+          "channels": [
+            {
+              "kind": "file",
+              "filename": "config/mcp_config.json"
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "v7-antigravity-wrong-node-channel-invalid",
       "schema": "launch-env-fragment-v7",
       "expect": "invalid",

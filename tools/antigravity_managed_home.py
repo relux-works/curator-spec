@@ -12,6 +12,15 @@ from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "antigravity-managed-home-v1"
+FORBIDDEN_ANTIGRAVITY_MCP_ENV = frozenset({
+    "GEMINI_API_KEY",
+    "GOOGLE_API_KEY",
+    "AGY_ADC_AUTH",
+    "GOOGLE_APPLICATION_CREDENTIALS",
+    "GOOGLE_CLOUD_QUOTA_PROJECT",
+    "AGY_CLI_FORCE_FILE_TOKEN_STORAGE",
+    "AGY_CLI_DISABLE_AUTO_UPDATE",
+})
 
 
 def strict_json(raw: bytes) -> Any:
@@ -66,6 +75,9 @@ def check_semantics(schema_name: str, doc: dict[str, Any]) -> str | None:
             expected = posixpath.join(cleaned, "config/mcp_config.json")
             if mcp.get("path") != expected:
                 return f"antigravity mcp.path must equal {expected}"
+            for env_name in mcp.get("env_names", []):
+                if isinstance(env_name, str) and env_name.upper() in FORBIDDEN_ANTIGRAVITY_MCP_ENV:
+                    return f"antigravity mcp.env_names forbids {env_name}"
     return None
 
 
