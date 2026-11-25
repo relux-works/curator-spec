@@ -1,5 +1,16 @@
 # Cross-CIP platform contract disposition
 
+## Revision 6: CIP-0034 to CIP-0038 reservations and shared carrier coordination (2026-11-26)
+
+Reserves sequential CIP numbers `CIP-0034` through `CIP-0038` in `cips/README.md` (preserving the separate `CIP-0028` allocation in PR #205) and coordinates their shared outer schema carriers so individual draft PRs do not allocate conflicting revisions:
+
+- **Single shared `launch-env-fragment-v8` reservation** (after frozen `v1`-`v7`, where `v7` landed in `antigravity-managed-home-v1` / CIP-0033): coordinates BOTH the CIP-0034 `qualification` block AND the CIP-0035 closed `surface` member (`{"setting_sources": "user"}`, valid only for `environment: "claude_code"`). Frozen revisions `v1`-`v7` remain byte-unchanged.
+- **Coordinated `manager-config-v10` candidate** (after published `v9` in `machine-claude-env-v1`, retaining deferred `v4`): coordinates operator-owned machine configuration additions for CIP-0006 (`profile_settings`), CIP-0035 (`surface`), CIP-0036 (`mcp_delivery`, GUI host records, expected account), and CIP-0037 (`auth` account/service bindings and `--confirm-auth-delta` origin pins).
+- **Additive `home-leases` holder variant (`gui-host`, CIP-0036):** extends the closed `home-leases` holder union (`HL05`) with a non-cooperative `gui-host` holder observed directly by Curator, leaving the existing `curator-run` holder variant unchanged.
+- **Standalone plugin boundary (`curator-credential-broker`, CIP-0037 / CIP-0038):** tool/MCP HTTP/WebDAV/CLI auth mediation and browser SSO live in a dedicated Curator plugin repository (`relux-works/curator-credential-broker`, invoked via `environments` section 11) with strictly Unix-socket-only custody/gateway surfaces; `swarma-credential-broker` (CIP-0011) retains its separate Linux model-subscription custody scope and wire domains.
+
+All items above are reservations and coordination rails only; no schema publication, implementation, or runtime qualification is claimed here.
+
 ## Revision 5: accepted architecture-review findings (2026-10-13)
 
 Owner-linked naming and format references distinguish signed domains, object kinds and transport/schema labels. Draft result bytes remain separate from transport/lifecycle qualification. Muse subscription priority is decided; its channel is proposed and qualification open. No implementation or activation is claimed.
@@ -114,6 +125,10 @@ may widen it. Runtime qualification remains separate.
 | Effect observation (R-OBS) | User-manager `helper-op/1` and broker `broker/1`; remote semantics in CIP-0009 D5 | `effect.observe`: original `request_id`, operation, canonical-argument digest; `recorded`, `pending`, `rolled_back`, `not_recorded`, `unavailable`, `contradictory` | Original caller principal/operators; receiver-journal serialization; `recorded` carries result/current target state; only authoritative evidence proves `not_recorded`; expired/missing evidence is `unavailable`; no automatic create from absence/rollback |
 | Revocation verdict (R-VERDICT) | Broker `broker/1`; dispatcher admission | `revocation.check`: exact chain(s), context `prepare`, `dequeue`, `start`; `not_revoked`, `revoked`, `unavailable` and broker revocation sequence | Configured dispatchers only; point-in-time evidence; stale verdict never authorizes a future start; restoring state is `unavailable`; refuse on revoked/unavailable, retain final bind/lease/renewal checks |
 | Orchestrator caller delegation (R-DELEG) | Dispatcher bootstrap and broker chain verifier; CIP-0011 §4 | Requester signs after generation-bound `register_key`; dispatcher verifies/records, never signs | Registration alone gives no spawn authority; depth/chain preflight and activation rechecks; recursive provisioning refused until bootstrap publication/qualification |
+| Shared launch fragment v8 (qualification + surface) | Environments section 10, manager emitter, launcher and SAM consumers; CIP-0034 and CIP-0035 | Single shared `launch-env-fragment-v8` candidate after frozen v1-v7 (CIP-0033): optional `qualification` object (CIP-0034) plus closed `surface` member `{"setting_sources": "user"}` for `environment: "claude_code"` (CIP-0035) | Reservation only; frozen v1-v7 unchanged; exact schemas and conformance vectors publish with CIP-0034/0035 |
+| Coordinated manager machine config v10 | Curator manager / environments section 12; CIP-0006, CIP-0035, CIP-0036, CIP-0037 | `manager-config-v10` candidate after published `v9` (`machine-claude-env-v1`), preserving deferred `v4`: coordinates `profile_settings`, `surface`, `mcp_delivery`, GUI host records, expected account, and `auth` bindings/origin pins | Reservation only; operator-owned machine config; no package-origin authority widening |
+| GUI-host home-lease holder variant | `protocol/home-leases.md` (HL05, HL07, HL09, HL23); CIP-0036 | Additive `gui-host` holder variant (`launcher: "curator-app"`), directly observed by Curator for both `bind` and `release` | Reservation only; existing `curator-run` holder variant unchanged |
+| Tool and MCP auth mediation plugin (`curator-credential-broker`) | Standalone Curator plugin (`relux-works/curator-credential-broker`, `environments` section 11); CIP-0037 and CIP-0038 | `auth-adapter.json` v1, `curator-auth-adapter/1`, Unix-socket-only custody/gateway APIs, `curator-mcp-bridge`, `curator-mcp-exec`, optional `browser_sso` | Reservation only; distinct from `swarma-credential-broker` (CIP-0011) model-subscription custody and wire domains |
 
 ## Operator authority boundary
 

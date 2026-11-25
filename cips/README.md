@@ -124,5 +124,10 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0031](CIP-0031-machine-host-notification.md) | Machine Host notification carrier | Review |
 | [CIP-0032](CIP-0032-native-a2a-station-link.md) | Native a2a station-link handover | Review |
 | [CIP-0033](CIP-0033-antigravity-managed-home.md) | Antigravity CLI (`agy`) managed home, flag home transport, and credential contracts | Review |
+| CIP-0034 | Automated harness qualification registry and versioned binary custody | In preparation |
+| CIP-0035 | Claude Code session surface projection | In preparation |
+| CIP-0036 | GUI-host managed sessions (instance per profile) | In preparation |
+| CIP-0037 | Tool and MCP authentication mediation (`curator-credential-broker`) | In preparation |
+| CIP-0038 | Isolated browser SSO authentication extension for `curator-credential-broker` | In preparation |
 
 CIP-0028 remains allocated separately in [PR #205](https://github.com/relux-works/curator-spec/pull/205); these proposals do not reuse it.
