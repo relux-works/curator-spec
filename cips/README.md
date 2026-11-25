@@ -127,7 +127,7 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | CIP-0034 | Automated harness qualification registry and versioned binary custody | In preparation |
 | CIP-0035 | Claude Code session surface projection | In preparation |
 | CIP-0036 | GUI-host managed sessions (instance per profile) | In preparation |
-| CIP-0037 | Tool and MCP authentication mediation (`curator-credential-broker`) | In preparation |
-| CIP-0038 | Isolated browser SSO authentication extension for `curator-credential-broker` | In preparation |
+| [CIP-0037](CIP-0037-tool-and-mcp-auth-mediation.md) | Tool and MCP authentication mediation (`curator-credential-broker`) | Draft |
+| [CIP-0038](CIP-0038-browser-sso-auth-extension.md) | Isolated browser SSO authentication extension for `curator-credential-broker` | Draft |
 
 CIP-0028 remains allocated separately in [PR #205](https://github.com/relux-works/curator-spec/pull/205); these proposals do not reuse it.
