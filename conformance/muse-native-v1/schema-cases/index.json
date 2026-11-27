@@ -1,0 +1,127 @@
+[
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "valid-muse-native.json",
+    "valid": true
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "valid-muse-file.json",
+    "valid": true
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "valid-muse-native-no-root.json",
+    "valid": true
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-unknown-selection.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-keychain-selection.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-native-with-backend.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-native-with-lowercase-backend.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-native-with-overrides.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-file-without-backend.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-file-wrong-backend.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-foreign-parent.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-HOME.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-missing-store.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-missing-xdg.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-root-false.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-unknown-field.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-wrong-revision.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "valid-claude_code-native.json",
+    "valid": true
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-claude_code-native-overrides.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "valid-codex_cli-native.json",
+    "valid": true
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-codex_cli-native-overrides.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "valid-opencode-native.json",
+    "valid": true
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-opencode-native-overrides.json",
+    "valid": false
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "valid-pi-native.json",
+    "valid": true
+  },
+  {
+    "schema": "launch-env-fragment-v4-muse-native.schema.json",
+    "instance": "invalid-pi-native-overrides.json",
+    "valid": false
+  }
+]
