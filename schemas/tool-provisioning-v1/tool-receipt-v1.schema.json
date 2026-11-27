@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/tool-provisioning-v1/tool-receipt-v1.schema.json",
+  "title": "curator-tool-receipt/1",
+  "type": "object",
+  "required": [
+    "schema",
+    "backend",
+    "id",
+    "version",
+    "platform",
+    "executables",
+    "provisioned_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "curator-tool-receipt/1"
+    },
+    "backend": {
+      "enum": [
+        "go-official",
+        "aqua",
+        "pypi-uv"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "platform": {
+      "enum": [
+        "darwin-arm64",
+        "darwin-amd64",
+        "linux-amd64",
+        "linux-arm64",
+        "windows-amd64",
+        "windows-arm64"
+      ]
+    },
+    "archive_url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "archive_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/hex256"
+    },
+    "executables": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "relative_path",
+          "sha256"
+        ],
+        "properties": {
+          "relative_path": {
+            "$ref": "../v1/common.schema.json#/$defs/portablePath"
+          },
+          "sha256": {
+            "$ref": "../v1/common.schema.json#/$defs/hex256"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "provisioned_at": {
+      "$ref": "../v1/common.schema.json#/$defs/timestamp"
+    }
+  },
+  "additionalProperties": false
+}

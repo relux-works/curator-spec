@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/tool-provisioning-v1/csk-skill-v10.schema.json",
+  "title": "csk-skill.json schema 10 legacy alias (tool provisioning v1)",
+  "$ref": "agent-skill-v10.schema.json"
+}

@@ -133,3 +133,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0037](CIP-0037-tool-and-mcp-auth-mediation.md) | Tool and MCP authentication mediation (`curator-credential-broker`) | Draft |
 | [CIP-0038](CIP-0038-browser-sso-auth-extension.md) | Isolated browser SSO authentication extension for `curator-credential-broker` | Draft |
 | [CIP-0039](CIP-0039-muse-native-credential-form.md) | Muse native credential form with Linux file mapping | Draft |
+| [CIP-0040](CIP-0040-manager-provisioned-go-toolchain.md) | Manager-provisioned Go toolchain for `go-v1` builds | Accepted |

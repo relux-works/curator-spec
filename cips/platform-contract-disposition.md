@@ -1,5 +1,13 @@
 # Cross-CIP platform contract disposition
 
+## Revision 7: CIP-0040, tool-provisioning-v1 (`agent-skill-v10`), and `launch-env-fragment-v9` (2026-11-27)
+
+Records the additive surfaces for self-contained profile onboarding on macOS and Linux (Ubuntu) without modifying any frozen `v1`-`v7` carrier or colliding with the `launch-env-fragment-v8` reservation:
+
+- **`CIP-0040` (Accepted):** manager-provisioned Go toolchain auto-bootstrap into `<manager-home>/tools/store/go/<version>/<os>-<arch>/go` ([`protocol/go-toolchain-provisioning.md`](../protocol/go-toolchain-provisioning.md)).
+- **`tool-provisioning-v1` (`agent-skill-v10`):** concrete CIP-0007 v1 skill dependency declaration `dependencies.tools` with built-in trusted Aqua and curated PyPI (`uv`) backends ([`protocol/tool-provisioning.md`](../protocol/tool-provisioning.md), [`schemas/tool-provisioning-v1/`](../schemas/tool-provisioning-v1/README.md)).
+- **`launch-env-fragment-v9`:** closed launch fragment carrying active Slice B-a `command_root` + `path_prepend` alongside all `v1`-`v7` transports ([`schemas/profile-command-roots-v1/launch-env-fragment-v9.schema.json`](../schemas/profile-command-roots-v1/launch-env-fragment-v9.schema.json)), preserving `v8` for CIP-0034/0035 and keeping `v1`-`v7` `path_prepend` reserved/inert.
+
 ## Revision 6: CIP-0034 to CIP-0038 reservations and shared carrier coordination (2026-11-26)
 
 Reserves sequential CIP numbers `CIP-0034` through `CIP-0038` in `cips/README.md` (preserving the separate `CIP-0028` allocation in PR #205) and coordinates their shared outer schema carriers so individual draft PRs do not allocate conflicting revisions:

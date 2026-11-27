@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/tool-provisioning-v1/agent-skill-v10.schema.json",
+  "title": "agent-skill.json schema 10 (tool provisioning v1)",
+  "$defs": {
+    "toolRequirementV1": {
+      "type": "object",
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 256,
+          "pattern": "^(?:aqua/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+|pypi/[A-Za-z0-9][A-Za-z0-9._-]*)$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^(?:latest|[A-Za-z0-9.=<>^~*, +-]+)$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "dependenciesV7": {
+      "type": "object",
+      "properties": {
+        "commands": {
+          "$ref": "../v1/common.schema.json#/$defs/dependenciesV5/properties/commands"
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "../draft-sources-v2/agent-skill-v9.schema.json#/$defs/skillRequirementV9"
+          }
+        },
+        "mcp_servers": {
+          "$ref": "../v1/common.schema.json#/$defs/dependenciesV5/properties/mcp_servers"
+        },
+        "tools": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/toolRequirementV1"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 10
+    },
+    "runtime_roots": {
+      "$ref": "../v1/common.schema.json#/$defs/pathSet"
+    },
+    "build_roots": {
+      "$ref": "../v1/common.schema.json#/$defs/pathSet"
+    },
+    "build_repositories": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "$ref": "../v1/common.schema.json#/$defs/buildRepositoryV1"
+      }
+    },
+    "commands": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "$ref": "../v1/common.schema.json#/$defs/commandV8"
+      }
+    },
+    "capabilities": {
+      "$ref": "../v1/common.schema.json#/$defs/capabilities"
+    },
+    "dependencies": {
+      "$ref": "#/$defs/dependenciesV7"
+    }
+  },
+  "additionalProperties": false
+}

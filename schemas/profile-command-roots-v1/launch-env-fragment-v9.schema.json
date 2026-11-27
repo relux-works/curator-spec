@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-command-roots-v1/launch-env-fragment-v9.schema.json",
+  "title": "launch-env-fragment-v9",
+  "description": "Closed launch fragment carrying active profile command roots (Slice B-a) alongside all v1-v7 environment transports without colliding with the CIP-0034/0035 v8 reservation.",
+  "type": "object",
+  "required": [
+    "fragment",
+    "environment",
+    "profile",
+    "precedence",
+    "env",
+    "permissions",
+    "command_root",
+    "path_prepend"
+  ],
+  "properties": {
+    "fragment": {
+      "const": "launch-env-fragment-v9"
+    },
+    "environment": {
+      "enum": [
+        "claude_code",
+        "codex_cli",
+        "opencode",
+        "pi",
+        "muse",
+        "antigravity",
+        "kimi_code"
+      ]
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "lock_sha256"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "../v1/common.schema.json#/$defs/identifier"
+        },
+        "lock_sha256": {
+          "$ref": "../v1/common.schema.json#/$defs/hex256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "precedence": {
+      "$ref": "../v1/agent-environment-marker-v1.schema.json#/$defs/precedence"
+    },
+    "home": {
+      "type": "object",
+      "required": [
+        "path",
+        "transport"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "transport": {
+          "const": "flag"
+        }
+      },
+      "additionalProperties": false
+    },
+    "env": {
+      "type": "object",
+      "minProperties": 0,
+      "maxProperties": 5,
+      "properties": {
+        "CLAUDE_CONFIG_DIR": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "CODEX_HOME": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "PI_CODING_AGENT_DIR": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "KIMI_SHARE_DIR": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "XDG_CONFIG_HOME": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "XDG_DATA_HOME": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "XDG_STATE_HOME": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "XDG_CACHE_HOME": {
+          "$ref": "#/$defs/absolutePath"
+        },
+        "TBH_CREDENTIAL_BACKEND": {
+          "const": "file"
+        },
+        "AGY_CLI_FORCE_FILE_TOKEN_STORAGE": {
+          "const": "true"
+        }
+      },
+      "additionalProperties": false
+    },
+    "system_prompt": {
+      "$ref": "../antigravity-managed-home-v1/launch-env-fragment-v7.schema.json#/properties/system_prompt"
+    },
+    "mcp": {
+      "$ref": "../antigravity-managed-home-v1/launch-env-fragment-v7.schema.json#/properties/mcp"
+    },
+    "permissions": {
+      "$ref": "../antigravity-managed-home-v1/launch-env-fragment-v7.schema.json#/properties/permissions"
+    },
+    "root_context": {
+      "$ref": "../antigravity-managed-home-v1/launch-env-fragment-v7.schema.json#/properties/root_context"
+    },
+    "credential_store": {
+      "$ref": "../antigravity-managed-home-v1/launch-env-fragment-v7.schema.json#/properties/credential_store"
+    },
+    "codex_settings": {
+      "$ref": "../profile-codex-settings-v1/fragment-members-v1.schema.json#/properties/codex_settings"
+    },
+    "credential_source": {
+      "$ref": "../antigravity-managed-home-v1/launch-env-fragment-v7.schema.json#/properties/credential_source"
+    },
+    "command_root": {
+      "$ref": "fragment-members.schema.json#/properties/command_root"
+    },
+    "path_prepend": {
+      "$ref": "#/$defs/absolutePath"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "absolutePath": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 4096,
+      "pattern": "^(?:/(?!/)[^:;\\\\\\u0000-\\u001f\\u007f]*|[A-Za-z]:/[^:;\\\\\\u0000-\\u001f\\u007f]+)$",
+      "not": {
+        "pattern": "(?:^|/)(?:\\.|\\.\\.)(?:/|$)"
+      }
+    }
+  }
+}
