@@ -95,6 +95,15 @@ command root:
 <manager-home>/environments/<profile>/commands/<generation>/<platform>/bin/<alias>
 ```
 
-covered by `.curator-profile-command-root.json` and delivered at launch via
-`launch-env-fragment-v9` (`command_root` + `path_prepend`) or interactive
-operator execution via `curator profile exec <profile> -- <command> [args...]`.
+covered by `.curator-profile-command-root.json` and delivered through:
+
+1. `launch-env-fragment-v9` (`command_root` + `path_prepend`) for launcher
+   integration (`curator run`) and shell evaluation
+   (`curator env resolve <env-id> --profile <profile> --repair --format shell`,
+   which appends `export PATH='<path_prepend>':"$PATH"` after the adapter's
+   managed-home variables while leaving `v1`–`v7` shell output unchanged);
+2. `curator profile exec <profile> [--env <env-id>] -- <command> [args...]`
+   for direct interactive execution — without `--env` for operator utility
+   workflows (such as OAuth login), and with `--env <env-id>` to apply both the
+   profile's managed environment variables and its verified command root `PATH`
+   without requiring a separate launcher binary.

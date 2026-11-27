@@ -47,6 +47,22 @@ Muse Code 1.4.1: `exec --yolo`; `serve --disable-sandbox` and
 Provider spelling and wire mapping stay owned by agents-management;
 permission precedence and headless/CI/tracked `native` silence are unchanged.
 
+Amended 2026-11-27 by operator decision: the built-in permission-mode
+default is unified to `native` across all launches (interactive,
+headless, CI, native, and hosted) on every stdio shape, replacing the
+earlier interactive-`yolo` default. `yolo` remains an explicit opt-in
+through `--permissions yolo` / `--yolo`, per-profile
+`permissions.<profile>`, or launcher-global `defaults.json`
+`permissions`, subject to the item-3 force-`native` lock, the item-5
+transport gate (explicit `yolo` still fails closed on fragments predating
+`launch-env-fragment-v2`, whereas built-in `native` silence proceeds as
+`native`), and the agents-management provider capability table (semver
+release ranges / live probe where supported). Provenance for unlocked
+built-in silence retains `source=default-interactive` (`mode=native`) so
+existing wire schemas (`delegated-launch`, `session-launch-plan`) remain
+unchanged while still distinguishing unlocked default silence from
+force-`native` lock silence (`source=default-headless`).
+
 ## Context
 
 The launcher (`curator-agent-launcher` `b34e1e2`) accepts `--profile`,
