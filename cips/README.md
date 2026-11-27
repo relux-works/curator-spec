@@ -119,6 +119,9 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0025](CIP-0025-execution-isolation-contract.md) | Execution Isolation Contract | Review |
 | [CIP-0026](CIP-0026-foreign-code-execution.md) | Foreign-code execution | Review |
 | [CIP-0027](CIP-0027-provisioning-origin.md) | Persist managed-home provisioning origin | Accepted |
+| [CIP-0028](CIP-0028-claude-read-scope.md) | Read scope of declared skills and selected contexts in Claude managed homes | Draft |
+| [CIP-0028](CIP-0028-claude-read-scope.md) | Read scope of declared skills and selected contexts in Claude managed homes | Draft |
+| [CIP-0028](CIP-0028-claude-read-scope.md) | Read scope of declared skills and selected contexts in Claude managed homes | Draft |
 | [CIP-0029](CIP-0029-machine-claude-output-limit.md) | Machine-scoped Claude output limit | Review |
 | [CIP-0030](CIP-0030-package-prefixed-overlay-ranges.md) | Package-prefixed version tags for directory overlays | Review |
 | [CIP-0031](CIP-0031-machine-host-notification.md) | Machine Host notification carrier | Review |
@@ -129,5 +132,3 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0036](CIP-0036-gui-host-managed-sessions.md) | GUI-host managed sessions (instance per profile) | Draft |
 | [CIP-0037](CIP-0037-tool-and-mcp-auth-mediation.md) | Tool and MCP authentication mediation (`curator-credential-broker`) | Draft |
 | [CIP-0038](CIP-0038-browser-sso-auth-extension.md) | Isolated browser SSO authentication extension for `curator-credential-broker` | Draft |
-
-CIP-0028 remains allocated separately in [PR #205](https://github.com/relux-works/curator-spec/pull/205); these proposals do not reuse it.
