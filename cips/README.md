@@ -125,8 +125,8 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0032](CIP-0032-native-a2a-station-link.md) | Native a2a station-link handover | Review |
 | [CIP-0033](CIP-0033-antigravity-managed-home.md) | Antigravity CLI (`agy`) managed home, flag home transport, and credential contracts | Review |
 | CIP-0034 | Automated harness qualification registry and versioned binary custody | In preparation |
-| CIP-0035 | Claude Code session surface projection | In preparation |
-| CIP-0036 | GUI-host managed sessions (instance per profile) | In preparation |
+| [CIP-0035](CIP-0035-claude-code-session-surface-projection.md) | Claude Code session surface projection | Draft |
+| [CIP-0036](CIP-0036-gui-host-managed-sessions.md) | GUI-host managed sessions (instance per profile) | Draft |
 | [CIP-0037](CIP-0037-tool-and-mcp-auth-mediation.md) | Tool and MCP authentication mediation (`curator-credential-broker`) | Draft |
 | [CIP-0038](CIP-0038-browser-sso-auth-extension.md) | Isolated browser SSO authentication extension for `curator-credential-broker` | Draft |
 
