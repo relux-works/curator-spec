@@ -1240,17 +1240,22 @@ in two explicitly labelled revisions:
 
 - **Revision A (this release).** The knob is admitted with default
   `permissive`, and every manager MUST report the posture it runs in
-  (section 10). Every operation under the `permissive` posture MUST emit
-  the warning `security_posture_permissive` exactly once per operation,
-  naming the `security_posture` knob and carrying the migration hint `set
+  (section 10). Under the `permissive` posture, diagnostic and audit
+  surfaces (`status`, `env status`, `config show`, `audit`, plus the
+  section-10 `security_posture_rows`) MUST emit the warning
+  `security_posture_permissive` once per operation, naming the
+  `security_posture` knob and carrying the migration hint `set
   security_posture: hardened in the machine configuration to adopt the
-  hardened defaults before revision B flips the default`. Old behavior is
-  otherwise kept.
+  hardened defaults`. (Amended 2026-11-27: everyday launch and profile
+  operations such as `profile install`, `profile exec`, `profile list`,
+  `env resolve`, and `run` suppress the repetitive stderr warning while
+  keeping full posture reporting on status, config, and audit surfaces.)
+  Old behavior is otherwise kept.
 - **Revision B (a later release).** The default flips to `hardened`. An
   explicit `permissive` remains a valid machine-file value that restores
   today's per-knob defaults, and keeps emitting
-  `security_posture_permissive` whenever the effective posture is
-  `permissive`.
+  `security_posture_permissive` on diagnostic and audit surfaces whenever
+  the effective posture is `permissive`.
 
 A release MUST NOT flip the default and add the refusals at once: revision
 A admits the knob with the warning, revision B flips the default.
@@ -1469,13 +1474,27 @@ by the manager implementation tasks `TASK-260910-1952mz`
 (manager-hook-digest-pin, the hook trust gate) and `TASK-260910-3ungjy`
 (hook-approval-command, the approval command).
 
-## 9. Idempotent machine bootstrap
+## 9. Idempotent machine bootstrap and zero-config defaults
 
 A manager SHOULD expose a non-interactive operation that creates its machine
 configuration only when it is absent. When the configuration path already
 exists, this operation MUST succeed without parsing, rewriting, or changing
 the existing file. An explicit overwrite operation and create-if-absent mode
 MUST be mutually exclusive.
+
+Amended 2026-11-27: when the operator machine configuration file is absent
+(ENOENT, never a malformed or unreadable file), a manager MAY operate using
+in-memory built-in defaults (`skills_root` defaulting to `<manager-home>/skills`,
+empty `projects`, `adapter_mode: "auto"`, and the revision's default
+`security_posture`) while still loading and enforcing any present system
+configuration file (section 1) fail-closed. Read-only operations MUST NOT
+create the file on disk; configuration-mutating operations (`env config set`,
+`config ...`, `project add`, `profile compose`) MAY lazily materialize the
+minimal machine configuration file on first write. Under `schema_version >= 2`,
+`skills_root` is optional and defaults to `<manager-home>/skills` when absent
+(explicit empty or non-string values still fail closed; frozen schema 1 is
+unchanged). `bootstrap` accepts an optional `--skills-root` defaulting to
+`<manager-home>/skills`.
 
 ## 10. Status and garbage collection
 
