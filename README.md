@@ -39,6 +39,12 @@ record every revision-1 disposition without redefining the released vectors.
 Run `make store-verification-v2-check` for metadata and counterexample checks;
 the tool writes no product artifacts and does not claim runtime qualification.
 
+[Draft Decision 0033: compatible lock refresh on ordinary launch](decisions/0033-launch-lock-refresh-compatible.md)
+proposes an operator-owned refresh policy, stopped-thread restart/readmission,
+frozen hosted resume/Werkstatt pins and lease/confirmation gates. Owner
+confirmation is pending; no runtime behavior or
+released carrier changes are enabled by this proposal.
+
 The release consists of the following documents and artifacts:
 
 | Part | Role |

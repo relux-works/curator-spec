@@ -371,3 +371,14 @@ and `courier_contract`, the test selector
 label. These remain unchanged pending an explicit mapping; they are not
 additional admitted station entries or daemon default paths. The station
 pointer filename and failure-log filename do follow the supplied map.
+
+## Draft launch lock refresh
+
+[Decision 0033](decisions/0033-launch-lock-refresh-compatible.md#owner-questions)
+awaits owner confirmation of the relayed requirement, activated default and
+transition, operator policy authority, automatic signer/attestation gates,
+same-major bounds, system/MCP removal confirmation and offline/lease deferral.
+The same-thread native restart and explicit down-session hosted readmission
+contracts are included in this draft, with frozen hosted resume as the default.
+Owner review includes their lease/identity transitions and the choice between
+below-1.0 and caret ranges for 0.x; no route implementation is claimed.
