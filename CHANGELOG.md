@@ -121,6 +121,14 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Define snapshot-cache retention (manager profile section 10.1, #75): the
+  references that keep a commit-keyed snapshot reachable, fail-safe
+  uncertainty, a grace period, the operator `keep_last` and `older_than`
+  policy, dry-run parity, move-then-delete removal, and a retention report
+  with allocated and logical sizes. Add the standalone `snapshot-retention-v1`
+  decision vectors, their semantic check in `tools/validate.py`, and the
+  informative `curator cache prune` row.
+
 - 2026-11-10: propose the shared macOS Muse native credential form in Draft CIP-0039 and
   Draft Decision 0038, with a separate v4 successor schema and paired cases.
   Frozen schemas/pins and file-only behavior remain; acceptance and joint

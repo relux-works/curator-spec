@@ -219,6 +219,7 @@ func main() {
 	writeDraftSourcesManifest(*root)
 	writeCandidateMetadata(*root, suite, skillfileSourcesManifestSHA256)
 	writeGoHostExecutionPolicyInventory(filepath.Join(*root, "conformance/go-native-controls-v2"), "rc5-native-control-inventory-v2")
+	writeSnapshotRetentionVectors(filepath.Join(*root, "conformance/snapshot-retention-v1"))
 }
 
 // writeModuleRootVectors emits the filesystem and build-graph cases that JSON
